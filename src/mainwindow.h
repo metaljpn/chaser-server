@@ -1,18 +1,23 @@
+/****************************************************************************
+*   SYSTEM  :   CHaserサーバー
+*----------------------------------------------------------------------------
+*   NOTE    :   メイン画面
+****************************************************************************/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QMainWindow>
-#include <QTimer>
-#include <QKeyEvent>
-#include "startupdialog.h"
-#include <fstream>
-#include <QDateTime>
-#include <QFile>
-#include <QSoundEffect>
-#include <QDataStream>
-#include <QMediaPlayer>
-#include <QThread>
-#include "StableLog.h"
+#include <QMainWindow>                  // メインウィンドウ
+#include <QTimer>                       // 時間管理
+#include <QKeyEvent>                    // キーイベント
+#include "startupdialog.h"              // 起動画面
+#include <fstream>                      // ファイルストリーム
+#include <QDateTime>                    // 日付と時刻管理
+#include <QFile>                        // ファイルアクセス
+#include <QSoundEffect>                 // 効果音再生
+#include <QDataStream>                  // バイナリシリアライズ
+#include <QMediaPlayer>                 // メディアファイル再生
+#include <QThread>                      // スレッド管理
+#include "StableLog.h"                  // ログ管理
 
 namespace Ui {
 class MainWindow;
@@ -23,32 +28,34 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 private:
 
-    int player;      //次ターン行動プレイヤー
+    int player;                         // 次ターン行動チーム
 
-    int FRAME_RATE = 150;   //ゲームフレームレート
-    QTimer* clock;          //ゲームクロック
-    QTimer* startup_anime;  //開始アニメーション
-    QTimer* teamshow_anime; //チーム表示アニメーション
-    QTimer* blind_anime;    //まっくらアニメーション
-    StartupDialog* startup; //スタートアップダイアログ
-    QMediaPlayer* bgm;           //音楽
-    QAudioOutput* audio_output; //音声出力
+    int FRAME_RATE = 150;               // ゲームフレームレート
+    QTimer* clock;                      // ゲームクロック
+    QTimer* startup_anime;              // 開始アニメーション
+    QTimer* teamshow_anime;             // チーム表示アニメーション
+    QTimer* blind_anime;                // まっくらアニメーション
+    StartupDialog* startup;             // スタートアップダイアログ
+    QMediaPlayer* bgm;                  // BGM
+    QAudioOutput* audio_output;         // 音声出力チャンネル
 
-    bool silent;
+    bool silent;                        // 消音モード
 
-    bool dark;         //暗転処理
-    bool isbotbattle; //ボット戦モード
+    bool dark;                          // 暗転モード
+    bool isbotbattle;                   // ボット戦モード
 
-    QFile* file;   //ログファイル
-    StableLog log; //ログストリーム
-    int anime_map_time   = 6000; //マップ構築アニメーション時間
-    int anime_team_time  = 2000; //チーム配置アニメーション時間
-    int anime_blind_time = 1000; //まっくらアニメーション時間
-	float audio_volume = 0.8f; //音量
+    QFile* file;                        // ファイル(未使用)
+    StableLog log;                      // ログストリーム
+    int anime_map_time   = 6000;        // マップ描画時間
+    int anime_team_time  = 2000;        // チーム配置アニメーション時間
+    int anime_blind_time = 1000;        // 暗闇アニメーション時間
+    float audio_volume = 0.8f;          // 音量
 
-    GameSystem::WINNER win;
+    GameSystem::WINNER win;             // 勝者
 
+    // 日時取得
     static QString getTime();
+    // クライアント行動文字列変換
     static QString convertString(GameSystem::Method method);
 
     // qInstallMessageHandler 用
@@ -61,6 +68,7 @@ private:
     static void s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
 protected:
+    // キー押下イベント
     void keyPressEvent(QKeyEvent* event);
 
 public:
@@ -68,22 +76,26 @@ public:
     ~MainWindow();
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow *ui;                 // UI
 
 private slots:
+    // ファイル保存
     void SaveFile();
 
-    //ゲーム進行
+    // ゲーム進行
     void StepGame();
-    //アイテム取得の判定
+    // アイテム取得判定
     void RefreshItem(GameSystem::Method method);
-    //決着判定
+    // 勝敗判定
     GameSystem::WINNER Judge();
-    //決着
+    // 勝敗通知
     void Finish(GameSystem::WINNER win);
 
+    // マップ描画
     void StartAnimation();
+    // チーム配置
     void ShowTeamAnimation();
+    // 暗転描画
     void BlindAnimation();
 };
 

@@ -8,3 +8,4 @@ src/.qtc_clangd/*
 /src/debug/
 /src/release/
 log*.txt
+*.ini

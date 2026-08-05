@@ -1,13 +1,18 @@
+/****************************************************************************
+*   SYSTEM  :   CHaserサーバー
+*----------------------------------------------------------------------------
+*   NOTE    :   クライアント設定画面
+****************************************************************************/
 #ifndef CLIENTSETTINGFORM_H
 #define CLIENTSETTINGFORM_H
 
-#include <QGroupBox>
-#include <QProcess>
-#include <QFile>
+#include <QGroupBox>                    // グループボックス
+#include <QProcess>                     // 外部プログラム起動
+#include <QFile>                        // ファイルアクセス
 
-#include "TcpClient.h"
-#include "ComClient.h"
-#include "ManualClient.h"
+#include "TcpClient.h"                  // TCPクライアント
+#include "ComClient.h"                  // 通信クライアント 自動くん
+#include "ManualClient.h"               // 手動クライアント
 
 
 namespace Ui {
@@ -19,25 +24,26 @@ class ClientSettingForm : public QGroupBox
     Q_OBJECT
 
 public:
-    BaseClient* client;
+    BaseClient* client;                 // TCPクライアント
 
     explicit ClientSettingForm(QWidget *parent = 0);
     ~ClientSettingForm();
 
 public slots:
 
-    void SetStandby ();
-    void Connected  ();
-    void DisConnected();
-    void ConnectionToggled(bool state);
-    void ComboBoxChenged(QString text);
-    void SetPortSpin(int num);
+    void SetStandby ();                 // 準備完了
+    void Connected  ();                 // 接続
+    void DisConnected();                // 切断
+    void ConnectionToggled(bool state); // 待機切替
+    void ComboBoxChenged(QString text); // クライアント種別切替
+    void SetPortSpin(int num);          // ポート番号設定
 
 signals:
-    void Standby(ClientSettingForm* client,bool complate);//準備完了
+    // 準備完了
+    void Standby(ClientSettingForm* client,bool complate);
 private:
-    Ui::ClientSettingForm *ui;
-    QProcess *botProcess;
+    Ui::ClientSettingForm *ui;          // UI
+    QProcess *botProcess;               // ボットプロセス
 };
 
 #endif // CLIENTSETTINGFORM_H

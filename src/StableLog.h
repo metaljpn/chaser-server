@@ -1,21 +1,27 @@
+/****************************************************************************
+*   SYSTEM  :   CHaserサーバー
+*----------------------------------------------------------------------------
+*   NOTE    :   ログ管理
+****************************************************************************/
 #ifndef STABLELOG_H
 #define STABLELOG_H
-#include <QString>
-#include <QFile>
-#include <QDir>
-#include <QIODevice>
-#include <QTextStream>
-#include <QMutex>
+#include <QString>                      // 文字列
+#include <QFile>                        // ファイルアクセス
+#include <QDir>                         // ディレクトリ操作
+#include <QIODevice>                    // I/Oデバイス
+#include <QTextStream>                  // テキストアクセス
+#include <QMutex>                       // 排他制御
 
 class StableLog
 {
 public:
+    // ファイル名取得
     QString filename() { return m_filename; }
-
+    // 書込
     void Write(const QString& str)const;
 
 
-
+    // 書込オペレータ
     const StableLog& operator<<(const QString& str)const;
 
     StableLog();
@@ -25,10 +31,9 @@ public:
     ~StableLog();
 
 private:
-	QString m_filename;
+    QString m_filename;                 // ファイル名
 
-    //排他制御(スレッドセーフ)のための変数
-	mutable QMutex* m_mutex;
+    mutable QMutex* m_mutex;            // 排他用オブジェクト
 };
 
 #endif // STABLELOG_H

@@ -1,9 +1,14 @@
+/****************************************************************************
+*   SYSTEM  :   CHaserサーバー
+*----------------------------------------------------------------------------
+*   NOTE    :   手動クライアント画面
+****************************************************************************/
 #ifndef MANUALCLIENTDIALOG_H
 #define MANUALCLIENTDIALOG_H
 
-#include <QDialog>
-#include <QKeyEvent>
-#include "GameSystem.h"
+#include <QDialog>                      // ダイアログ
+#include <QKeyEvent>                    // キーイベント
+#include "GameSystem.h"                 // マップ管理
 
 namespace Ui {
 class ManualClientDialog;
@@ -13,37 +18,38 @@ class ManualClientDialog : public QDialog
 {
     Q_OBJECT
 public:
-    GameSystem::Method next_method; //実行される関数
+    GameSystem::Method next_method;     // 実行行動
 
     explicit ManualClientDialog(QWidget *parent = 0);
     ~ManualClientDialog();
 
 
 protected:
+    // クローズ
     void closeEvent(QCloseEvent* ce);
+    // キー押下
     void keyPressEvent(QKeyEvent* event);
 
 private:
-    Ui::ManualClientDialog *ui;
+    Ui::ManualClientDialog *ui;         // UI
 
-    //現在のメソッドのアクションを取得
+    // 行動定数取得
     GameSystem::Method::ACTION GetAction();
 
 signals:
-    //関数決定シグナル
-    void ReadyAction();
+    void ReadyAction();                 // 行動決定
 
-    void CloseWindow();
+    void CloseWindow();                 // クローズ
 
 private slots:
-    //各スロット
-    void UPButtonClicked();
-    void DOWNButtonClicked();
-    void RIGHTButtonClicked();
-    void LEFTButtonClicked();
+    // 各スロット
+    void UPButtonClicked();             // [↑]ボタン押下
+    void DOWNButtonClicked();           // [↓]ボタン押下
+    void RIGHTButtonClicked();          // [→]ボタン押下
+    void LEFTButtonClicked();           // [←]ボタン押下
 
 public slots:
-    void AppendLog(const QString& str);
+    void AppendLog(const QString& str); // ログ追加
 
 };
 

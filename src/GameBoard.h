@@ -1,14 +1,19 @@
+/****************************************************************************
+*   SYSTEM  :   CHaserサーバー
+*----------------------------------------------------------------------------
+*   NOTE    :   ゲームボード管理
+****************************************************************************/
 #ifndef GRAPHICFIELD_H
 #define GRAPHICFIELD_H
 
-#include <QWidget>
-#include <QVector>
-#include <QPainter>
-#include <QResizeEvent>
-#include <QDebug>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsView>
-#include "GameSystem.h"
+#include <QWidget>                          // ユーザーインターフェース
+#include <QVector>                          // 動的配列
+#include <QPainter>                         // 描画
+#include <QResizeEvent>                     // リサイズイベント
+#include <QDebug>                           // デバッグ情報
+#include <QGraphicsPixmapItem>              // 画像管理
+#include <QGraphicsView>                    // ビューポート
+#include "GameSystem.h"                     // マップ管理
 
 namespace Ui {
 class GameBoard;
@@ -18,77 +23,78 @@ class GameBoard : public QWidget
 {
     Q_OBJECT
 private:
-    int map_width;  //全体高さ
-    int map_height; //全体幅
+    int map_width;                          // マップ幅
+    int map_height;                         // マップ高さ
 
     //Animations
-    bool animation    = false; //アニメーション有効
-    bool animationing = false; //アニメーション中
+    bool animation    = false;              // アニメーション有効
+    bool animationing = false;              // アニメーション中(未使用)
 
-    QString texture_dir_path; //使用テクスチャディレクトリ
-    QPixmap team_resource[TEAM_COUNT];   //チーム画像
-    QPixmap field_resource[4];  //フィールド画像
-    QPixmap overray_resource[5];//オーバーレイ画像
+    QString texture_dir_path;               // 使用テクスチャディレクトリ
+    QPixmap team_resource[TEAM_COUNT];      // チーム画像
+    QPixmap field_resource[4];              // フィールド画像
+    QPixmap overray_resource[5];            // オーバーレイ(行動効果)画像
 
 public:
-    GameSystem::Map field; //フィールド状態
-    Field<GameSystem::MAP_OVERLAY> overlay;//オーバーレイ状態
+    GameSystem::Map field;                  // ゲーム盤
+    Field<GameSystem::MAP_OVERLAY> overlay; // オーバーレイ(行動効果)
 
-    QSize image_part; //単体画像サイズ
-    QPoint team_pos[TEAM_COUNT]; //チーム位置
+    QSize image_part;                       // 単体画像サイズ
+    QPoint team_pos[TEAM_COUNT];            // チーム位置
 
-    GameSystem::Method past_method;//前回のログ
+    GameSystem::Method past_method;         // 前回の行動(未使用)
 
-    int leave_items;             //残りアイテム
-    int team_score[TEAM_COUNT];  //チームのスコア
+    int leave_items;                        // 残アイテム数
+    int team_score[TEAM_COUNT];             // チーム得点
 protected:
-    void paintEvent (QPaintEvent *event);   //ペイントイベント
-    void resizeEvent(QResizeEvent *event); //リサイズイベント
+    void paintEvent (QPaintEvent *event);   // ペイントイベント
+    void resizeEvent(QResizeEvent *event);  // リサイズイベント
 
 public:
     //テクスチャパス取得
     //static QString GetTexturePath(GameSystem::Texture tex);
 
-    //オブジェクトの数を数える
+    // オブジェクト数算出
     int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
 
 public:
-    //フィールドへアクセスする
+    // 指定位置物体種別取得
     GameSystem::MAP_OBJECT FieldAccess(GameSystem::Method method, const QPoint& pos);
-    //周辺情報を取得する
+    // 周辺確認
     GameSystem::AroundData FieldAccessAround(GameSystem::TEAM team);
+    // 指定位置周辺確認
     GameSystem::AroundData FieldAccessAround(GameSystem::Method method, const QPoint& center);
-    //メソッドで周辺情報を取得する
+    // 行動後周辺確認
     GameSystem::AroundData FieldAccessMethod(GameSystem::Method method);
 
-    //
+    // 接続終了
     GameSystem::AroundData FinishConnecting(GameSystem::TEAM team);
 
-    //マップを設定する
+    // マップ設定
     void setMap(const GameSystem::Map &map);
 
-    //オーバーレイを全て削除する
+    // オーバーレイ(行動効果)消去
     void RefreshOverlay();
 
-    //アニメーション開始
+    // アニメーション開始(未使用)
     void PlayAnimation(GameSystem::Method method);
 
     explicit GameBoard(QWidget *parent = 0);
 
-    //アイテム回収
+    // アイテム回収
     void PickItem(GameSystem::Method method);
 
     ~GameBoard();
 
 private:
-    Ui::GameBoard *ui;
+    Ui::GameBoard *ui;                  // UI
 
          signals:
-    //アニメーション終了
+    // アニメーション終了(未使用)
     void FinishAnimations();
 
 public slots:
-    //テクスチャ読み込み
+    // テクスチャ再読込
     void ReloadTexture(QString texture_dir_path);
 
 };
