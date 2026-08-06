@@ -436,7 +436,7 @@ void MainWindow::ShowTeamAnimation()
     }else{
         // 探索済設定
         ui->Field->field.discover[ui->Field->team_pos[team_count].y()]
-                [ui->Field->team_pos[team_count].x()] = GameSystem::Discoverer::Cool;
+                [ui->Field->team_pos[team_count].x()] = GameSystem::DISCOVER::EXPLORED;
     }
     // 描画更新
     repaint();
@@ -471,16 +471,16 @@ void MainWindow::BlindAnimation()
                 pos[i].setY(QRandomGenerator::global()->generate() % this->startup->map.size.y());
             // マップサイズ分の回数未到達 and 未探索(座標取得済)の間
             }while(timer < startup->map.size.x() * startup->map.size.y() &&
-                   ui->Field->field.discover[pos[i].y()][pos[i].x()] == GameSystem::Discoverer::Unknown);
+                   ui->Field->field.discover[pos[i].y()][pos[i].x()] == GameSystem::DISCOVER::UNKNOWN);
             // 未探索設定
-            ui->Field->field.discover[pos[i].y()][pos[i].x()] = GameSystem::Discoverer::Unknown;
+            ui->Field->field.discover[pos[i].y()][pos[i].x()] = GameSystem::DISCOVER::UNKNOWN;
         }
     }
     // マップサイズ分の回数到達
     if(timer >= startup->map.size.x() * startup->map.size.y()){
         // 探索状態初期化
-        for(auto& v : this->ui->Field->field.discover)v = QVector<GameSystem::Discoverer>
-                (this->ui->Field->field.size.x(),GameSystem::Discoverer::Unknown);
+        for(auto& v : this->ui->Field->field.discover)v = QVector<GameSystem::DISCOVER>
+                (this->ui->Field->field.size.x(),GameSystem::DISCOVER::UNKNOWN);
         // タイマー
         clock = new QTimer();
         // ゲーム進行シグナル･スロット設定

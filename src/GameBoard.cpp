@@ -92,7 +92,7 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
                                            field_resource[static_cast<int>(field.field[i][j])]);
                     }
                     // (暗転時)未探索
-                    if(field.discover[i][j] == GameSystem::Discoverer::Unknown){
+                    if(field.discover[i][j] == GameSystem::DISCOVER::UNKNOWN){
                         // 暗闇描画
                         painter.drawPixmap(j * image_part.width() ,
                                            i * image_part.height(),
@@ -144,7 +144,7 @@ GameSystem::MAP_OBJECT GameBoard::FieldAccess(GameSystem::Method method, const Q
     if(pos.x() >= field.size.x() || pos.y() >= field.size.y())return GameSystem::MAP_OBJECT::BLOCK;
 
     // 探索済設定
-    field.discover[pos.y()][pos.x()] = GameSystem::Discoverer::Cool;
+    field.discover[pos.y()][pos.x()] = GameSystem::DISCOVER::EXPLORED;
 
     // オーバーレイ(行動効果)設定
     if(method.action == GameSystem::Method::ACTION::LOOK    )overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::LOOK;
@@ -322,7 +322,7 @@ void GameBoard::setMap(const GameSystem::Map& map){
     // 探索状態サイズ設定
     field.discover.resize(map_height);
     // 探索状態初期化
-    for(auto& v : field.discover)v = QVector<GameSystem::Discoverer>(map_width,GameSystem::Discoverer::Cool);
+    for(auto& v : field.discover)v = QVector<GameSystem::DISCOVER>(map_width,GameSystem::DISCOVER::EXPLORED);
 }
 
 /****************************************************************************

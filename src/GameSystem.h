@@ -54,24 +54,16 @@ public:
 
     // マップ上に存在する物体
     enum class MAP_OBJECT{
-        NOTHING = 0,                    // 無し
-        TARGET  = 1,                    // 相手
-        BLOCK   = 2,                    // ブロック
-        ITEM    = 3,                    // アイテム
+        NOTHING,                        // 無し
+        TARGET,                         // 相手
+        BLOCK,                          // ブロック
+        ITEM,                           // アイテム
     };
 
     // 探索状態
-    enum class Discoverer{
-        Unknown = 0,                    // 不明(未探索)
-        Cool    = 2,                    // COOL(探索済)
-    };
-
-    // テクスチャ
-    enum class Texture{
-        Light = 0,                      // Light
-        Heavy = 1,                      // Heavy
-        Jewel = 2,                      // Jewel
-        Other = 3                       // ディレクトリから読込
+    enum class DISCOVER{
+        UNKNOWN,                        // 未探索
+        EXPLORED,                       // 探索済
     };
 
     // マップ上に描画する非物体(行動効果)
@@ -87,7 +79,7 @@ public:
     // ゲーム盤
     struct Map{
         Field<GameSystem::MAP_OBJECT> field;    // フィールド(物体)
-        Field<GameSystem::Discoverer> discover; // 探索状態
+        Field<GameSystem::DISCOVER> discover;   // 探索状態
         int turn;                               // ターン
         QString name;                           // ステージ名
         QPoint size;                            // マップサイズ
