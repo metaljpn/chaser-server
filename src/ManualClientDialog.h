@@ -32,6 +32,8 @@ protected:
 public:
     GameSystem::Method next_method;     // 実行行動
 
+    void AppendLog(const QString& str); // ログ追加
+
     explicit ManualClientDialog(QWidget *parent = 0);
     ~ManualClientDialog();
 
@@ -44,10 +46,6 @@ private slots:
     void DOWNButtonClicked();           // [↓]ボタン押下
     void RIGHTButtonClicked();          // [→]ボタン押下
     void LEFTButtonClicked();           // [←]ボタン押下
-
-public slots:
-    void AppendLog(const QString& str); // ログ追加
-
 };
 
 #endif // MANUALCLIENT_H

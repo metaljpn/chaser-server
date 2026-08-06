@@ -7,15 +7,24 @@
 #include "ui_ManualClientDialog.h"      // 手動クライアント画面UI
 
 /****************************************************************************
-*   クローズ
+*   コンストラクタ
 *
-*   @param ce クローズ情報
+*   @param parent 親ウィジェット
 ****************************************************************************/
-void ManualClientDialog::closeEvent(QCloseEvent* ce){
-    // ウィンドウクローズ
-    emit CloseWindow();
-    // クローズ許可
-    ce->accept();
+ManualClientDialog::ManualClientDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::ManualClientDialog)
+{
+    // UI初期化
+    ui->setupUi(this);
+    // [↑]ボタンシグナル･スロット設定
+    connect(this->ui->UPButton,    &QPushButton::clicked, this, &ManualClientDialog::UPButtonClicked);
+    // [↓]ボタンシグナル･スロット設定
+    connect(this->ui->DOWNButton,  &QPushButton::clicked, this, &ManualClientDialog::DOWNButtonClicked);
+    // [→]ボタンシグナル･スロット設定
+    connect(this->ui->RIGHTButton, &QPushButton::clicked, this, &ManualClientDialog::RIGHTButtonClicked);
+    // [←]ボタンシグナル･スロット設定
+    connect(this->ui->LEFTButton,  &QPushButton::clicked, this, &ManualClientDialog::LEFTButtonClicked);
 }
 
 /****************************************************************************
@@ -35,6 +44,18 @@ void ManualClientDialog::keyPressEvent(QKeyEvent * event){
 }
 
 /****************************************************************************
+*   クローズ
+*
+*   @param ce クローズ情報
+****************************************************************************/
+void ManualClientDialog::closeEvent(QCloseEvent* ce){
+    // ウィンドウクローズ
+    emit CloseWindow();
+    // クローズ許可
+    ce->accept();
+}
+
+/****************************************************************************
 *   行動定数取得
 ****************************************************************************/
 GameSystem::Method::ACTION ManualClientDialog::GetAction(){
@@ -48,6 +69,17 @@ GameSystem::Method::ACTION ManualClientDialog::GetAction(){
     else if(this->ui->LookRadio->isChecked())  return GameSystem::Method::ACTION::LOOK;
     // 不明
     else                                       return GameSystem::Method::ACTION::UNKNOWN;
+}
+
+/****************************************************************************
+*   ログ追加
+*
+*   @param str ログ文字列
+****************************************************************************/
+void ManualClientDialog::AppendLog(const QString &str)
+{
+    // ログ追加
+    this->ui->LogEdit->appendPlainText(str);
 }
 
 /****************************************************************************
@@ -100,38 +132,6 @@ void ManualClientDialog::LEFTButtonClicked()
     next_method.action = GetAction();
     // 行動決定
     emit ReadyAction();
-}
-
-/****************************************************************************
-*   ログ追加
-*
-*   @param str ログ文字列
-****************************************************************************/
-void ManualClientDialog::AppendLog(const QString &str)
-{
-    // ログ追加
-    this->ui->LogEdit->appendPlainText(str);
-}
-
-/****************************************************************************
-*   コンストラクタ
-*
-*   @param parent 親ウィジェット
-****************************************************************************/
-ManualClientDialog::ManualClientDialog(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::ManualClientDialog)
-{
-    // UI初期化
-    ui->setupUi(this);
-    // [↑]ボタンシグナル･スロット設定
-    connect(this->ui->UPButton,    &QPushButton::clicked, this, &ManualClientDialog::UPButtonClicked);
-    // [↓]ボタンシグナル･スロット設定
-    connect(this->ui->DOWNButton,  &QPushButton::clicked, this, &ManualClientDialog::DOWNButtonClicked);
-    // [→]ボタンシグナル･スロット設定
-    connect(this->ui->RIGHTButton, &QPushButton::clicked, this, &ManualClientDialog::RIGHTButtonClicked);
-    // [←]ボタンシグナル･スロット設定
-    connect(this->ui->LEFTButton,  &QPushButton::clicked, this, &ManualClientDialog::LEFTButtonClicked);
 }
 
 /****************************************************************************

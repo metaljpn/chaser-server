@@ -31,16 +31,16 @@ public:
     bool CloseSocket();                 // ソケットクローズ
     bool isConnecting();                // 接続待機中
 
-    // 改行変換
-    QString VisibilityString(QString str);
-    // 応答待機
-    QString WaitResponce();
     // 周辺情報要求
     virtual bool WaitGetReady();
     // 周辺情報応答
     virtual GameSystem::Method WaitReturnMethod(GameSystem::AroundData data);
     // 行動に対する周辺情報送信及び受信完了待機
     virtual bool WaitEndSharp(GameSystem::AroundData data);
+    // 応答待機
+    QString WaitResponce();
+    // 改行変換
+    QString VisibilityString(QString str);
 
     explicit TCPClient(QObject *parent = 0);
     virtual ~TCPClient();

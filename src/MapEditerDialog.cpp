@@ -71,22 +71,17 @@ MapEditerDialog::MapEditerDialog(GameSystem::Map map, QWidget *parent) :
 }
 
 /****************************************************************************
-*   デストラクタ
+*   オブジェクト数更新
 ****************************************************************************/
-MapEditerDialog::~MapEditerDialog()
+void MapEditerDialog::ReCount()
 {
-    // UI破棄
-    delete ui;
-}
-
-/****************************************************************************
-*   マップ取得
-*
-*   @return マップ
-****************************************************************************/
-GameSystem::Map MapEditerDialog::GetMap(){
-    // 戻り値[マップ]
-    return ui->widget->field;
+    // ブロック数表示
+    int counter = 0;
+    counter = ui->widget->GetMapObjectCount(GameSystem::MAP_OBJECT::BLOCK);
+    ui->ObjectCounter->item(0)->setText("×" + QString(QString::number(counter)));
+    // アイテム数表示
+    counter = ui->widget->GetMapObjectCount(GameSystem::MAP_OBJECT::ITEM);
+    ui->ObjectCounter->item(1)->setText("×" + QString(QString::number(counter)));
 }
 
 /****************************************************************************
@@ -101,15 +96,6 @@ void MapEditerDialog::mousePressEvent(QMouseEvent *event)
         // オブジェクト配置
         FillItem(event->pos());
     }
-}
-
-/****************************************************************************
-*   マウスクリック解放
-****************************************************************************/
-void MapEditerDialog::mouseReleaseEvent(QMouseEvent *event)
-{
-    // クリック無効
-    if(event->button() == Qt::LeftButton)this->clicking = false;
 }
 
 /****************************************************************************
@@ -139,7 +125,7 @@ void MapEditerDialog::FillItem(const QPoint& pos)
 
     // 有効範囲外ならば関数終了
     if(fill_point.x() < 0 || fill_point.x() >= ui->widget->field.size.x() ||
-       fill_point.y() < 0 || fill_point.y() >= ui->widget->field.size.y())return;
+        fill_point.y() < 0 || fill_point.y() >= ui->widget->field.size.y())return;
 
     // 物体
     GameSystem::MAP_OBJECT obj = GameSystem::MAP_OBJECT::NOTHING;
@@ -172,6 +158,90 @@ void MapEditerDialog::FillItem(const QPoint& pos)
 }
 
 /****************************************************************************
+*   マウスクリック解放
+****************************************************************************/
+void MapEditerDialog::mouseReleaseEvent(QMouseEvent *event)
+{
+    // クリック無効
+    if(event->button() == Qt::LeftButton)this->clicking = false;
+}
+
+/****************************************************************************
+*   エリア選択
+****************************************************************************/
+void MapEditerDialog::ComboChanged()
+{
+    // [ランダム生成]ボタン押下
+    randomGenerateButtonPressed();
+
+    // ウインドウ縦横比算出
+    double window_width_per_height = static_cast<double>(ui->widget->field.size.x())/ui->widget->field.size.y();
+    // 画面の最大高さをもとに、ウインドウ高さを算出
+    int window_height = static_cast<int>(QGuiApplication::primaryScreen()->size().height()*0.8);
+    // リサイズ
+    resize(QSize(window_height*window_width_per_height+134, window_height+4));
+
+    // 描画更新
+    paintEvent(nullptr);
+    // 再描画
+    update();
+}
+
+/****************************************************************************
+*   ターン数変更
+*
+*   @param value 数値
+****************************************************************************/
+void MapEditerDialog::SpinChanged(int value){
+    // ターン数変更
+    ui->widget->field.turn = value;
+}
+
+/****************************************************************************
+*   [ランダム生成]ボタン押下
+****************************************************************************/
+void MapEditerDialog::randomGenerateButtonPressed()
+{
+    // エリア文字列取得
+    auto fieldSizeText = ui->comboBox->currentText();
+
+    // 広域
+    if(fieldSizeText=="広域(21x17)"){
+        // フィールドサイズ設定
+        this->ui->widget->field.SetSize(QPoint(21,17), ui->BlockSpin->value(), ui->ItemSpin->value());
+    }
+    // 決戦
+    else if(fieldSizeText=="決戦(15x17)"){
+        // フィールドサイズ設定
+        this->ui->widget->field.SetSize(QPoint(15,17), ui->BlockSpin->value(), ui->ItemSpin->value());
+    }
+
+    // COOL側初期位置
+    this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)];
+    // HOT側初期位置
+    this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )];
+
+    // マップ設定
+    ui->widget->setMap(ui->widget->field);
+    // 描画更新
+    paintEvent(nullptr);
+    // オブジェクト数更新
+    ReCount();
+    // 再描画
+    update();
+
+    // ブロック数が奇数
+    if(this->ui->BlockSpin->value() % 2 != 0)
+        // 警告通知
+        QMessageBox::information(this, tr("警告"), tr("ブロックは必ず偶数個で生成されます"));
+
+    // アイテム数が偶数
+    if(this->ui->ItemSpin->value() % 2 == 0)
+        // 警告通知
+        QMessageBox::information(this, tr("警告"), tr("アイテムは必ず奇数個で生成されます"));
+}
+
+/****************************************************************************
 *   [全消し]ボタン押下
 ****************************************************************************/
 void MapEditerDialog::Clear()
@@ -187,16 +257,6 @@ void MapEditerDialog::Clear()
     ReCount();
     // 再描画
     update();
-}
-
-/****************************************************************************
-*   ターン数変更
-*
-*   @param value 数値
-****************************************************************************/
-void MapEditerDialog::SpinChanged(int value){
-    // ターン数変更
-    ui->widget->field.turn = value;
 }
 
 /****************************************************************************
@@ -233,81 +293,20 @@ void MapEditerDialog::SelectItem(QListWidgetItem *next)
 }
 
 /****************************************************************************
-*   エリア選択
+*   マップ取得
+*
+*   @return マップ
 ****************************************************************************/
-void MapEditerDialog::ComboChanged()
-{
-    // [ランダム生成]ボタン押下
-    randomGenerateButtonPressed();
-
-    // ウインドウ縦横比算出
-    double window_width_per_height = static_cast<double>(ui->widget->field.size.x())/ui->widget->field.size.y();
-    // 画面の最大高さをもとに、ウインドウ高さを算出
-    int window_height = static_cast<int>(QGuiApplication::primaryScreen()->size().height()*0.8);
-    // リサイズ
-    resize(QSize(window_height*window_width_per_height+134, window_height+4));
-
-    // 描画更新
-    paintEvent(nullptr);
-    // 再描画
-    update();
+GameSystem::Map MapEditerDialog::GetMap(){
+    // 戻り値[マップ]
+    return ui->widget->field;
 }
 
 /****************************************************************************
-*   オブジェクト数更新
+*   デストラクタ
 ****************************************************************************/
-void MapEditerDialog::ReCount()
+MapEditerDialog::~MapEditerDialog()
 {
-    // ブロック数表示
-    int counter = 0;
-    counter = ui->widget->GetMapObjectCount(GameSystem::MAP_OBJECT::BLOCK);
-    ui->ObjectCounter->item(0)->setText("×" + QString(QString::number(counter)));
-    // アイテム数表示
-    counter = ui->widget->GetMapObjectCount(GameSystem::MAP_OBJECT::ITEM);
-    ui->ObjectCounter->item(1)->setText("×" + QString(QString::number(counter)));
-}
-
-/****************************************************************************
-*   [ランダム生成]ボタン押下
-****************************************************************************/
-void MapEditerDialog::randomGenerateButtonPressed()
-{
-    // エリア文字列取得
-    auto fieldSizeText = ui->comboBox->currentText();
-
-    // 広域
-    if(fieldSizeText=="広域(21x17)"){
-        // フィールドサイズ設定
-        this->ui->widget->field.SetSize(QPoint(21,17), ui->BlockSpin->value(), ui->ItemSpin->value());
-    }
-         // 決戦
-    else if(fieldSizeText=="決戦(15x17)"){
-        // フィールドサイズ設定
-        this->ui->widget->field.SetSize(QPoint(15,17), ui->BlockSpin->value(), ui->ItemSpin->value());
-    }
-
-    // COOL側初期位置
-    this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)];
-    // HOT側初期位置
-    this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )];
-
-    // マップ設定
-    ui->widget->setMap(ui->widget->field);
-    // 描画更新
-    paintEvent(nullptr);
-    // オブジェクト数更新
-    ReCount();
-    // 再描画
-    update();
-
-    // ブロック数が奇数
-    if(this->ui->BlockSpin->value() % 2 != 0)
-        // 警告通知
-        QMessageBox::information(this, tr("警告"), tr("ブロックは必ず偶数個で生成されます"));
-
-    // アイテム数が偶数
-    if(this->ui->ItemSpin->value() % 2 == 0)
-        // 警告通知
-        QMessageBox::information(this, tr("警告"), tr("アイテムは必ず奇数個で生成されます"));
-
+    // UI破棄
+    delete ui;
 }

@@ -41,36 +41,37 @@ private:
 
     Ui::MainWindow *ui;                 // UI
 
-    // 日時取得
-    static QString getTime();
-    // クライアント行動文字列変換
-    static QString convertString(GameSystem::Method method);
     // qInstallMessageHandler 用
     static MainWindow* s_instance;
 	// 前のメッセージハンドラを保存するための変数
     static QtMessageHandler s_prevMsgHandler;
-	// メッセージハンドラ(ファイルへのログの書き出しを追加)
+
+    // メッセージハンドラ
     static void s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
+    // 日時取得
+    static QString getTime();
+    // アイテム取得判定
+    void RefreshItem(GameSystem::Method method);
+    // クライアント行動文字列変換
+    QString convertString(GameSystem::Method method);
+    // 勝敗判定
+    GameSystem::WINNER Judge();
+    // 勝敗通知
+    void Finish(GameSystem::WINNER win);
 
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
 private slots:
-    // ゲーム進行
-    void StepGame();
-    // アイテム取得判定
-    void RefreshItem(GameSystem::Method method);
-    // 勝敗判定
-    GameSystem::WINNER Judge();
-    // 勝敗通知
-    void Finish(GameSystem::WINNER win);
     // マップ描画
     void StartAnimation();
     // チーム配置
     void ShowTeamAnimation();
     // 暗転描画
     void BlindAnimation();
+    // ゲーム進行
+    void StepGame();
 };
 
 #endif // MAINWINDOW_H

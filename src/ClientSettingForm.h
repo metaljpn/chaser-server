@@ -34,12 +34,12 @@ signals:
     void Standby(ClientSettingForm* client,bool complate);
 
 public slots:
-    void SetStandby ();                 // 準備完了
-    void Connected  ();                 // 接続
-    void DisConnected();                // 切断
-    void ConnectionToggled(bool state); // 待機切替
-    void ComboBoxChenged(QString text); // クライアント種別切替
     void SetPortSpin(int num);          // ポート番号設定
+    void ComboBoxChenged(QString text); // クライアント種別切替
+    void ConnectionToggled(bool state); // 待機切替
+    void Connected();                   // 接続
+    void SetStandby();                  // 準備完了
+    void DisConnected();                // 切断
 };
 
 #endif // CLIENTSETTINGFORM_H

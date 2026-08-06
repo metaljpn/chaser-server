@@ -9,12 +9,21 @@
 #include <QScreen>                      // 画面プロパティ
 
 /****************************************************************************
-*   クローズ
+*   コンストラクタ
+*
+*   @param parent 親ウィジェット
 ****************************************************************************/
-void ManualClient::closeEvent(){
-    // 切断
-    emit Disconnected();
-    is_disconnected=true;
+ManualClient::ManualClient(QWidget* parent):
+    BaseClient(parent)
+{
+    // 名称
+    Name = "ManualClient";
+    // IP
+    IP   = "ローカル";
+    // 手動クライアント画面
+    diag = new ManualClientDialog();
+    // クローズ時シグナル･スロット設定
+    connect(diag, &ManualClientDialog::CloseWindow, this, &ManualClient::closeEvent);
 }
 
 /****************************************************************************
@@ -88,21 +97,12 @@ void ManualClient::Startup(){
 }
 
 /****************************************************************************
-*   コンストラクタ
-*
-*   @param parent 親ウィジェット
+*   クローズ
 ****************************************************************************/
-ManualClient::ManualClient(QWidget* parent):
-    BaseClient(parent)
-{
-    // 名称
-    Name = "ManualClient";
-    // IP
-    IP   = "ローカル";
-    // 手動クライアント画面
-    diag = new ManualClientDialog();
-    // クローズ時シグナル･スロット設定
-    connect(diag, &ManualClientDialog::CloseWindow, this, &ManualClient::closeEvent);
+void ManualClient::closeEvent(){
+    // 切断
+    emit Disconnected();
+    is_disconnected=true;
 }
 
 /****************************************************************************

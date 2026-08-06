@@ -98,9 +98,9 @@ public:
 
         // サイズ設定
         void SetSize(QPoint size, int block_num = 20, int item_num = 51);
-        // 対称位置
+        // 対称位置取得
         QPoint MirrorPoint(const QPoint& pos);
-        // ランダム生成
+        // ランダムマップ生成
         void CreateRandomMap(int block_num = 20, int item_num = 51);
         // 設定読込
         bool Import(QString Filename);
@@ -134,7 +134,7 @@ public:
         ACTION action;                  // 行動
         ROTE   rote;                    // 方向
 
-        // 方向ベクトル取得
+        // 方向座標取得
         QPoint  GetRoteVector();
         // 行動･方向変換
         static Method fromString(const QString& str);

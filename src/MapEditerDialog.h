@@ -42,13 +42,13 @@ public:
     ~MapEditerDialog();
 
 private slots:
-    void Export();                      // [書き出し]ボタン押下
-    void FillItem(const QPoint& pos);   // オブジェクト配置
-    void Clear();                       // [全消し]ボタン押下
-    void SpinChanged(int value);        // ターン数変更
-    void ComboChanged();                // エリア選択
     void ReCount();                     // オブジェクト数更新
+    void FillItem(const QPoint& pos);   // オブジェクト配置
+    void ComboChanged();                // エリア選択
+    void SpinChanged(int value);        // ターン数変更
     void randomGenerateButtonPressed(); // [ランダム生成]ボタン押下
+    void Clear();                       // [全消し]ボタン押下
+    void Export();                      // [書き出し]ボタン押下
 
 public slots:
     // オブジェクト選択

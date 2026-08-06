@@ -9,42 +9,6 @@
 #include <QTextStream>                  // テキストアクセス
 
 /****************************************************************************
-*   追加書込
-*
-*   @param str ログ文字列
-****************************************************************************/
-void StableLog::Write(const QString &str) const
-{
-    // 排他制御(スレッドセーフ)にするためにロックを取得
-    QMutexLocker locker(m_mutex);
-
-    // 追加書き込みオープン
-    QFile file(m_filename);
-    file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text);
-
-    // 書込
-    file.write(str.toUtf8());
-
-    // クローズ
-    file.close();
-}
-
-/****************************************************************************
-*   書込オペレータ
-*
-*   @return 対象オブジェクト
-*
-*   @param str ログ文字列
-****************************************************************************/
-const StableLog &StableLog::operator<<(const QString &str) const
-{
-    // 書込
-    Write(str);
-    // 戻り値[対象オブジェクト]
-    return (*this);
-}
-
-/****************************************************************************
 *   コンストラクタ
 *
 *   @param parent 親ウィジェット
@@ -91,7 +55,43 @@ StableLog::StableLog(const StableLog& other)
     : m_filename(other.m_filename),
     m_mutex(new QMutex())
 {
-    
+
+}
+
+/****************************************************************************
+*   追記書込
+*
+*   @param str ログ文字列
+****************************************************************************/
+void StableLog::Write(const QString &str) const
+{
+    // 排他制御(スレッドセーフ)にするためにロックを取得
+    QMutexLocker locker(m_mutex);
+
+    // 追記書込オープン
+    QFile file(m_filename);
+    file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text);
+
+    // 書込
+    file.write(str.toUtf8());
+
+    // クローズ
+    file.close();
+}
+
+/****************************************************************************
+*   書込オペレータ
+*
+*   @return 対象オブジェクト
+*
+*   @param str ログ文字列
+****************************************************************************/
+const StableLog &StableLog::operator<<(const QString &str) const
+{
+    // 書込
+    Write(str);
+    // 戻り値[対象オブジェクト]
+    return (*this);
 }
 
 /****************************************************************************

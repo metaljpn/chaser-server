@@ -27,7 +27,7 @@ StartupDialog::StartupDialog(QWidget *parent)
 {
     // UI初期化
     ui->setupUi(this);
-    // BGMファイルリスト生成
+    // BGMリスト生成
     setMusicFileList();
     // テクスチャリスト生成
     setImageThemeList();
@@ -88,87 +88,6 @@ StartupDialog::StartupDialog(QWidget *parent)
 }
 
 /****************************************************************************
-*   デストラクタ
-****************************************************************************/
-StartupDialog::~StartupDialog()
-{
-    // UI破棄
-    delete ui;
-}
-
-/****************************************************************************
-*   BGM選択
-*
-*   @param text 選択項目文字列
-****************************************************************************/
-void StartupDialog::ChangeMusicCombo(QString text)
-{
-    // BGM名取得
-    music_text = text;
-}
-
-/****************************************************************************
-*   ゲーム開始可否確認
-****************************************************************************/
-void StartupDialog::CheckStandby()
-{
-    // 全体準備状態
-    bool all_of = true;
-    // チーム数分
-    for (int i = 0; i < TEAM_COUNT; i++) {
-        // 準備未完了
-        if (!team_standby[i])
-            // 準備未完了
-            all_of = false;
-    }
-    // [ゲーム開始]ボタン有効/無効設定
-    this->ui->ServerStartButton->setEnabled(all_of && map_standby);
-}
-
-/****************************************************************************
-*   マップ編集画面表示
-****************************************************************************/
-void StartupDialog::ShowMapEditDialog()
-{
-    // マップ編集画面
-    MapEditerDialog diag(map);
-    // マップ編集実行
-    if (diag.exec()) {
-        // ファイルパス無効
-        if (diag.filepath == "") {
-            // マップフルパス表示
-            this->ui->MapDirEdit->setText("[CUSTOM MAP]");
-            // マップ情報取得
-            map = diag.GetMap();
-        } else {
-            // 再読込
-            if (MapRead(diag.filepath))
-                // マップフルパス表示
-                this->ui->MapDirEdit->setText(diag.filepath);
-        }
-    }
-    // マップ準備完了
-    SetMapStandby(true);
-}
-
-/****************************************************************************
-*   マップ読込
-*
-*   @return true固定
-*
-*   @param dir マップフルパス
-****************************************************************************/
-bool StartupDialog::MapRead(const QString &dir)
-{
-    // マップファイル読込
-    this->map.Import(dir);
-    // マップサイズ設定
-    map.size.setY(map.field.size());
-    // 戻り値[true]
-    return true;
-}
-
-/****************************************************************************
 *   BGMリスト生成
 ****************************************************************************/
 void StartupDialog::setMusicFileList()
@@ -222,29 +141,6 @@ void StartupDialog::setImageThemeList()
 }
 
 /****************************************************************************
-*   マップ選択
-****************************************************************************/
-void StartupDialog::PushedMapSelect()
-{
-    // マップフォルダ
-    QString folder = QDir::currentPath() + "/Map/";
-    // キャプション
-    QString cap = tr("マップを開く");
-    // フィルタ
-    QString filter = tr("マップファイル (*.map)");
-
-    // ファイルパス取得
-    QString filePath = QFileDialog::getOpenFileName(this, cap, folder, filter);
-    // ファイルパス有効
-    if(filePath != ""){
-        // マップフルパス表示
-        this->ui->MapDirEdit->setText(filePath);
-        // マップ読込 and 準備設定
-        SetMapStandby(MapRead(filePath));
-    }
-}
-
-/****************************************************************************
 *   クライアント準備設定
 *
 *   @param client   クライアント設定画面
@@ -280,7 +176,91 @@ void StartupDialog::SetMapStandby(bool state)
 }
 
 /****************************************************************************
-*   テクスチャ変更
+*   ゲーム開始可否確認
+****************************************************************************/
+void StartupDialog::CheckStandby()
+{
+    // 全体準備状態
+    bool all_of = true;
+    // チーム数分
+    for (int i = 0; i < TEAM_COUNT; i++) {
+        // 準備未完了
+        if (!team_standby[i])
+            // 準備未完了
+            all_of = false;
+    }
+    // [ゲーム開始]ボタン有効/無効設定
+    this->ui->ServerStartButton->setEnabled(all_of && map_standby);
+}
+
+/****************************************************************************
+*   マップ読込
+*
+*   @return true固定
+*
+*   @param dir マップフルパス
+****************************************************************************/
+bool StartupDialog::MapRead(const QString &dir)
+{
+    // マップファイル読込
+    this->map.Import(dir);
+    // マップサイズ設定
+    map.size.setY(map.field.size());
+    // 戻り値[true]
+    return true;
+}
+
+/****************************************************************************
+*   マップ選択
+****************************************************************************/
+void StartupDialog::PushedMapSelect()
+{
+    // マップフォルダ
+    QString folder = QDir::currentPath() + "/Map/";
+    // キャプション
+    QString cap = tr("マップを開く");
+    // フィルタ
+    QString filter = tr("マップファイル (*.map)");
+
+    // ファイルパス取得
+    QString filePath = QFileDialog::getOpenFileName(this, cap, folder, filter);
+    // ファイルパス有効
+    if(filePath != ""){
+        // マップフルパス表示
+        this->ui->MapDirEdit->setText(filePath);
+        // マップ読込 and 準備設定
+        SetMapStandby(MapRead(filePath));
+    }
+}
+
+/****************************************************************************
+*   [マップの編集]ボタン押下
+****************************************************************************/
+void StartupDialog::ShowMapEditDialog()
+{
+    // マップ編集画面
+    MapEditerDialog diag(map);
+    // マップ編集実行
+    if (diag.exec()) {
+        // ファイルパス無効
+        if (diag.filepath == "") {
+            // マップフルパス表示
+            this->ui->MapDirEdit->setText("[CUSTOM MAP]");
+            // マップ情報取得
+            map = diag.GetMap();
+        } else {
+            // 再読込
+            if (MapRead(diag.filepath))
+                // マップフルパス表示
+                this->ui->MapDirEdit->setText(diag.filepath);
+        }
+    }
+    // マップ準備完了
+    SetMapStandby(true);
+}
+
+/****************************************************************************
+*   テクスチャ選択
 *
 *   @param text テクスチャ文字列
 ****************************************************************************/
@@ -291,6 +271,35 @@ void StartupDialog::ChangedTexture(QString text)
     else if (text == "こってり") this->map.texture_dir_path = ":/Image/Heavy";
     else if (text == "ほうせき") this->map.texture_dir_path = ":/Image/Jewel";
     else                       this->map.texture_dir_path = "Image/" + text;
+}
+
+/****************************************************************************
+*   BGM選択
+*
+*   @param text 選択項目文字列
+****************************************************************************/
+void StartupDialog::ChangeMusicCombo(QString text)
+{
+    // BGM名取得
+    music_text = text;
+}
+
+/****************************************************************************
+*   [デザイン設定]ボタン押下
+****************************************************************************/
+void StartupDialog::ShowDesignDialog()
+{
+    // デザイン設定画面
+    DesignDialog *diag;
+    // 画面生成
+    diag = new DesignDialog;
+    // 画面実行 and 設定有効
+    if (diag->exec() == QDialog::Accepted) {
+        // 設定保存
+        diag->Export();
+    }
+    // 画面破棄
+    delete diag;
 }
 
 /****************************************************************************
@@ -312,19 +321,10 @@ void StartupDialog::Setting()
 }
 
 /****************************************************************************
-*   [デザイン設定]ボタン押下
+*   デストラクタ
 ****************************************************************************/
-void StartupDialog::ShowDesignDialog()
+StartupDialog::~StartupDialog()
 {
-    // デザイン設定画面
-    DesignDialog *diag;
-    // 画面生成
-    diag = new DesignDialog;
-    // 画面実行 and 設定有効
-    if (diag->exec() == QDialog::Accepted) {
-        // 設定保存
-        diag->Export();
-    }
-    // 画面破棄
-    delete diag;
+    // UI破棄
+    delete ui;
 }

@@ -11,92 +11,35 @@
 #include <QSettings>                    // アプリケーション設定情報
 
 /****************************************************************************
-*   改行変換
+*   コンストラクタ
 *
-*   @return 変換後文字列
-*
-*   @param str 対象文字列
+*   @param parent 親ウィジェット
 ****************************************************************************/
-QString TCPClient::VisibilityString(QString str)
+TCPClient::TCPClient(QObject *parent)
+    : BaseClient(parent)
 {
-    QString answer;                     // 文字列バッファ
-    // 文字列長分
-    for (int i = 0; i < str.size(); i++) {
-        // 改行
-        if (str[i] == '\n')
-            // '\'付加
-            answer.push_back("\\n");
-        // キャリッジリターン
-        else if (str[i] == '\r')
-            // '\'付加
-            answer.push_back("\\r");
-        else
-            // 文字取得
-            answer.push_back(str[i]);
+    // 設定情報
+    QSettings *mSettings;
+    // 設定情報読込
+    mSettings = new QSettings("setting.ini", QSettings::IniFormat);
+    // 通信タイムアウト取得
+    QVariant v = mSettings->value("Timeout");
+    // 設定有効
+    if (v.typeId() != QMetaType::UnknownType) {
+        // 通信タイムアウト取得
+        TIMEOUT = v.toInt();
     }
-    // 戻り値[文字列]
-    return answer;
-}
+    // 設定情報破棄
+    delete mSettings;
 
-/****************************************************************************
-*   応答待機
-*
-*   @return 応答文字列
-****************************************************************************/
-QString TCPClient::WaitResponce()
-{
-    int ignore = 0;                     // 無効行カウンタ
-
-    // 無効行無視最大回数到達まで
-    while (ignore != this->IGNORE_INVALD) {
-        // デバッグ情報
-        qDebug() << "WaitStart:";
-        // 受信待機
-        if (this->client->waitForReadyRead(this->TIMEOUT)) {
-            QString response = "";      // 受信文字列
-
-            do {
-                // 受信データ結合
-                response += client->readLine();
-            // 改行未検出 and タイムアウトまで
-            } while (*(response.end() - 1) != '\n' && this->client->waitForReadyRead(this->TIMEOUT));
-
-            // デバッグ情報
-            qDebug() << "" + VisibilityString(response);
-
-            // 空文字(改行のみ)
-            if (response == "" || response == "\n" || response == "\r" || response == "\r\n") {
-                // 無効行カウンタ更新
-                ignore++;
-                // ループ終了
-                continue;
-            }
-            // 文字列有効 and 改行なし(タイムアウト)
-            if (response.size() > 0 && *(response.end() - 1) != '\n') {
-                // 切断
-                is_disconnected = true;
-                // デバッグ情報
-                qDebug() << QString("[Port") + QString::number(this->client->localPort())
-                                + "]:Noting \\n";
-                // 戻り値[空文字]
-                return QString();
-            }
-
-            // デバッグ情報
-            qDebug() << "test:" + response;
-            // 戻り値[応答文字列]
-            return response;
-        } else {
-            // 切断
-            is_disconnected = true;
-            // 戻り値[空文字]
-            return QString();
-        }
-    }
-    // 切断
-    is_disconnected = true;
-    // 戻り値[空文字]
-    return QString();
+    // TCPサーバー
+    this->server = new QTcpServer(this);
+    // TCPクライアント
+    this->client = nullptr;
+    // 接続可能最大数
+    this->server->setMaxPendingConnections(1);
+    // TCPサーバー接続時のシグナル･スロット設定
+    connect(this->server, &QTcpServer::newConnection, this, &TCPClient::NewConnection);
 }
 
 /****************************************************************************
@@ -190,6 +133,95 @@ bool TCPClient::WaitEndSharp(GameSystem::AroundData data)
 }
 
 /****************************************************************************
+*   応答待機
+*
+*   @return 応答文字列
+****************************************************************************/
+QString TCPClient::WaitResponce()
+{
+    int ignore = 0;                     // 無効行カウンタ
+
+    // 無効行無視最大回数到達まで
+    while (ignore != this->IGNORE_INVALD) {
+        // デバッグ情報
+        qDebug() << "WaitStart:";
+        // 受信待機
+        if (this->client->waitForReadyRead(this->TIMEOUT)) {
+            QString response = "";      // 受信文字列
+
+            do {
+                // 受信データ結合
+                response += client->readLine();
+                // 改行未検出 and タイムアウトまで
+            } while (*(response.end() - 1) != '\n' && this->client->waitForReadyRead(this->TIMEOUT));
+
+            // デバッグ情報
+            qDebug() << "" + VisibilityString(response);
+
+            // 空文字(改行のみ)
+            if (response == "" || response == "\n" || response == "\r" || response == "\r\n") {
+                // 無効行カウンタ更新
+                ignore++;
+                // ループ終了
+                continue;
+            }
+            // 文字列有効 and 改行なし(タイムアウト)
+            if (response.size() > 0 && *(response.end() - 1) != '\n') {
+                // 切断
+                is_disconnected = true;
+                // デバッグ情報
+                qDebug() << QString("[Port") + QString::number(this->client->localPort())
+                                + "]:Noting \\n";
+                // 戻り値[空文字]
+                return QString();
+            }
+
+            // デバッグ情報
+            qDebug() << "test:" + response;
+            // 戻り値[応答文字列]
+            return response;
+        } else {
+            // 切断
+            is_disconnected = true;
+            // 戻り値[空文字]
+            return QString();
+        }
+    }
+    // 切断
+    is_disconnected = true;
+    // 戻り値[空文字]
+    return QString();
+}
+
+/****************************************************************************
+*   改行変換
+*
+*   @return 変換後文字列
+*
+*   @param str 対象文字列
+****************************************************************************/
+QString TCPClient::VisibilityString(QString str)
+{
+    QString answer;                     // 文字列バッファ
+    // 文字列長分
+    for (int i = 0; i < str.size(); i++) {
+        // 改行
+        if (str[i] == '\n')
+            // '\'付加
+            answer.push_back("\\n");
+        // キャリッジリターン
+        else if (str[i] == '\r')
+            // '\'付加
+            answer.push_back("\\r");
+        else
+            // 文字取得
+            answer.push_back(str[i]);
+    }
+    // 戻り値[文字列]
+    return answer;
+}
+
+/****************************************************************************
 *   ソケットオープン
 *
 *   @return true固定
@@ -221,17 +253,6 @@ bool TCPClient::CloseSocket()
         this->server->close();
     }
     return true;
-}
-
-/****************************************************************************
-*   接続待機確認
-*
-*   @return 接続待機状態
-****************************************************************************/
-bool TCPClient::isConnecting()
-{
-    // 戻り値[接続待機状態]
-    return this->server->isListening();
 }
 
 /****************************************************************************
@@ -387,38 +408,6 @@ QString TCPClient::GetTeamName()
 }
 
 /****************************************************************************
-*   コンストラクタ
-*
-*   @param parent 親ウィジェット
-****************************************************************************/
-TCPClient::TCPClient(QObject *parent)
-    : BaseClient(parent)
-{
-    // 設定情報
-    QSettings *mSettings;
-    // 設定情報読込
-    mSettings = new QSettings("setting.ini", QSettings::IniFormat);
-    // 通信タイムアウト取得
-    QVariant v = mSettings->value("Timeout");
-    // 設定有効
-    if (v.typeId() != QMetaType::UnknownType) {
-        // 通信タイムアウト取得
-        TIMEOUT = v.toInt();
-    }
-    // 設定情報破棄
-    delete mSettings;
-
-    // TCPサーバー
-    this->server = new QTcpServer(this);
-    // TCPクライアント
-    this->client = nullptr;
-    // 接続可能最大数
-    this->server->setMaxPendingConnections(1);
-    // TCPサーバー接続時のシグナル･スロット設定
-    connect(this->server, &QTcpServer::newConnection, this, &TCPClient::NewConnection);
-}
-
-/****************************************************************************
 *   デストラクタ
 ****************************************************************************/
 TCPClient::~TCPClient()
@@ -432,4 +421,15 @@ TCPClient::~TCPClient()
     delete this->client;
     // TCPサーバー破棄
     delete this->server;
+}
+
+/****************************************************************************
+*   接続待機確認
+*
+*   @return 接続待機状態
+****************************************************************************/
+bool TCPClient::isConnecting()
+{
+    // 戻り値[接続待機状態]
+    return this->server->isListening();
 }

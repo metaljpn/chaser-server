@@ -19,9 +19,8 @@ private:
 public:
     // ファイル名取得
     QString filename() { return m_filename; }
-    // 書込
+    // 追記書込
     void Write(const QString& str)const;
-
     // 書込オペレータ
     const StableLog& operator<<(const QString& str)const;
     // 更新オペレータ

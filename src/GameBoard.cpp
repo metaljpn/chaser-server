@@ -10,46 +10,27 @@
 #include <QResizeEvent>                 // リサイズイベント
 
 /****************************************************************************
-*   アイテム取得
+*   コンストラクタ
 *
-*   @param method クライアント行動情報
+*   @param parent 親ウィジェット
 ****************************************************************************/
-void GameBoard::PickItem(GameSystem::Method method){
-
-    // 移動元
-    QPoint pos = this->team_pos[static_cast<int>(method.team)];
-    // 移動先がアイテム
-    if(this->FieldAccess(method,pos) == GameSystem::MAP_OBJECT::ITEM){
-        // 移動元のフィールドを初期化
-        this->field.field[ pos                        .y()][ pos                        .x()] = GameSystem::MAP_OBJECT::NOTHING;
-        // 移動先のフィールドを壁に設定
-        this->field.field[(pos-method.GetRoteVector()).y()][(pos-method.GetRoteVector()).x()] = GameSystem::MAP_OBJECT::BLOCK;
-
-        // 点数を１増やす
-        this->team_score[static_cast<int>(method.team)]++;
-        // 残りアイテム数更新
-        this->leave_items--;
+GameBoard::GameBoard(QWidget *parent) :
+    QWidget(parent),
+    ui(new Ui::GameBoard)
+{
+    // イメージサイズ
+    image_part = QSize(32.0,32.0);
+    // テクスチャ読込
+    ReloadTexture(":/Image/Light");
+    // UI初期化
+    ui->setupUi(this);
+    // チーム数分
+    for(int i = 0; i < TEAM_COUNT; i++){
+        // 得点初期化
+        this->team_score[i] = 0;
     }
-
-}
-
-/****************************************************************************
-*   リサイズ
-*
-*   @param event リサイズ情報
-****************************************************************************/
-void GameBoard::resizeEvent(QResizeEvent *event){
-
-    // イメージ幅
-    image_part.setWidth (event->size().width() / field.size.x());
-    // イメージ高さ
-    image_part.setHeight(event->size().height() / field.size.y());
-    // イベント実行済
-    event->ignore();
-    // リサイズ
-    resize(image_part.width() * field.size.x(), image_part.height() * field.size.y());
-    // テクスチャ再読込
-    ReloadTexture(texture_dir_path);
+    // 残アイテム数初期化
+    leave_items = 0;
 }
 
 /****************************************************************************
@@ -90,7 +71,7 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
         for(int i=0;i<TEAM_COUNT;i++){
             // 座標有効
             if(0 <= team_pos[i].x() && team_pos[i].x() < field.size.x() &&
-               0 <= team_pos[i].y() && team_pos[i].y() < field.size.y()){
+                0 <= team_pos[i].y() && team_pos[i].y() < field.size.y()){
                 // チーム描画
                 painter.drawPixmap(team_pos[i].x() * image_part.width(),team_pos[i].y() * image_part.height(),team_resource[i]);
 
@@ -107,8 +88,8 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
                     if(field.field[i][j] != GameSystem::MAP_OBJECT::NOTHING){
                         // 物体上書き
                         painter.drawPixmap(j * image_part.width(),
-                                            i * image_part.height(),
-                                            field_resource[static_cast<int>(field.field[i][j])]);
+                                           i * image_part.height(),
+                                           field_resource[static_cast<int>(field.field[i][j])]);
                     }
                     // (暗転時)未探索
                     if(field.discover[i][j] == GameSystem::Discoverer::Unknown){
@@ -128,47 +109,25 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
             }
         }
     }
-
 }
 
 /****************************************************************************
-*   オーバーレイ(行動効果)消去
-****************************************************************************/
-void GameBoard::RefreshOverlay(){
-    // フィールド高さ分
-    for(int i = 0;i < field.size.y();i++){
-        // フィールド幅分
-        for(int j = 0;j < field.size.x();j++){
-            // オーバーレイ(行動効果)消去
-            overlay[i][j] = GameSystem::MAP_OVERLAY::NOTHING;
-        }
-    }
-}
-
-/****************************************************************************
-*   オブジェクト数算出
+*   リサイズ
 *
-*   @return オブジェクト数
-*
-*   @param mb 物体種別
+*   @param event リサイズ情報
 ****************************************************************************/
-int GameBoard::GetMapObjectCount(GameSystem::MAP_OBJECT mb){
-    // オブジェクト数
-    int result = 0;
-    // フィールド高さ分
-    for(int i = 0; i < field.size.y(); i++){
-        // フィールド幅分
-        for(int j = 0; j < field.size.x(); j++){
-            // 物体検出
-            if(field.field[i][j] == mb){
-                // オブジェクト数更新
-                result ++;
-            }
-        }
-    }
+void GameBoard::resizeEvent(QResizeEvent *event){
 
-    // 戻り値[オブジェクト数]
-    return result;
+    // イメージ幅
+    image_part.setWidth (event->size().width() / field.size.x());
+    // イメージ高さ
+    image_part.setHeight(event->size().height() / field.size.y());
+    // イベント実行済
+    event->ignore();
+    // リサイズ
+    resize(image_part.width() * field.size.x(), image_part.height() * field.size.y());
+    // テクスチャ再読込
+    ReloadTexture(texture_dir_path);
 }
 
 /****************************************************************************
@@ -202,23 +161,6 @@ GameSystem::MAP_OBJECT GameBoard::FieldAccess(GameSystem::Method method, const Q
 
     // 戻り値[物体種別]
     return this->field.field[pos.y()][pos.x()];
-}
-
-/****************************************************************************
-*   接続終了
-*
-*   @return 周辺情報
-*
-*   @param team チーム
-****************************************************************************/
-GameSystem::AroundData GameBoard::FinishConnecting(GameSystem::TEAM team){
-    // 周辺情報
-    GameSystem::AroundData around = FieldAccessAround(GameSystem::Method{team,GameSystem::Method::ACTION::UNKNOWN,GameSystem::Method::ROTE::UNKNOWN},
-                                                     team_pos[static_cast<int>(team)]);
-    // 終了
-    around.finish();
-    // 戻り値[周辺情報]
-    return around;
 }
 
 /****************************************************************************
@@ -313,6 +255,46 @@ GameSystem::AroundData GameBoard::FieldAccessMethod(GameSystem::Method method){
 }
 
 /****************************************************************************
+*   アイテム取得
+*
+*   @param method クライアント行動情報
+****************************************************************************/
+void GameBoard::PickItem(GameSystem::Method method){
+
+    // 移動元
+    QPoint pos = this->team_pos[static_cast<int>(method.team)];
+    // 移動先がアイテム
+    if(this->FieldAccess(method,pos) == GameSystem::MAP_OBJECT::ITEM){
+        // 移動元のフィールドを初期化
+        this->field.field[ pos                        .y()][ pos                        .x()] = GameSystem::MAP_OBJECT::NOTHING;
+        // 移動先のフィールドを壁に設定
+        this->field.field[(pos-method.GetRoteVector()).y()][(pos-method.GetRoteVector()).x()] = GameSystem::MAP_OBJECT::BLOCK;
+
+        // 点数を１増やす
+        this->team_score[static_cast<int>(method.team)]++;
+        // 残りアイテム数更新
+        this->leave_items--;
+    }
+}
+
+/****************************************************************************
+*   接続終了
+*
+*   @return 周辺情報
+*
+*   @param team チーム
+****************************************************************************/
+GameSystem::AroundData GameBoard::FinishConnecting(GameSystem::TEAM team){
+    // 周辺情報
+    GameSystem::AroundData around = FieldAccessAround(GameSystem::Method{team,GameSystem::Method::ACTION::UNKNOWN,GameSystem::Method::ROTE::UNKNOWN},
+                                                      team_pos[static_cast<int>(team)]);
+    // 終了
+    around.finish();
+    // 戻り値[周辺情報]
+    return around;
+}
+
+/****************************************************************************
 *   マップ設定
 *
 *   @param map マップ情報
@@ -344,36 +326,43 @@ void GameBoard::setMap(const GameSystem::Map& map){
 }
 
 /****************************************************************************
-*   コンストラクタ
-*
-*   @param parent 親ウィジェット
+*   オーバーレイ(行動効果)消去
 ****************************************************************************/
-GameBoard::GameBoard(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::GameBoard)
-{
-    // イメージサイズ
-    image_part = QSize(32.0,32.0);
-    // テクスチャ読込
-    ReloadTexture(":/Image/Light");
-    // UI初期化
-    ui->setupUi(this);
-    // チーム数分
-    for(int i = 0; i < TEAM_COUNT; i++){
-        // 得点初期化
-        this->team_score[i] = 0;
+void GameBoard::RefreshOverlay(){
+    // フィールド高さ分
+    for(int i = 0;i < field.size.y();i++){
+        // フィールド幅分
+        for(int j = 0;j < field.size.x();j++){
+            // オーバーレイ(行動効果)消去
+            overlay[i][j] = GameSystem::MAP_OVERLAY::NOTHING;
+        }
     }
-    // 残アイテム数初期化
-    leave_items = 0;
 }
 
 /****************************************************************************
-*   デストラクタ
+*   オブジェクト数算出
+*
+*   @return オブジェクト数
+*
+*   @param mb 物体種別
 ****************************************************************************/
-GameBoard::~GameBoard()
-{
-    // UI破棄
-    delete ui;
+int GameBoard::GetMapObjectCount(GameSystem::MAP_OBJECT mb){
+    // オブジェクト数
+    int result = 0;
+    // フィールド高さ分
+    for(int i = 0; i < field.size.y(); i++){
+        // フィールド幅分
+        for(int j = 0; j < field.size.x(); j++){
+            // 物体検出
+            if(field.field[i][j] == mb){
+                // オブジェクト数更新
+                result ++;
+            }
+        }
+    }
+
+    // 戻り値[オブジェクト数]
+    return result;
 }
 
 /****************************************************************************
@@ -410,4 +399,13 @@ void GameBoard::ReloadTexture(QString tex_dir_path){
     for(QPixmap& img:overray_resource){
         if(!img.isNull())img = img.scaled(image_part.width(),image_part.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     }
+}
+
+/****************************************************************************
+*   デストラクタ
+****************************************************************************/
+GameBoard::~GameBoard()
+{
+    // UI破棄
+    delete ui;
 }

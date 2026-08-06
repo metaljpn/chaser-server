@@ -30,23 +30,23 @@ public:
     // クライアント設定画面
     ClientSettingForm* team_client[TEAM_COUNT];
 
-    bool MapRead(const QString& dir);   // マップ読込
     void setMusicFileList();            // BGMリスト生成
     void setImageThemeList();           // テクスチャリスト生成
+    bool MapRead(const QString& dir);   // マップ読込
 
     explicit StartupDialog(QWidget *parent = 0);
     ~StartupDialog();
 
 public slots:
-    void ChangeMusicCombo(QString text);    // BGM選択
-    void CheckStandby();                    // ゲーム開始可否確認
-    void ShowMapEditDialog();               // マップ編集画面表示
-    void PushedMapSelect();                 // マップ選択
-    void ShowDesignDialog();                // [デザイン設定]ボタン押下
     // クライアント準備設定
     void ClientStandby(ClientSettingForm* client,bool complate);
-    void SetMapStandby (bool state);        // マップ準備設定
-    void ChangedTexture(QString text);      // テクスチャ変更
+    void SetMapStandby(bool state);         // マップ準備設定
+    void CheckStandby();                    // ゲーム開始可否確認
+    void PushedMapSelect();                 // マップ選択
+    void ShowMapEditDialog();               // [マップの編集]ボタン押下
+    void ChangedTexture(QString text);      // テクスチャ選択
+    void ChangeMusicCombo(QString text);    // BGM選択
+    void ShowDesignDialog();                // [デザイン設定]ボタン押下
     void Setting();                         // [サーバー設定]ボタン押下
 };
 

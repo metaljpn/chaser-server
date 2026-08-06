@@ -40,8 +40,6 @@ public:
     int leave_items;                        // 残アイテム数
     int team_score[TEAM_COUNT];             // チーム得点
 
-    // オブジェクト数算出
-    int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
     // 指定位置物体種別取得
     GameSystem::MAP_OBJECT FieldAccess(GameSystem::Method method, const QPoint& pos);
     // 周辺確認
@@ -50,14 +48,17 @@ public:
     GameSystem::AroundData FieldAccessAround(GameSystem::Method method, const QPoint& center);
     // 行動後周辺確認
     GameSystem::AroundData FieldAccessMethod(GameSystem::Method method);
-    // 接続終了
-    GameSystem::AroundData FinishConnecting(GameSystem::TEAM team);
-    // マップ設定
-    void setMap(const GameSystem::Map &map);
-    // オーバーレイ(行動効果)消去
-    void RefreshOverlay();
     // アイテム取得
     void PickItem(GameSystem::Method method);
+    // 接続終了
+    GameSystem::AroundData FinishConnecting(GameSystem::TEAM team);
+
+    // マップ設定
+    void setMap(const GameSystem::Map &map);
+    // オブジェクト数算出
+    int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
+    // オーバーレイ(行動効果)消去
+    void RefreshOverlay();
 
     explicit GameBoard(QWidget *parent = 0);
     ~GameBoard();
