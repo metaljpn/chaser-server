@@ -7,10 +7,6 @@
 #define STARTUPDIALOG_H
 
 #include <QDialog>                      // ダイアログ
-#include <QFile>                        // ファイルアクセス
-#include <QMessageBox>                  // メッセージボックス
-#include <QFileDialog>                  // ファイルダイアログ
-#include "SettingDialog.h"              // 設定画面
 #include "ClientSettingForm.h"          // クライアント設定画面
 
 namespace Ui {

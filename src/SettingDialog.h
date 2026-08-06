@@ -7,7 +7,6 @@
 #define SETTINGDIALOG_H
 
 #include <QDialog>                      // Qtダイアログ
-#include <QMessageBox>                  // メッセージボックス
 
 namespace Ui {
 class SettingDialog;

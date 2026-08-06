@@ -5,8 +5,10 @@
 ****************************************************************************/
 #include "MapEditerDialog.h"            // マップ編集画面
 #include "ui_MapEditerDialog.h"         // マップ編集画面UI
+
 #include <QFileDialog>                  // ファイルダイアログ
-#include <QDesktopServices>             // デスクトップサービス
+#include <QMessageBox>                  // メッセージボックス
+#include <QMouseEvent>                  // マウスイベント
 
 /****************************************************************************
 *   コンストラクタ

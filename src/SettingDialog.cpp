@@ -4,9 +4,10 @@
 *   NOTE    :   設定画面
 ****************************************************************************/
 #include "SettingDialog.h"              // 設定画面
+#include "ui_SettingDialog.h"           // 設定画面UI
+
 #include <QFileDialog>                  // ファイルダイアログ
 #include <QSettings>                    // アプリケーション設定情報
-#include "ui_SettingDialog.h"           // 設定画面UI
 
 /****************************************************************************
 *   コンストラクタ

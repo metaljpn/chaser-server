@@ -6,10 +6,8 @@
 #ifndef TCPCLIENT_H
 #define TCPCLIENT_H
 
-#include <QObject>                      // Qtオブジェクト
 #include <QTcpServer>                   // TCPサーバー
 #include <QTcpSocket>                   // TCPソケット
-#include <QDataStream>                  // バイナリシリアライズ
 #include "BaseClient.h"                 // 通信クライアント
 
 class TCPClient : public BaseClient

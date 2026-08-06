@@ -4,10 +4,11 @@
 *   NOTE    :   TCPクライアント
 ****************************************************************************/
 #include "TcpClient.h"                  // TCPクライアント
-#include <QSettings>                    // アプリケーション設定情報
-#include <QRegularExpression>           // 正規表現
+
 #include <QFont>                        // フォント
 #include <QLabel>                       // ラベル
+#include <QRegularExpression>           // 正規表現
+#include <QSettings>                    // アプリケーション設定情報
 
 /****************************************************************************
 *   改行変換

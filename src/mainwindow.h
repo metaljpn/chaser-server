@@ -7,15 +7,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>                  // メインウィンドウ
-#include <QTimer>                       // 時間管理
-#include <QKeyEvent>                    // キーイベント
-#include "startupdialog.h"              // 起動画面
-#include <QDateTime>                    // 日付と時刻管理
-#include <QFile>                        // ファイルアクセス
-#include <QSoundEffect>                 // 効果音再生
-#include <QDataStream>                  // バイナリシリアライズ
 #include <QMediaPlayer>                 // メディアファイル再生
-#include <QThread>                      // スレッド管理
+#include "startupdialog.h"              // 起動画面
 #include "StableLog.h"                  // ログ管理
 
 namespace Ui {

@@ -7,9 +7,7 @@
 #define MAPEDITERDIALOG_H
 
 #include <QDialog>                      // ダイアログ
-#include <QMouseEvent>                  // マウスイベント
 #include <QListWidgetItem>              // アイテムリスト
-#include <QMessageBox>                  // メッセージボックス
 #include "GameSystem.h"                 // マップ管理
 
 namespace Ui {

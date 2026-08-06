@@ -4,13 +4,16 @@
 *   NOTE    :   起動画面
 ****************************************************************************/
 #include "startupdialog.h"              // 起動画面
-#include <QDesktopServices>             // デスクトップサービス
-#include <QDir>                         // ディレクトリ操作
+#include "ui_startupdialog.h"           // 起動画面UI
+
+#include <QFileDialog>                  // ファイルダイアログ
 #include <QHostInfo>                    // ホスト情報
+#include <QMessageBox>                  // メッセージボックス
 #include <QNetworkInterface>            // ネットワーク一覧
+
 #include "DesignDialog.h"               // デザイン設定
 #include "MapEditerDialog.h"            // マップ編集画面
-#include "ui_startupdialog.h"           // 起動画面UI
+#include "SettingDialog.h"              // 設定画面
 
 /****************************************************************************
 *   コンストラクタ

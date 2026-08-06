@@ -5,11 +5,14 @@
 ****************************************************************************/
 #include "mainwindow.h"                 // メイン画面
 #include "ui_mainwindow.h"              // メイン画面UI
-#include <QSettings>                    // アプリケーション設定情報
-#include <QFileInfo>                    // ファイルシステム
-#include <QMediaPlayer>                 // メディアファイル再生
+
 #include <QAudioOutput>                 // 音声出力チャンネル
+#include <QDateTime>                    // 日付･時刻
+#include <QMessageBox>                  // メッセージボックス
 #include <QRandomGenerator>             // 乱数発生
+#include <QScreen>                      // 画面プロパティ
+#include <QSettings>                    // アプリケーション設定情報
+#include <QTimer>                       // 時間管理
 
 // staticメンバ変数
 MainWindow* MainWindow::s_instance = nullptr;

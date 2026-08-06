@@ -7,12 +7,6 @@
 #define GRAPHICFIELD_H
 
 #include <QWidget>                          // ユーザーインターフェース
-#include <QVector>                          // 動的配列
-#include <QPainter>                         // 描画
-#include <QResizeEvent>                     // リサイズイベント
-#include <QDebug>                           // デバッグ情報
-#include <QGraphicsPixmapItem>              // 画像管理
-#include <QGraphicsView>                    // ビューポート
 #include "GameSystem.h"                     // マップ管理
 
 namespace Ui {

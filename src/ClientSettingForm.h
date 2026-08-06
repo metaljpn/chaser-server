@@ -6,14 +6,10 @@
 #ifndef CLIENTSETTINGFORM_H
 #define CLIENTSETTINGFORM_H
 
+#include <QFile>                        // ファイルアクセス
 #include <QGroupBox>                    // グループボックス
 #include <QProcess>                     // 外部プログラム起動
-#include <QFile>                        // ファイルアクセス
-
-#include "TcpClient.h"                  // TCPクライアント
-#include "ComClient.h"                  // 通信クライアント 自動くん
-#include "ManualClient.h"               // 手動クライアント
-
+#include "BaseClient.h"                 // 通信クライアント
 
 namespace Ui {
 class ClientSettingForm;

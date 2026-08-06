@@ -7,7 +7,6 @@
 #define MANUALCLIENTDIALOG_H
 
 #include <QDialog>                      // ダイアログ
-#include <QKeyEvent>                    // キーイベント
 #include "GameSystem.h"                 // マップ管理
 
 namespace Ui {

@@ -6,6 +6,10 @@
 #include "ClientSettingForm.h"          // クライアント設定画面
 #include "ui_ClientSettingForm.h"       // クライアント設定画面UI
 
+#include "ComClient.h"                  // 通信クライアント 自動くん
+#include "ManualClient.h"               // 手動クライアント
+#include "TcpClient.h"                  // TCPクライアント
+
 /****************************************************************************
 *   コンストラクタ
 *

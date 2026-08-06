@@ -5,12 +5,9 @@
 ****************************************************************************/
 #ifndef STABLELOG_H
 #define STABLELOG_H
-#include <QString>                      // 文字列
-#include <QFile>                        // ファイルアクセス
-#include <QDir>                         // ディレクトリ操作
-#include <QIODevice>                    // I/Oデバイス
-#include <QTextStream>                  // テキストアクセス
+
 #include <QMutex>                       // 排他制御
+#include <QString>                      // 文字列
 
 class StableLog
 {

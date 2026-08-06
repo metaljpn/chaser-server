@@ -6,11 +6,8 @@
 #ifndef GAMESYSTEM_H
 #define GAMESYSTEM_H
 
-#include <QObject>                      // Qtオブジェクト
 #include <QPoint>                       // 位置
 #include <QVector>                      // 動的配列
-#include <QtGlobal>                     // 大域宣言
-#include <QTime>                        // 時間管理
 
 // 二次元配列エイリアス
 template <class T>
