@@ -26,9 +26,7 @@ private:
     int map_width;                          // マップ幅
     int map_height;                         // マップ高さ
 
-    //Animations
-    bool animation    = false;              // アニメーション有効
-    bool animationing = false;              // アニメーション中(未使用)
+    bool animation = false;                 // アニメーション有効
 
     QString texture_dir_path;               // 使用テクスチャディレクトリ
     QPixmap team_resource[TEAM_COUNT];      // チーム画像
@@ -42,8 +40,6 @@ public:
     QSize image_part;                       // 単体画像サイズ
     QPoint team_pos[TEAM_COUNT];            // チーム位置
 
-    GameSystem::Method past_method;         // 前回の行動(未使用)
-
     int leave_items;                        // 残アイテム数
     int team_score[TEAM_COUNT];             // チーム得点
 protected:
@@ -51,9 +47,6 @@ protected:
     void resizeEvent(QResizeEvent *event);  // リサイズイベント
 
 public:
-    //テクスチャパス取得
-    //static QString GetTexturePath(GameSystem::Texture tex);
-
     // オブジェクト数算出
     int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
 
@@ -76,9 +69,6 @@ public:
     // オーバーレイ(行動効果)消去
     void RefreshOverlay();
 
-    // アニメーション開始(未使用)
-    void PlayAnimation(GameSystem::Method method);
-
     explicit GameBoard(QWidget *parent = 0);
 
     // アイテム回収
@@ -89,14 +79,9 @@ public:
 private:
     Ui::GameBoard *ui;                  // UI
 
-         signals:
-    // アニメーション終了(未使用)
-    void FinishAnimations();
-
 public slots:
     // テクスチャ再読込
     void ReloadTexture(QString texture_dir_path);
-
 };
 
 #endif // GRAPHICFIELD_H

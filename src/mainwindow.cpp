@@ -10,9 +10,8 @@
 #include <QMediaPlayer>                 // メディアファイル再生
 #include <QAudioOutput>                 // 音声出力チャンネル
 #include <QRandomGenerator>             // 乱数発生
-#include "Definition.h"                 // 定数定義
 
-// staticメンバ変数 初期化
+// staticメンバ変数
 MainWindow* MainWindow::s_instance = nullptr;
 QtMessageHandler MainWindow::s_prevMsgHandler = nullptr;
 
@@ -56,22 +55,6 @@ QString MainWindow::convertString(GameSystem::Method method)
 }
 
 /****************************************************************************
-*   キー押下
-*
-*   @param event イベント情報(未使用)
-****************************************************************************/
-void MainWindow::keyPressEvent([[maybe_unused]] QKeyEvent *event)
-{
-    //縦に比率を合わせる
-    // if(event->key()==Qt::Key_F){
-    //     int left_margin=0,right_margin=0;
-    //     this->ui->centralWidget->layout()->getContentsMargins(&left_margin,nullptr,&right_margin,nullptr);
-    //     this->ui->Field->resize((static_cast<float>(this->ui->Field->size().height())/ui->Field->field.size.y())*ui->Field->field.size.x(),this->ui->Field->size().height());
-    //     this->resize(QSize(this->ui->Field->width() + left_margin + right_margin,this->size().height()));
-    // }
-}
-
-/****************************************************************************
 *   コンストラクタ
 *
 *   @param parent 親ウィジェット
@@ -86,10 +69,6 @@ MainWindow::MainWindow(QWidget *parent) :
     this->startup = new StartupDialog();
     // 勝者初期化
     this->win = GameSystem::WINNER::CONTINUE;
-
-    // Functorベースでは動作しないため、Stringベースでconnect
-    connect(this,SIGNAL(destroyed()),this,SLOT(SaveFile()));
-    //connect(this, &MainWindow::destroyed, this, &MainWindow::SaveFile);
 
     // 起動画面実行
     if(this->startup->exec()){
@@ -127,7 +106,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QVariant v;                         // 設定値
     // サーバー設定
     mSettings = new QSettings( "setting.ini", QSettings::IniFormat );
-    // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
     // ログ保存パス
     v = mSettings->value( "LogFilepath" );
     if (v.typeId() != QMetaType::UnknownType)path = v.toString();
@@ -146,7 +124,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QVariant v2;                        // 設定値
     // デザイン設定
     dSettings = new QSettings( "design.ini", QSettings::IniFormat );
-    // dSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
     // 暗転モード
     v2 = dSettings->value( "Dark" );
     if (v2.typeId() != QMetaType::UnknownType)dark = v2.toBool();
@@ -251,12 +228,9 @@ MainWindow::MainWindow(QWidget *parent) :
         QSettings* mSettings;           // アニメーション設定
         // アニメーション設定
         mSettings = new QSettings( "AnimationTime.ini", QSettings::IniFormat );
-        // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
 
         // マップ描画時間
         mSettings->setValue( "Map" , anime_map_time );
-        // チーム配置時間(未使用)
-        mSettings->setValue( "Team", anime_team_time );
 
     }
 
@@ -300,7 +274,6 @@ void MainWindow::s_messageHandler(QtMsgType type, const QMessageLogContext& cont
 
     // インスタンス有効
     if (s_instance) {
-        // Warning、Critical、Fatalのメッセージのみログに出力(Debug、Infoの情報は書き込まない)
         // メッセージタイプにより分岐
         switch (type) {
         case QtWarningMsg:              // 警告
@@ -368,15 +341,6 @@ MainWindow::~MainWindow()
 }
 
 /****************************************************************************
-*   ファイル保存
-****************************************************************************/
-void MainWindow::SaveFile()
-{
-    // ファイルクローズ(未使用)
-    file->close();
-}
-
-/****************************************************************************
 *   ゲーム進行(1ターン)
 ****************************************************************************/
 void MainWindow::StepGame()
@@ -394,6 +358,7 @@ void MainWindow::StepGame()
        turn_count = ui->TimeBar->value();
        // ターン数ログ出力
        log << QString("-----残") + QString::number(turn_count) + "ターン-----" + "\r\n";
+       // デバッグ情報
        qDebug() << QString("-----残") + QString::number(turn_count) + "ターン-----";
     }
 
@@ -406,7 +371,6 @@ void MainWindow::StepGame()
             // 切断
             startup->team_client[player]->client->is_disconnected = true;
         }else{
-            //log << getTime() + "GetReady" + "\r\n";
             // フィールド周辺確認
             GameSystem::AroundData buffer = ui->Field->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
                                                                          GameSystem::Method::ACTION::GETREADY,
@@ -595,7 +559,6 @@ void MainWindow::Finish(GameSystem::WINNER winner)
     this->clock->stop();
     // 通信切断情報
     QString append_str = "";
-    //disconnect
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // 通信切断
@@ -617,7 +580,6 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         bgm = new QMediaPlayer;
         audio_output = new QAudioOutput;
         bgm->setAudioOutput(audio_output);
-        //connect(bgm, SIGNAL(positionChanged(qint64)), this, SLOT(positionChanged(qint64)));
         bgm->setSource(QUrl("qrc:/Sound/ji_023.mp3"));
         audio_output->setVolume(audio_volume);
         bgm->play();
@@ -656,23 +618,6 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         // 引き分けログ出力
         log << getTime() + "[決着]引き分けです。" << "\r\n";
     }
-    /*
-    GameBoard*& board = this->ui->Field;
-
-    for(int i=0;i<TEAM_COUNT;i++){
-        startup->team_client[player]->client->WaitGetReady();
-        startup->team_client[player]->client->WaitReturnMethod(ui->Field->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
-                                                                                            GameSystem::Method::ACTION::GETREADY,
-                                                                                            GameSystem::Method::ROTE::UNKNOWN},
-                                                                                            ui->Field->team_pos[player]));
-        startup->team_client[player]->client->WaitEndSharp(board->FinishConnecting(static_cast<GameSystem::TEAM>(player)));
-        player ++;
-        player %= TEAM_COUNT;
-
-        qDebug() << board->FinishConnecting(static_cast<GameSystem::TEAM>(i)).toString();
-    }
-    */
-    //log.close();
 }
 
 /****************************************************************************
@@ -695,7 +640,6 @@ GameSystem::WINNER MainWindow::Judge()
         _player = (_player + 1) % TEAM_COUNT;
         // フィールド周辺確認
         GameSystem::AroundData team_around = board->FieldAccessAround(static_cast<GameSystem::TEAM>(_player));
-        //log << getTime() + GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(i)) + ":" + team_around.toString() << "\r\n";
 
         // ブロック下敷き
         if(team_around.data[4] == GameSystem::MAP_OBJECT::BLOCK){

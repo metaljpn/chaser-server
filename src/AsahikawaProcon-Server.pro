@@ -45,7 +45,6 @@ HEADERS  += mainwindow.h \
     MapEditerDialog.h \
     SettingDialog.h \
     ClientSettingForm.h \
-    Definition.h \
     StableLog.h \
     DesignDialog.h
 

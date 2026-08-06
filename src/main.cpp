@@ -21,7 +21,6 @@ int main(int argc, char *argv[])
     // アプリケーションオブジェクト
     QApplication a(argc, argv);
     // ダークテーマに変わらないように設定
-    // (デフォルト:windows11 -> windowsvista)
     a.setStyle("windowsvista");
 
     // 国際化サポート

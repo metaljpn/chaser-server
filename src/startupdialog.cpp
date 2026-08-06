@@ -179,7 +179,6 @@ void StartupDialog::setMusicFileList()
     if (dir.exists()) {
         // 拡張子が".mp3"と".wav"のファイルリストを取得
         QStringList filelist = dir.entryList({"*.mp3", "*.wav"}, QDir::Files | QDir::NoSymLinks);
-        //qDebug()<<filelist;
         // ファイル未存在
         if (filelist.isEmpty()) {
             // None項目追加

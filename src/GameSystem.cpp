@@ -233,7 +233,6 @@ bool GameSystem::Map::Export(QString Filename){
                 + QString::number(team_first_point[i] .x())
                 + ","
                 + QString::number(team_first_point[i] .y());
-        //if(i == TEAM_COUNT-1)
         // 改行
         stream << "\n";
     }
@@ -250,8 +249,6 @@ bool GameSystem::Map::Export(QString Filename){
 *
 *   @param pos 位置情報
 ****************************************************************************/
-//大会ルール(https://www.procon-asahikawa.org/files/U16Procon-RuleBookV231.pdf)
-//に則り、ブロックを置いてはいけない場所の場合はfalseを返す
 bool GameSystem::Map::CheckBlockRole(QPoint pos){
     // 外周にブロックがあってはいけない
     if(pos.x() == 0 || pos.x() == size.x()-1 || pos.y() == 0|| pos.y() == size.y()-1)
@@ -272,20 +269,15 @@ bool GameSystem::Map::CheckBlockRole(QPoint pos){
 *   @param block_num ブロック数
 *   @param item_num  アイテム数
 ****************************************************************************/
-//大会ルールの「A 基本タイプ」に準拠してブロック、アイテム、COOLとHOTをランダムに配置
-//*A 基本タイプ: COOLとHOTの周囲8マスにアイテムがない
-//デフォルトではブロック20個、アイテム50個を配置
 void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
     turn = 100;                         // ターン数
     name = "[RANDOM MAP]";              // マップ名
 
     // 一様ノルム(L∞ノルム)
-    // 詳細はWikipediaを参照
     auto UniformNorm = [](QPoint pos){
         return std::abs(pos.x()) > std::abs(pos.y()) ? std::abs(pos.x()) : std::abs(pos.y());
     };
 
-    // 大会ルールに準拠した位置にCOOLとHOTが配置されるようにする
     do{
         // ランダム座標取得
         auto pos = QPoint(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
@@ -333,7 +325,7 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
             // 点対称にブロック配置
             field[mirrorPos.y()][mirrorPos.x()] = GameSystem::MAP_OBJECT::BLOCK;
         }else{
-            // ブロックが大会ルールに準拠してない場合は、座標再取得
+            // 座標再取得
             i--;
             continue;
         }
@@ -348,9 +340,6 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
         // 配置有効フラグ
         bool around_item_flag = true;
 
-        //プレイヤーとアイテムを置こうとしている位置の一様ノルムが1以下なら、アイテムを置かない
-        //(プレイヤーが初期位置でGetReadyしたときに、アイテムがない状態にする)
-        //これは「A 基本タイプ」の要件
         // プレイヤー初期座標の周辺
         if(UniformNorm(team_first_point[0]  - pos) <= 1 || UniformNorm(team_first_point[1] - pos) <= 1)
             // 配置無効

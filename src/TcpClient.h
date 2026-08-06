@@ -15,7 +15,7 @@
 class TCPClient : public BaseClient
 {
     Q_OBJECT
-    //TCPユーザー用の接続サーバー
+
 private:
     // タイムアウト
     int TIMEOUT = 5000;
@@ -23,8 +23,6 @@ private:
     const static int IGNORE_INVALD = 10;
     // クライアント名1行分の最大ピクセルサイズ
     const static int LIMIT_NAME_PIXEL_SIZE = 250;
-    // 改行コード(未使用)
-    const QString NEWLINE_CODE = "";
 
     QTcpServer*  server;                // TCPサーバー
     QTcpSocket*  client;                // TCPクライアント
@@ -47,8 +45,6 @@ public:
 
     explicit TCPClient(QObject *parent = 0);
     virtual ~TCPClient();
-
-signals:
 
 private slots:
     void NewConnection ();              // 新規接続

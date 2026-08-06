@@ -21,14 +21,11 @@ SettingDialog::SettingDialog(QWidget *parent)
     QSettings *mSettings;
     // 設定情報読込
     mSettings = new QSettings("setting.ini", QSettings::IniFormat);
-    // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
     // UI設定
     ui->setupUi(this);
 
     // ログファイルパス取得
     QVariant v = mSettings->value("LogFilepath");
-
-    // 非推奨 QVariant::Invalid → QMetaType::UnknownType
     // 設定有効
     if (v.typeId() != QMetaType::UnknownType)
         // 設定表示
@@ -72,7 +69,6 @@ void SettingDialog::Export()
     QSettings *mSettings;
     // 設定読込
     mSettings = new QSettings("setting.ini", QSettings::IniFormat);
-    // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
 
     // ログファイルパス取得
     mSettings->setValue("LogFilepath", ui->Log->text());
@@ -84,7 +80,6 @@ void SettingDialog::Export()
     mSettings->setValue("Silent", ui->SilentCheck->isChecked());
     // ゲーム開始時最大化設定取得
     mSettings->setValue("Maximum", ui->MaximumCheck->isChecked());
-    //QMessageBox::information(this, tr("警告"), tr("設定は再起動後有効になります。"));
 }
 
 /****************************************************************************

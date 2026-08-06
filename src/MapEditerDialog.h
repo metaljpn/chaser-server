@@ -46,13 +46,13 @@ private slots:
     void FillItem(const QPoint& pos);   // オブジェクト配置
     void Clear();                       // [全消し]ボタン押下
     void SpinChanged(int value);        // ターン数変更
-    void ComboChanged(QString value);   // エリア選択
+    void ComboChanged();                // エリア選択
     void ReCount();                     // オブジェクト数更新
     void randomGenerateButtonPressed(); // [ランダム生成]ボタン押下
 
 public slots:
     // オブジェクト選択
-    void SelectItem(QListWidgetItem* next, QListWidgetItem* old);
+    void SelectItem(QListWidgetItem* next);
 };
 
 #endif // MAPEDITERDIALOG_H

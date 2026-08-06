@@ -24,7 +24,6 @@ DesignDialog::DesignDialog(QWidget *parent) :
     QSettings* mSettings;
     // 設定読込
     mSettings = new QSettings( "design.ini", QSettings::IniFormat );
-    // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
 
     // ステージの暗転取得
     QVariant v = mSettings->value( "Dark" );
@@ -78,11 +77,9 @@ void DesignDialog::Export(){
     QSettings* mSettings;
     // 設定読込
     mSettings = new QSettings( "design.ini", QSettings::IniFormat );
-    // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード
 
     // ステージの暗転取得
     mSettings->setValue( "Dark"    , GetCheckDark());
     // ボット戦取得
     mSettings->setValue( "Bot"     , GetCheckBot());
-    //QMessageBox::information(this, tr("警告"), tr("設定は再起動後有効になります。"));
 }

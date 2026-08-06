@@ -23,15 +23,7 @@ using Field = QVector<QVector<T>>;
 class GameSystem
 {
 public:
-    //通常マップサイズ
-    //const static int MAP_WIDTH  = 21;
-    //const static int MAP_HEIGHT = 17;
-
-    //決戦マップサイズ
-    //const static int MAP_WIDTH  = 15;
-    //const static int MAP_HEIGHT = 17;
-
-    // 通常マップサイズ
+    // マップサイズ
     const static int DEFAULT_MAP_WIDTH  = 15;
     const static int DEFAULT_MAP_HEIGHT = 17;
 
@@ -74,7 +66,6 @@ public:
     // 探索状態
     enum class Discoverer{
         Unknown = 0,                    // 不明(未探索)
-        Hot     = 1,                    // HOT(未使用)
         Cool    = 2,                    // COOL(探索済)
     };
 
@@ -95,6 +86,7 @@ public:
         BLIND,                          // 暗闇
         ERASE,                          // 消去(未選択)
     };
+
     // ゲーム盤
     struct Map{
         Field<GameSystem::MAP_OBJECT> field;    // フィールド(物体)
@@ -149,6 +141,7 @@ public:
         // 行動･方向変換
         static Method fromString(const QString& str);
     };
+
     // 周辺情報
     struct AroundData{
         CONNECTING_STATUS connect;      // 接続状態

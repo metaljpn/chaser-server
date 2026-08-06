@@ -35,7 +35,7 @@ MapEditerDialog::MapEditerDialog(GameSystem::Map map, QWidget *parent) :
     ui->ObjectCounter->item(1)->setIcon(QIcon(map.texture_dir_path + "/Item.png"));
 
     // エリア初期化
-    ComboChanged("決戦(15x17)");
+    ComboChanged();
     // マップ設定
     ui->widget->setMap(map);
     // オブジェクトリスト生成
@@ -73,7 +73,6 @@ MapEditerDialog::MapEditerDialog(GameSystem::Map map, QWidget *parent) :
 ****************************************************************************/
 MapEditerDialog::~MapEditerDialog()
 {
-    // QApplication::setOverrideCursor(Qt::ArrowCursor);
     // UI破棄
     delete ui;
 }
@@ -217,9 +216,8 @@ void MapEditerDialog::Export()
 *   オブジェクト選択
 *
 *   @param next 次のオブジェクト
-*   @param old  前のオブジェクト[未使用]
 ****************************************************************************/
-void MapEditerDialog::SelectItem(QListWidgetItem *next, [[maybe_unused]] QListWidgetItem *old)
+void MapEditerDialog::SelectItem(QListWidgetItem *next)
 {
     // 次のオブジェクトが有効
     if(next){
@@ -227,8 +225,6 @@ void MapEditerDialog::SelectItem(QListWidgetItem *next, [[maybe_unused]] QListWi
         QIcon icon = next->icon();
         // カーソル
         QCursor myCursor = QCursor(icon.pixmap(icon.actualSize(QSize(ICON_SIZE*0.8, ICON_SIZE*0.8))));
-        // QApplication::setOverrideCursor(myCursor);
-        // widget内(GameBoard内)でのみカーソルを変える
         // カーソル設定
         ui->widget->setCursor(myCursor);
     }
@@ -236,10 +232,8 @@ void MapEditerDialog::SelectItem(QListWidgetItem *next, [[maybe_unused]] QListWi
 
 /****************************************************************************
 *   エリア選択
-*
-*   @param value エリア文字列(未使用)
 ****************************************************************************/
-void MapEditerDialog::ComboChanged([[maybe_unused]] QString value)
+void MapEditerDialog::ComboChanged()
 {
     // [ランダム生成]ボタン押下
     randomGenerateButtonPressed();

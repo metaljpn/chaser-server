@@ -12,7 +12,7 @@
 class BaseClient : public QObject
 {
     Q_OBJECT
-    //クライアント純粋仮想クラス
+
 public:
     QString Name;                       // チーム名
     QString IP;                         // IP
@@ -37,7 +37,6 @@ signals:
     void WriteTeamName();               // チーム名表示
     void Ready();                       // 準備完了
     void Disconnected();                // 切断
-public slots:
 
 };
 

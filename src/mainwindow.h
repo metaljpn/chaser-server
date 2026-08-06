@@ -10,7 +10,6 @@
 #include <QTimer>                       // 時間管理
 #include <QKeyEvent>                    // キーイベント
 #include "startupdialog.h"              // 起動画面
-#include <fstream>                      // ファイルストリーム
 #include <QDateTime>                    // 日付と時刻管理
 #include <QFile>                        // ファイルアクセス
 #include <QSoundEffect>                 // 効果音再生
@@ -44,7 +43,6 @@ private:
     bool dark;                          // 暗転モード
     bool isbotbattle;                   // ボット戦モード
 
-    QFile* file;                        // ファイル(未使用)
     StableLog log;                      // ログストリーム
     int anime_map_time   = 6000;        // マップ描画時間
     int anime_team_time  = 2000;        // チーム配置アニメーション時間
@@ -67,10 +65,6 @@ private:
 	// メッセージハンドラ(ファイルへのログの書き出しを追加)
     static void s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
 
-protected:
-    // キー押下イベント
-    void keyPressEvent(QKeyEvent* event);
-
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
@@ -79,9 +73,6 @@ private:
     Ui::MainWindow *ui;                 // UI
 
 private slots:
-    // ファイル保存
-    void SaveFile();
-
     // ゲーム進行
     void StepGame();
     // アイテム取得判定

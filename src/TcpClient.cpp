@@ -54,8 +54,6 @@ QString TCPClient::WaitResponce()
         if (this->client->waitForReadyRead(this->TIMEOUT)) {
             QString response = "";      // 受信文字列
 
-            //自動結合
-            //bool f = false;
             do {
                 // 受信データ結合
                 response += client->readLine();
@@ -90,14 +88,12 @@ QString TCPClient::WaitResponce()
         } else {
             // 切断
             is_disconnected = true;
-            //qDebug() << QString("[Port") + QString::number(this->client->localPort()) +"]:Noting responce";
             // 戻り値[空文字]
             return QString();
         }
     }
     // 切断
     is_disconnected = true;
-    //qDebug() << QString("[Port") + QString::number(this->client->localPort()) +"]:Too many invald responce";
     // 戻り値[空文字]
     return QString();
 }
@@ -352,8 +348,6 @@ QString TCPClient::GetTeamName()
             // 文字サイズ調整
             nameLabel.adjustSize();
 
-            // 文字幅を計算して、ある程度以上の幅の文字列の表示をしない/改行して分割する
-            // (LIMIT_NAME_PIXEL_SIZE以上なら2行に分割)
             // 文字幅が既定値未満
             if(nameLabel.size().width() < LIMIT_NAME_PIXEL_SIZE){
                 // チーム名として連結
@@ -370,7 +364,7 @@ QString TCPClient::GetTeamName()
                 clientName += nextChar;
                 // 行テキスト初期化
                 lineText = nextChar;
-            } else { //1回改行が入ったあとは、2行目まで表示する(3行目以降は無視)
+            } else {
                 // ループ脱出
                 break;
             }
@@ -403,10 +397,8 @@ TCPClient::TCPClient(QObject *parent)
     QSettings *mSettings;
     // 設定情報読込
     mSettings = new QSettings("setting.ini", QSettings::IniFormat);
-    // mSettings->setIniCodec( "UTF-8" ); // iniファイルの文字コード (QSettingsはデフォルトでUTF-8で、変更不可っぽい)
     // 通信タイムアウト取得
     QVariant v = mSettings->value("Timeout");
-    // 非推奨 QVariant::Invalid → QMetaType::UnknownType
     // 設定有効
     if (v.typeId() != QMetaType::UnknownType) {
         // 通信タイムアウト取得

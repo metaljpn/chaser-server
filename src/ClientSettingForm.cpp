@@ -62,7 +62,6 @@ void ClientSettingForm::SetStandby()
 
     // 待機
     emit Standby(this,true);
-    //this->ui->ServerStartButton->setEnabled  (hot_standby && cool_standby && map_standby);
 }
 
 /****************************************************************************
@@ -202,7 +201,6 @@ void ClientSettingForm::ComboBoxChenged(QString text)
             // ボット用外部プログラム
             botProcess = new QProcess();
 
-            // "u16asahikawaBot.exe a:127.0.0.1 p:2009 n:botV4"のような文字列を作る
             // 実行ファイルパス
             QString command = "./2019-U16asahikawaBot/u16asahikawaBot.exe";
             // 引数

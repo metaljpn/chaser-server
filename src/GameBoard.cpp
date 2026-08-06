@@ -8,9 +8,6 @@
 #include <QThread>                      // スレッド管理
 #include <QtAlgorithms>                 // 汎用アルゴリズム
 
-// #define MIN(x,y) ((x < y)? x : y)
-// #define MAX(x,y) ((x > y)? x : y)
-
 /****************************************************************************
 *   アイテム取得
 *
@@ -35,14 +32,6 @@ void GameBoard::PickItem(GameSystem::Method method){
 
 }
 
-/*
-QString GameBoard::GetTexturePath(GameSystem::Texture tex){
-    if(tex == GameSystem::Texture::Light)return ":/Image/Light";
-    if(tex == GameSystem::Texture::Heavy)return ":/Image/Heavy";
-    if(tex == GameSystem::Texture::Jewel)return ":/Image/Jewel";
-}
-*/
-
 /****************************************************************************
 *   リサイズ
 *
@@ -50,16 +39,6 @@ QString GameBoard::GetTexturePath(GameSystem::Texture tex){
 ****************************************************************************/
 void GameBoard::resizeEvent(QResizeEvent *event){
 
-    //常に同じアスペクト比になるようにする
-
-    //int p = MIN(event->size().width(),event->size().height());
-    //resize(p,p);
-
-    //event->ignore();
-    /*
-    resize(event->size().height(),event->size().height());
-    this->setMinimumSize(event->size().height(),event->size().height());
-    */
     // イメージ幅
     image_part.setWidth (event->size().width() / field.size.x());
     // イメージ高さ
@@ -361,15 +340,6 @@ void GameBoard::setMap(const GameSystem::Map& map){
     field.discover.resize(map_height);
     // 探索状態初期化
     for(auto& v : field.discover)v = QVector<GameSystem::Discoverer>(map_width,GameSystem::Discoverer::Cool);
-}
-
-/****************************************************************************
-*   アニメーション
-*
-*   @param method クライアント行動情報
-****************************************************************************/
-void GameBoard::PlayAnimation([[maybe_unused]] GameSystem::Method method){
-    // アニメーション
 }
 
 /****************************************************************************
