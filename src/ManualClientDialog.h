@@ -16,18 +16,6 @@ class ManualClientDialog;
 class ManualClientDialog : public QDialog
 {
     Q_OBJECT
-public:
-    GameSystem::Method next_method;     // 実行行動
-
-    explicit ManualClientDialog(QWidget *parent = 0);
-    ~ManualClientDialog();
-
-
-protected:
-    // クローズ
-    void closeEvent(QCloseEvent* ce);
-    // キー押下
-    void keyPressEvent(QKeyEvent* event);
 
 private:
     Ui::ManualClientDialog *ui;         // UI
@@ -35,13 +23,23 @@ private:
     // 行動定数取得
     GameSystem::Method::ACTION GetAction();
 
+protected:
+    // キー押下
+    void keyPressEvent(QKeyEvent* event);
+    // クローズ
+    void closeEvent(QCloseEvent* ce);
+
+public:
+    GameSystem::Method next_method;     // 実行行動
+
+    explicit ManualClientDialog(QWidget *parent = 0);
+    ~ManualClientDialog();
+
 signals:
     void ReadyAction();                 // 行動決定
-
     void CloseWindow();                 // クローズ
 
 private slots:
-    // 各スロット
     void UPButtonClicked();             // [↑]ボタン押下
     void DOWNButtonClicked();           // [↓]ボタン押下
     void RIGHTButtonClicked();          // [→]ボタン押下

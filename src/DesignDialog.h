@@ -16,17 +16,16 @@ class DesignDialog : public QDialog
 {
     Q_OBJECT
 
-public:
-    explicit DesignDialog(QWidget *parent = 0);
+private:
+    Ui::DesignDialog *ui;               // UI
 
+public:
     bool GetCheckDark() const;          // ステージの暗転設定取得
     bool GetCheckBot() const;           // ボット戦設定取得
     void Export();                      // 設定保存
 
+    explicit DesignDialog(QWidget *parent = 0);
     ~DesignDialog();
-
-private:
-    Ui::DesignDialog *ui;               // UI
 };
 
 #endif // DESIGNDIALOG_H

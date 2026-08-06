@@ -18,7 +18,6 @@ public:
     virtual GameSystem::Method WaitReturnMethod(GameSystem::AroundData data);
     // 行動に対する周辺情報送信及び受信完了待機
     virtual bool WaitEndSharp(GameSystem::AroundData data);
-
     // シグナルスロット設定後処理
     virtual void Startup();
 

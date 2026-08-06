@@ -21,9 +21,9 @@
 *   @param parent 親ウィジェット
 ****************************************************************************/
 StartupDialog::StartupDialog(QWidget *parent)
-    : QDialog(parent)
-    , ui(new Ui::StartupDialog)
-    , map_standby(false)
+    : QDialog(parent),
+    map_standby(false),
+    ui(new Ui::StartupDialog)
 {
     // UI初期化
     ui->setupUi(this);

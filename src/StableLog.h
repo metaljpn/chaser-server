@@ -11,26 +11,26 @@
 
 class StableLog
 {
+private:
+    QString m_filename;                 // ファイル名
+
+    mutable QMutex* m_mutex;            // 排他用オブジェクト
+
 public:
     // ファイル名取得
     QString filename() { return m_filename; }
     // 書込
     void Write(const QString& str)const;
 
-
     // 書込オペレータ
     const StableLog& operator<<(const QString& str)const;
+    // 更新オペレータ
+    StableLog& operator=(const StableLog& other);
 
     StableLog();
     StableLog(QString filename);
     StableLog(const StableLog& other);
-    StableLog& operator=(const StableLog& other);
     ~StableLog();
-
-private:
-    QString m_filename;                 // ファイル名
-
-    mutable QMutex* m_mutex;            // 排他用オブジェクト
 };
 
 #endif // STABLELOG_H

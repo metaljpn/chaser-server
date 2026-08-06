@@ -15,18 +15,18 @@ class SettingDialog;
 class SettingDialog : public QDialog
 {
     Q_OBJECT
+
+private:
+    Ui::SettingDialog *ui;              // UI
+
 public:
+    void Export();                      // 設定保存
 
     explicit SettingDialog(QWidget *parent = 0);
     ~SettingDialog();
 
-    void Export();                      // 設定保存
-
 public slots:
     void openDirectory();               // ログ保存フォルダ[選択]ボタン押下
-
-private:
-    Ui::SettingDialog *ui;              // UI
 };
 
 #endif // SETTINGDIALOG_H

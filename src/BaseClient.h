@@ -18,14 +18,12 @@ public:
     QString IP;                         // IP
     bool is_disconnected;               // 切断フラグ
 
-public:
     // 周辺情報要求
     virtual bool WaitGetReady()=0;
     // 周辺情報応答
     virtual GameSystem::Method WaitReturnMethod(GameSystem::AroundData data)=0;
     // 行動に対する周辺情報送信及び受信完了待機
     virtual bool WaitEndSharp(GameSystem::AroundData data)=0;
-
     // シグナルスロット設定後処理
     virtual void Startup();
 
@@ -37,7 +35,6 @@ signals:
     void WriteTeamName();               // チーム名表示
     void Ready();                       // 準備完了
     void Disconnected();                // 切断
-
 };
 
 #endif // CLIENT_H

@@ -129,6 +129,7 @@ public:
             LEFT,                       // 左
             UNKNOWN                     // 不明
         };
+
         TEAM   team;                    // チーム
         ACTION action;                  // 行動
         ROTE   rote;                    // 方向

@@ -18,18 +18,18 @@ class StartupDialog : public QDialog
     Q_OBJECT
 
 private:
-    Ui::StartupDialog *ui;              // UI
     bool team_standby[TEAM_COUNT];      // チーム準備状態
     bool map_standby;                   // マップ準備状態
 
+    Ui::StartupDialog *ui;              // UI
+
 public:
-    QString music_text;                 // BGM名
     GameSystem::Map map;                // マップ情報
+    QString music_text;                 // BGM名
 
     // クライアント設定画面
     ClientSettingForm* team_client[TEAM_COUNT];
 
-public:
     bool MapRead(const QString& dir);   // マップ読込
     void setMusicFileList();            // BGMリスト生成
     void setImageThemeList();           // テクスチャリスト生成
@@ -38,21 +38,16 @@ public:
     ~StartupDialog();
 
 public slots:
-
     void ChangeMusicCombo(QString text);    // BGM選択
     void CheckStandby();                    // ゲーム開始可否確認
     void ShowMapEditDialog();               // マップ編集画面表示
     void PushedMapSelect();                 // マップ選択
     void ShowDesignDialog();                // [デザイン設定]ボタン押下
-
     // クライアント準備設定
     void ClientStandby(ClientSettingForm* client,bool complate);
     void SetMapStandby (bool state);        // マップ準備設定
-
     void ChangedTexture(QString text);      // テクスチャ変更
-
     void Setting();                         // [サーバー設定]ボタン押下
-
 };
 
 #endif // STARTUPDIALOG_H

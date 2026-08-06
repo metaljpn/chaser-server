@@ -18,26 +18,28 @@ class MapEditerDialog : public QDialog
 {
     Q_OBJECT
 
-public:
-    static const int IMAGE_PART_SIZE = 25;  // イメージサイズ
-    static const int ICON_SIZE = 50;        // アイコンサイズ
-    QString filepath;                       // マップ保存フルパス
+private:
+    bool clicking;                      // クリック状態
 
-    GameSystem::Map GetMap();               // マップ取得
-    explicit MapEditerDialog(GameSystem::Map map,QWidget *parent = 0);
-    ~MapEditerDialog();
+    Ui::MapEditerDialog *ui;            // UI
 
 protected:
     // マウスクリック
     void mousePressEvent(QMouseEvent *event);
-    // マウスクリック解放
-    void mouseReleaseEvent(QMouseEvent *event);
     // マウス移動
     void mouseMoveEvent(QMouseEvent *event);
+    // マウスクリック解放
+    void mouseReleaseEvent(QMouseEvent *event);
 
-private:
-    Ui::MapEditerDialog *ui;            // UI
-    bool clicking;                      // クリック状態
+public:
+    static const int IMAGE_PART_SIZE = 25;  // イメージサイズ
+    static const int ICON_SIZE = 50;        // アイコンサイズ
+
+    QString filepath;                       // マップ保存フルパス
+    GameSystem::Map GetMap();               // マップ取得
+
+    explicit MapEditerDialog(GameSystem::Map map,QWidget *parent = 0);
+    ~MapEditerDialog();
 
 private slots:
     void Export();                      // [書き出し]ボタン押下
