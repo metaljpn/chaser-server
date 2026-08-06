@@ -3,8 +3,8 @@
 *----------------------------------------------------------------------------
 *   NOTE    :   起動画面
 ****************************************************************************/
-#include "startupdialog.h"              // 起動画面
-#include "ui_startupdialog.h"           // 起動画面UI
+#include "StartupDialog.h"              // 起動画面
+#include "ui_StartupDialog.h"           // 起動画面UI
 
 #include <QFileDialog>                  // ファイルダイアログ
 #include <QHostInfo>                    // ホスト情報

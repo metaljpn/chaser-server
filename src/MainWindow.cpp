@@ -3,8 +3,8 @@
 *----------------------------------------------------------------------------
 *   NOTE    :   メイン画面
 ****************************************************************************/
-#include "mainwindow.h"                 // メイン画面
-#include "ui_mainwindow.h"              // メイン画面UI
+#include "MainWindow.h"                 // メイン画面
+#include "ui_MainWindow.h"              // メイン画面UI
 
 #include <QAudioOutput>                 // 音声出力チャンネル
 #include <QDateTime>                    // 日付･時刻

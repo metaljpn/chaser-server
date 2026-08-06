@@ -18,9 +18,9 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp \
-    startupdialog.cpp \
+    MainWindow.cpp \
     GameSystem.cpp \
+    StartupDialog.cpp \
     TcpClient.cpp \
     BaseClient.cpp \
     ComClient.cpp \
@@ -33,9 +33,10 @@ SOURCES += main.cpp\
     StableLog.cpp \
     DesignDialog.cpp
 
-HEADERS  += mainwindow.h \
-    startupdialog.h \
+HEADERS  += \
+    MainWindow.h \
     GameSystem.h \
+    StartupDialog.h \
     TcpClient.h \
     BaseClient.h \
     ComClient.h \
@@ -48,14 +49,15 @@ HEADERS  += mainwindow.h \
     StableLog.h \
     DesignDialog.h
 
-FORMS    += mainwindow.ui \
-    startupdialog.ui \
+FORMS    += \
+    MainWindow.ui \
     GameBoard.ui \
     ManualClientDialog.ui \
     MapEditerDialog.ui \
     SettingDialog.ui \
     ClientSettingForm.ui \
-    DesignDialog.ui
+    DesignDialog.ui \
+    StartupDialog.ui
 
 RESOURCES += \
     resource.qrc

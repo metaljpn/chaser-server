@@ -8,7 +8,7 @@
 
 #include <QMainWindow>                  // メインウィンドウ
 #include <QMediaPlayer>                 // メディアファイル再生
-#include "startupdialog.h"              // 起動画面
+#include "StartupDialog.h"              // 起動画面
 #include "StableLog.h"                  // ログ管理
 
 namespace Ui {

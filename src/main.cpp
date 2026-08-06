@@ -7,7 +7,7 @@
 #include <QLibraryInfo>                 // Qtライブラリ
 #include <QTranslator>                  // 国際化サポート
 
-#include "mainwindow.h"                 // メイン画面
+#include "MainWindow.h"                 // メイン画面
 
 /****************************************************************************
 *   メイン
