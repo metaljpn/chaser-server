@@ -13,13 +13,13 @@ class ComClient : virtual public BaseClient
 {
 public:
     // 周辺情報要求
-    virtual bool WaitGetReady();
+    bool WaitGetReady() override;
     // 周辺情報応答
-    virtual GameSystem::Method WaitReturnMethod(GameSystem::AroundData data);
+    GameSystem::Method WaitReturnMethod(GameSystem::AroundData data) override;
     // 行動に対する周辺情報送信及び受信完了待機
-    virtual bool WaitEndSharp(GameSystem::AroundData data);
+    bool WaitEndSharp(GameSystem::AroundData data) override;
     // シグナルスロット設定後処理
-    virtual void Startup();
+    void Startup() override;
 
     explicit ComClient(QObject *parent = 0);
     ~ComClient();

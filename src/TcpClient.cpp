@@ -390,7 +390,6 @@ QString TCPClient::GetTeamName()
                 // ループ脱出
                 break;
             }
-
         }
         // チーム名取得
         this->Name = clientName;

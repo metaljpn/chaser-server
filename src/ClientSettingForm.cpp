@@ -202,8 +202,7 @@ void ClientSettingForm::DisConnected() {
     // 切断時のシグナル･スロット設定
     connect(this->client, &TCPClient::Disconnected, this, &ClientSettingForm::DisConnected);
     // シグナル･スロット設定直後処理
-    this->client->Startup();
-
+    if(this->client != nullptr) this->client->Startup();
     // ボタンキャプション
     this->ui->ConnectButton->setText("接続開始");
     // 状態
