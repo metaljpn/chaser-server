@@ -27,7 +27,7 @@ TCPClient::TCPClient(QObject *parent)
     // 設定有効
     if (v.typeId() != QMetaType::UnknownType) {
         // 通信タイムアウト取得
-        TIMEOUT = v.toInt();
+        timeout = v.toInt();
     }
     // 設定情報破棄
     delete mSettings;
@@ -146,14 +146,14 @@ QString TCPClient::WaitResponce()
         // デバッグ情報
         qDebug() << "WaitStart:";
         // 受信待機
-        if (this->client->waitForReadyRead(this->TIMEOUT)) {
+        if (this->client->waitForReadyRead(this->timeout)) {
             QString response = "";      // 受信文字列
 
             do {
                 // 受信データ結合
                 response += client->readLine();
                 // 改行未検出 and タイムアウトまで
-            } while (*(response.end() - 1) != '\n' && this->client->waitForReadyRead(this->TIMEOUT));
+            } while (*(response.end() - 1) != '\n' && this->client->waitForReadyRead(this->timeout));
 
             // デバッグ情報
             qDebug() << "" + VisibilityString(response);
@@ -204,7 +204,7 @@ QString TCPClient::VisibilityString(QString str)
 {
     QString answer;                     // 文字列バッファ
     // 文字列長分
-    for (int i = 0; i < str.size(); i++) {
+    for (int i=0;i<str.size();i++) {
         // 改行
         if (str[i] == '\n')
             // '\'付加

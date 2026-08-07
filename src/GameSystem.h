@@ -78,7 +78,7 @@ public:
 
     // ゲーム盤
     struct Map{
-        Field<GameSystem::MAP_OBJECT> field;    // フィールド(物体)
+        Field<GameSystem::MAP_OBJECT> field;    // 物体フィールド
         Field<GameSystem::DISCOVER> discover;   // 探索状態
         int turn;                               // ターン
         QString name;                           // ステージ名
@@ -96,7 +96,7 @@ public:
         void CreateRandomMap(int block_num = 20, int item_num = 51);
         // 設定読込
         bool Import(QString Filename);
-        // 設定保存
+        // 設定書込
         bool Export(QString Filename);
         // ブロック配置確認
         bool CheckBlockRole(QPoint pos);
@@ -138,7 +138,7 @@ public:
         MAP_OBJECT data[9];             // 周辺情報
 
         QString toString();             // 文字列変換
-        void finish();                  // ゲーム終了
+        void Finish();                  // ゲーム終了
     };
 };
 

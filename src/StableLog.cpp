@@ -67,14 +67,13 @@ void StableLog::Write(const QString &str) const
 {
     // 排他制御(スレッドセーフ)にするためにロックを取得
     QMutexLocker locker(m_mutex);
+    // ログファイル
+    QFile file(m_filename);
 
     // 追記書込オープン
-    QFile file(m_filename);
     file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text);
-
     // 書込
     file.write(str.toUtf8());
-
     // クローズ
     file.close();
 }
@@ -111,12 +110,10 @@ StableLog& StableLog::operator=(const StableLog& other)
 
     // ファイル名をコピー
     m_filename = other.m_filename;
-
     // 排他用オブジェクト破棄
     delete m_mutex;
     // 排他用オブジェクト設定
     m_mutex = newMutex;
-
     // 戻り値[対象オブジェクト]
     return *this;
 }

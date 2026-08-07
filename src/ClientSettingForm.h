@@ -35,7 +35,7 @@ signals:
 
 public slots:
     void SetPortSpin(int num);          // ポート番号設定
-    void ComboBoxChenged(QString text); // クライアント種別切替
+    void ComboBoxChanged(QString text); // クライアント種別切替
     void ConnectionToggled(bool state); // 待機切替
     void Connected();                   // 接続
     void SetStandby();                  // 準備完了

@@ -125,7 +125,7 @@ void MapEditerDialog::FillItem(const QPoint& pos)
 
     // 有効範囲外ならば関数終了
     if(fill_point.x() < 0 || fill_point.x() >= ui->widget->field.size.x() ||
-        fill_point.y() < 0 || fill_point.y() >= ui->widget->field.size.y())return;
+       fill_point.y() < 0 || fill_point.y() >= ui->widget->field.size.y())return;
 
     // 物体
     GameSystem::MAP_OBJECT obj = GameSystem::MAP_OBJECT::NOTHING;
@@ -173,14 +173,12 @@ void MapEditerDialog::ComboChanged()
 {
     // [ランダム生成]ボタン押下
     randomGenerateButtonPressed();
-
     // ウインドウ縦横比算出
     double window_width_per_height = static_cast<double>(ui->widget->field.size.x())/ui->widget->field.size.y();
     // 画面の最大高さをもとに、ウインドウ高さを算出
     int window_height = static_cast<int>(QGuiApplication::primaryScreen()->size().height()*0.8);
     // リサイズ
     resize(QSize(window_height*window_width_per_height+134, window_height+4));
-
     // 描画更新
     paintEvent(nullptr);
     // 再描画

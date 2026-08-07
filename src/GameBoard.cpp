@@ -21,7 +21,7 @@ GameBoard::GameBoard(QWidget *parent) :
     // イメージサイズ
     image_part = QSize(32.0,32.0);
     // テクスチャ読込
-    ReloadTexture(":/Image/Light");
+    LoadTexture(":/Image/Light");
     // UI初期化
     ui->setupUi(this);
     // チーム数分
@@ -48,11 +48,10 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
 
     // アニメーション無効
     if(!animation){
-
         // フィールド高さ分
-        for(int i = 0;i < field.size.y();i++){
+        for(int i=0;i<field.size.y();i++){
             // フィールド幅分
-            for(int j = 0;j < field.size.x();j++){
+            for(int j=0;j<field.size.x();j++){
                 // マップ描画済
                 if(overlay[i][j] != GameSystem::MAP_OVERLAY::ERASE){
                     // 物体が存在しない
@@ -61,7 +60,6 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
                         painter.drawPixmap(j * image_part.width(),
                                            i * image_part.height(),
                                            field_resource[static_cast<int>(GameSystem::MAP_OBJECT::NOTHING)]);
-
                     }
                 }
             }
@@ -71,17 +69,16 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
         for(int i=0;i<TEAM_COUNT;i++){
             // 座標有効
             if(0 <= team_pos[i].x() && team_pos[i].x() < field.size.x() &&
-                0 <= team_pos[i].y() && team_pos[i].y() < field.size.y()){
+               0 <= team_pos[i].y() && team_pos[i].y() < field.size.y()){
                 // チーム描画
                 painter.drawPixmap(team_pos[i].x() * image_part.width(),team_pos[i].y() * image_part.height(),team_resource[i]);
-
             }
         }
 
         // フィールド高さ分
-        for(int i = 0;i < field.size.y();i++){
+        for(int i=0;i<field.size.y();i++){
             // フィールド幅分
-            for(int j = 0;j < field.size.x();j++){
+            for(int j=0;j<field.size.x();j++){
                 // マップ描画済
                 if(overlay[i][j] != GameSystem::MAP_OVERLAY::ERASE){
                     // 物体有り
@@ -91,7 +88,7 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
                                            i * image_part.height(),
                                            field_resource[static_cast<int>(field.field[i][j])]);
                     }
-                    // (暗転時)未探索
+                    // 暗闇モード時未探索
                     if(field.discover[i][j] == GameSystem::DISCOVER::UNKNOWN){
                         // 暗闇描画
                         painter.drawPixmap(j * image_part.width() ,
@@ -126,8 +123,8 @@ void GameBoard::resizeEvent(QResizeEvent *event){
     event->ignore();
     // リサイズ
     resize(image_part.width() * field.size.x(), image_part.height() * field.size.y());
-    // テクスチャ再読込
-    ReloadTexture(texture_dir_path);
+    // テクスチャ読込
+    LoadTexture(texture_dir_path);
 }
 
 /****************************************************************************
@@ -148,7 +145,7 @@ GameSystem::MAP_OBJECT GameBoard::FieldAccess(GameSystem::Method method, const Q
 
     // オーバーレイ(行動効果)設定
     if(method.action == GameSystem::Method::ACTION::LOOK    )overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::LOOK;
-    if(method.action == GameSystem::Method::ACTION::SEARCH   )overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::SEARCH;
+    if(method.action == GameSystem::Method::ACTION::SEARCH  )overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::SEARCH;
     if(method.action == GameSystem::Method::ACTION::GETREADY)overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::GETREADY;
 
     // チーム数分
@@ -260,17 +257,15 @@ GameSystem::AroundData GameBoard::FieldAccessMethod(GameSystem::Method method){
 *   @param method クライアント行動情報
 ****************************************************************************/
 void GameBoard::PickItem(GameSystem::Method method){
-
     // 移動元
     QPoint pos = this->team_pos[static_cast<int>(method.team)];
     // 移動先がアイテム
     if(this->FieldAccess(method,pos) == GameSystem::MAP_OBJECT::ITEM){
         // 移動元のフィールドを初期化
-        this->field.field[ pos                        .y()][ pos                        .x()] = GameSystem::MAP_OBJECT::NOTHING;
+        this->field.field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::NOTHING;
         // 移動先のフィールドを壁に設定
         this->field.field[(pos-method.GetRoteVector()).y()][(pos-method.GetRoteVector()).x()] = GameSystem::MAP_OBJECT::BLOCK;
-
-        // 点数を１増やす
+        // 点数更新
         this->team_score[static_cast<int>(method.team)]++;
         // 残りアイテム数更新
         this->leave_items--;
@@ -285,11 +280,11 @@ void GameBoard::PickItem(GameSystem::Method method){
 *   @param team チーム
 ****************************************************************************/
 GameSystem::AroundData GameBoard::FinishConnecting(GameSystem::TEAM team){
-    // 周辺情報
+    // 周辺情報取得
     GameSystem::AroundData around = FieldAccessAround(GameSystem::Method{team,GameSystem::Method::ACTION::UNKNOWN,GameSystem::Method::ROTE::UNKNOWN},
                                                       team_pos[static_cast<int>(team)]);
     // 終了
-    around.finish();
+    around.Finish();
     // 戻り値[周辺情報]
     return around;
 }
@@ -305,7 +300,7 @@ void GameBoard::setMap(const GameSystem::Map& map){
     // 使用テクスチャディレクトリ取得
     this->texture_dir_path = map.texture_dir_path;
     // テクスチャ読込
-    ReloadTexture(texture_dir_path);
+    LoadTexture(texture_dir_path);
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // チーム位置取得
@@ -326,13 +321,13 @@ void GameBoard::setMap(const GameSystem::Map& map){
 }
 
 /****************************************************************************
-*   オーバーレイ(行動効果)消去
+*   オーバーレイ(行動効果)初期化
 ****************************************************************************/
-void GameBoard::RefreshOverlay(){
+void GameBoard::ResetOverlay(){
     // フィールド高さ分
-    for(int i = 0;i < field.size.y();i++){
+    for(int i=0;i<field.size.y();i++){
         // フィールド幅分
-        for(int j = 0;j < field.size.x();j++){
+        for(int j=0;j<field.size.x();j++){
             // オーバーレイ(行動効果)消去
             overlay[i][j] = GameSystem::MAP_OVERLAY::NOTHING;
         }
@@ -350,13 +345,13 @@ int GameBoard::GetMapObjectCount(GameSystem::MAP_OBJECT mb){
     // オブジェクト数
     int result = 0;
     // フィールド高さ分
-    for(int i = 0; i < field.size.y(); i++){
+    for(int i=0; i<field.size.y();i++){
         // フィールド幅分
-        for(int j = 0; j < field.size.x(); j++){
+        for(int j=0;j<field.size.x();j++){
             // 物体検出
             if(field.field[i][j] == mb){
                 // オブジェクト数更新
-                result ++;
+                result++;
             }
         }
     }
@@ -366,11 +361,11 @@ int GameBoard::GetMapObjectCount(GameSystem::MAP_OBJECT mb){
 }
 
 /****************************************************************************
-*   テクスチャ再読込
+*   テクスチャ読込
 *
 *   @param tex_dir_path 使用テクスチャディレクトリ
 ****************************************************************************/
-void GameBoard::ReloadTexture(QString tex_dir_path){
+void GameBoard::LoadTexture(QString tex_dir_path){
     // 使用テクスチャディレクトリ取得
     this->texture_dir_path = tex_dir_path;
 
@@ -386,7 +381,7 @@ void GameBoard::ReloadTexture(QString tex_dir_path){
     this->overray_resource[static_cast<int>(GameSystem::MAP_OVERLAY::NOTHING)]  = QPixmap();
     this->overray_resource[static_cast<int>(GameSystem::MAP_OVERLAY::LOOK)]     = QPixmap(tex_dir_path + "/Look.png");
     this->overray_resource[static_cast<int>(GameSystem::MAP_OVERLAY::GETREADY)] = QPixmap(tex_dir_path + "/Getready.png");
-    this->overray_resource[static_cast<int>(GameSystem::MAP_OVERLAY::SEARCH)]    = QPixmap(tex_dir_path + "/Search.png");
+    this->overray_resource[static_cast<int>(GameSystem::MAP_OVERLAY::SEARCH)]   = QPixmap(tex_dir_path + "/Search.png");
     this->overray_resource[static_cast<int>(GameSystem::MAP_OVERLAY::BLIND)]    = QPixmap(tex_dir_path + "/Blind.png");
 
     // チーム画像サイズ変更
@@ -395,7 +390,7 @@ void GameBoard::ReloadTexture(QString tex_dir_path){
     for(QPixmap& img:field_resource){
         if(!img.isNull())img = img.scaled(image_part.width(),image_part.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     }
-    // オーバーレイ画像サイズ変更
+    // オーバーレイ画像(行動効果)サイズ変更
     for(QPixmap& img:overray_resource){
         if(!img.isNull())img = img.scaled(image_part.width(),image_part.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     }

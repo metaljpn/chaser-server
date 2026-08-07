@@ -82,14 +82,13 @@ void ManualClient::Startup(){
     emit WriteTeamName();
     // 待機
     emit Ready();
+
     // 常に手前に表示
     diag->setWindowFlags(Qt::WindowStaysOnTopHint);
-
     // 画面サイズ取得
     auto displaySize = QGuiApplication::primaryScreen()->size();
     // ダイアログサイズ取得
     auto diagSize = diag->size();
-
     // 画面サイズに合わせて表示位置移動
     diag->move((displaySize.width()-diagSize.width())*0.5, displaySize.height()*0.65);
     // 画面表示

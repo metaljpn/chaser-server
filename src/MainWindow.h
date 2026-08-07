@@ -21,16 +21,16 @@ class MainWindow : public QMainWindow
 
 private:
     int player;                         // 次ターン行動チーム
-    int FRAME_RATE = 150;               // ゲームフレームレート
+    int frame_rate = 150;               // ゲームフレームレート
     QTimer* clock;                      // ゲームクロック
     QTimer* startup_anime;              // 開始アニメーション
     QTimer* teamshow_anime;             // チーム表示アニメーション
-    QTimer* blind_anime;                // まっくらアニメーション
+    QTimer* blind_anime;                // 暗闇アニメーション
     StartupDialog* startup;             // スタートアップダイアログ
     QMediaPlayer* bgm;                  // BGM
     QAudioOutput* audio_output;         // 音声出力チャンネル
     bool silent;                        // 消音モード
-    bool dark;                          // 暗転モード
+    bool dark;                          // 暗闇モード
     bool isbotbattle;                   // ボット戦モード
     StableLog log;                      // ログストリーム
     int anime_map_time   = 6000;        // マップ描画時間
@@ -41,17 +41,17 @@ private:
 
     Ui::MainWindow *ui;                 // UI
 
-    // qInstallMessageHandler 用
+    // インスタンス
     static MainWindow* s_instance;
-	// 前のメッセージハンドラを保存するための変数
+    // メッセージハンドラ退避
     static QtMessageHandler s_prevMsgHandler;
-
     // メッセージハンドラ
     static void s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
     // 日時取得
     static QString getTime();
-    // アイテム取得判定
-    void RefreshItem(GameSystem::Method method);
+
+    // 得点更新
+    void ScoreUpdate(GameSystem::Method method);
     // クライアント行動文字列変換
     QString convertString(GameSystem::Method method);
     // 勝敗判定
@@ -65,10 +65,10 @@ public:
 
 private slots:
     // マップ描画
-    void StartAnimation();
+    void DrawMapAnimation();
     // チーム配置
-    void ShowTeamAnimation();
-    // 暗転描画
+    void SetTeamAnimation();
+    // 暗闇描画
     void BlindAnimation();
     // ゲーム進行
     void StepGame();

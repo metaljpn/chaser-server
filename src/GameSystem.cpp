@@ -29,14 +29,11 @@ QString GameSystem::TEAM_PROPERTY::getTeamName(GameSystem::TEAM team){
 *   マップ-コンストラクタ
 ****************************************************************************/
 GameSystem::Map::Map():
-    // ターン数
-    turn(100),
-    // マップ名
-    name("[DEFAULT MAP]"),
-    // サイズ
-    size(DEFAULT_MAP_WIDTH,DEFAULT_MAP_HEIGHT),
-    // テクスチャパス
-    texture_dir_path(":/Image/Jewel"){
+    turn(100),                                  // ターン数
+    name("[DEFAULT MAP]"),                      // マップ名
+    size(DEFAULT_MAP_WIDTH,DEFAULT_MAP_HEIGHT), // サイズ
+    texture_dir_path(":/Image/Jewel")           // テクスチャパス
+{
 }
 
 /****************************************************************************
@@ -79,6 +76,7 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
 
     // 一様ノルム(L∞ノルム)
     auto UniformNorm = [](QPoint pos){
+        // 戻り値[絶対値最大]
         return std::abs(pos.x()) > std::abs(pos.y()) ? std::abs(pos.x()) : std::abs(pos.y());
     };
 
@@ -90,13 +88,12 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
             // 座標再取得
             continue;
         if(pos.x() < size.x()/2 ||                          // 盤面の左側
-            (pos.x() == size.x()/2 && pos.y() < size.y()/2)){ // 盤面中心の縦列 and 盤面の上半分
+          (pos.x() == size.x()/2 && pos.y() < size.y()/2)){ // 盤面中心の縦列 and 盤面の上半分
             // COOL側初期位置取得
             team_first_point[0] = pos;
             // ループ脱出
             break;
         }
-
     }while(true);
 
     // HOT側の初期位置を点対称に配置
@@ -119,19 +116,17 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
 
         // ブロック配置有効 and プレイヤー初期値位置以外 and ブロック以外 and マップ中心以外
         if(CheckBlockRole(pos) &&
-            pos != team_first_point[0] &&
-            pos != team_first_point[1] &&
-            field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::BLOCK &&
-            pos != QPoint(size.x()/2, size.y()/2 )){
+           pos != team_first_point[0] &&
+           pos != team_first_point[1] &&
+           field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::BLOCK &&
+           pos != QPoint(size.x()/2, size.y()/2 )){
             // ブロック配置
             field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::BLOCK;
-
             // 点対称にブロック配置
             field[mirrorPos.y()][mirrorPos.x()] = GameSystem::MAP_OBJECT::BLOCK;
         }else{
             // 座標再取得
             i--;
-            continue;
         }
     }
 
@@ -151,9 +146,9 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
 
         // 配置有効 and アイテム以外 and ブロック以外 and マップ中心以外
         if(around_item_flag &&
-            field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::ITEM &&
-            field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::BLOCK &&
-            pos != QPoint(size.x()/2, size.y()/2) ){
+           field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::ITEM &&
+           field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::BLOCK &&
+           pos != QPoint(size.x()/2, size.y()/2) ){
             // アイテム配置
             field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::ITEM;
             //点対称にアイテム配置
@@ -161,7 +156,6 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
         }else{
             // 座標再取得
             i--;
-            continue;
         }
     }
     // マップ中心にアイテムを配置
@@ -178,10 +172,12 @@ void GameSystem::Map::CreateRandomMap(int block_num, int item_num){
 bool GameSystem::Map::Import(QString Filename){
     // マップファイル
     QFile file(Filename);
+
     // 読取専用ファイルオープン
     if (file.open(QIODevice::ReadOnly)){
         char buf[1024]={};              // ラインバッファ
         int calm=0;                     // 行カウンタ
+
         // 読込可能の間
         while(file.readLine(buf,1024) != -1){
             // 文字列として取得
@@ -194,7 +190,6 @@ bool GameSystem::Map::Import(QString Filename){
             if(str[0]=='N')name = str.remove(0,2);
             // ターン数
             if(str[0]=='T')turn = str.remove(0,2).toInt();
-
 
             // マップ
             if(str[0]=='D'){
@@ -234,7 +229,7 @@ bool GameSystem::Map::Import(QString Filename){
 }
 
 /****************************************************************************
-*   マップ-設定保存
+*   マップ-設定書込
 *
 *   @return 処理結果
 *
@@ -243,7 +238,6 @@ bool GameSystem::Map::Import(QString Filename){
 bool GameSystem::Map::Export(QString Filename){
     // マップファイル
     QFile file(Filename);
-
     // 拡張子取得
     QString fileExt = Filename.split("/").last().split(".").last();
 
@@ -274,13 +268,16 @@ bool GameSystem::Map::Export(QString Filename){
     stream << "S:" + QString::number(size.x()) + "," + QString::number(size.y()) + "\n";
     // フィールド数分
     for(auto v1 : field){
+        // マップ
         stream << "D:";
+        // 座標数分
         for(auto it = v1.begin();it != v1.end();it++){
             // 座標出力
             stream << QString::number(static_cast<int>(*it));
             // 区切り文字列出力
             if(it != v1.end()-1)stream << ",";
         }
+        // 改行
         stream << "\n";
     }
     // チーム数分
@@ -329,11 +326,11 @@ bool GameSystem::Map::CheckBlockRole(QPoint pos){
 QPoint GameSystem::Method::GetRoteVector(){
     // 方向ベクトル生成
     switch(this->rote){
-    case GameSystem::Method::ROTE::UP:    return QPoint( 0,-1); // 上
-    case GameSystem::Method::ROTE::RIGHT: return QPoint( 1, 0); // 右
-    case GameSystem::Method::ROTE::DOWN:  return QPoint( 0, 1); // 下
-    case GameSystem::Method::ROTE::LEFT:  return QPoint(-1, 0); // 左
-    default:                              return QPoint( 0, 0); // 不明
+        case GameSystem::Method::ROTE::UP:    return QPoint( 0,-1); // 上
+        case GameSystem::Method::ROTE::RIGHT: return QPoint( 1, 0); // 右
+        case GameSystem::Method::ROTE::DOWN:  return QPoint( 0, 1); // 下
+        case GameSystem::Method::ROTE::LEFT:  return QPoint(-1, 0); // 左
+        default:                              return QPoint( 0, 0); // 不明
     }
 }
 
@@ -345,9 +342,10 @@ QPoint GameSystem::Method::GetRoteVector(){
 *   @param str 行動･方向文字列
 ****************************************************************************/
 GameSystem::Method GameSystem::Method::fromString(const QString& str){
-    // 文字列から抽出
+    // クライアント行動情報
     GameSystem::Method answer;
 
+    // 文字列から行動と方向を取得
     if     (str[0] == 'w')answer.action = GameSystem::Method::ACTION::WALK;     // 指定方向移動
     else if(str[0] == 'l')answer.action = GameSystem::Method::ACTION::LOOK;     // 指定方向周囲確認
     else if(str[0] == 's')answer.action = GameSystem::Method::ACTION::SEARCH;   // 指定方向直線確認
@@ -370,6 +368,7 @@ GameSystem::Method GameSystem::Method::fromString(const QString& str){
 QString GameSystem::AroundData::toString(){
     // 文字列
     QString str;
+
     // 接続状態
     str.append(static_cast<QChar>('0' + static_cast<int>(this->connect)));
     // 周辺情報数分
@@ -386,7 +385,7 @@ QString GameSystem::AroundData::toString(){
 /****************************************************************************
 *   周辺情報-ゲーム終了
 ****************************************************************************/
-void GameSystem::AroundData::finish(){
+void GameSystem::AroundData::Finish(){
     // 周辺情報先頭を接続終了
     this->data[0] = static_cast<GameSystem::MAP_OBJECT>(GameSystem::CONNECTING_STATUS::FINISHED);
     // 接続終了

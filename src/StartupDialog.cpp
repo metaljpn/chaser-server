@@ -134,7 +134,6 @@ void StartupDialog::setImageThemeList()
     if (dir.exists()) {
         // ファイルリスト取得
         QStringList filelist = dir.entryList(QDir::Dirs | QDir::NoSymLinks | QDir::NoDotAndDotDot);
-        //qDebug()<<filelist;
         // ファイルリスト登録
         ui->TextureThemeCombo->addItems(filelist);
     }
@@ -149,7 +148,7 @@ void StartupDialog::setImageThemeList()
 void StartupDialog::ClientStandby(ClientSettingForm *client, bool complate)
 {
     // チーム数分
-    for (int i = 0; i < TEAM_COUNT; i++) {
+    for (int i=0;i<TEAM_COUNT;i++) {
         // 該当チーム
         if (team_client[i] == client) {
             // 準備状態取得
@@ -183,7 +182,7 @@ void StartupDialog::CheckStandby()
     // 全体準備状態
     bool all_of = true;
     // チーム数分
-    for (int i = 0; i < TEAM_COUNT; i++) {
+    for (int i=0;i<TEAM_COUNT;i++) {
         // 準備未完了
         if (!team_standby[i])
             // 準備未完了
@@ -269,8 +268,8 @@ void StartupDialog::ChangedTexture(QString text)
     // テクスチャ文字列に対応するパスを取得
     if (text == "あっさり")      this->map.texture_dir_path = ":/Image/Light";
     else if (text == "こってり") this->map.texture_dir_path = ":/Image/Heavy";
-    else if (text == "ほうせき") this->map.texture_dir_path = ":/Image/Jewel";
-    else                       this->map.texture_dir_path = "Image/" + text;
+    else if (text == "ほうせき")this->map.texture_dir_path = ":/Image/Jewel";
+    else                     this->map.texture_dir_path = "Image/" + text;
 }
 
 /****************************************************************************
@@ -295,7 +294,7 @@ void StartupDialog::ShowDesignDialog()
     diag = new DesignDialog;
     // 画面実行 and 設定有効
     if (diag->exec() == QDialog::Accepted) {
-        // 設定保存
+        // 設定書込
         diag->Export();
     }
     // 画面破棄
@@ -313,7 +312,7 @@ void StartupDialog::Setting()
     diag = new SettingDialog;
     // 画面実行 and 設定有効
     if (diag->exec() == QDialog::Accepted) {
-        // 設定保存
+        // 設定書込
         diag->Export();
     }
     // 画面破棄

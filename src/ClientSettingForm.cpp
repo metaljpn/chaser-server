@@ -55,7 +55,7 @@ void ClientSettingForm::SetPortSpin(int num)
 *
 *   @param text 待機対象
 ****************************************************************************/
-void ClientSettingForm::ComboBoxChenged(QString text)
+void ClientSettingForm::ComboBoxChanged(QString text)
 {
     // TCPクライアント破棄
     delete client;
@@ -87,21 +87,16 @@ void ClientSettingForm::ComboBoxChenged(QString text)
         if(text=="botV4"){
             // TCPクライアント
             this->client = new TCPClient(this);
-
             // 待機開始
             ConnectionToggled(true);
-
             // ボット用外部プログラム
             botProcess = new QProcess();
-
             // 実行ファイルパス
             QString command = "./2019-U16asahikawaBot/u16asahikawaBot.exe";
             // 引数
             QStringList option;
-
             // 引数設定
             option << "a:127.0.0.1" << "p:" + QString::number(ui->PortSpinBox->value()) << "n:botV4";
-
             // ボット用外部プログラム開始
             botProcess->start(command, option);
         }
@@ -139,8 +134,6 @@ void ClientSettingForm::ConnectionToggled(bool state)
     }else{
         // ソケットクローズ
         dynamic_cast<TCPClient*>(this->client)->CloseSocket();
-        //this->client->Startup();
-
         // ボタンキャプション
         this->ui->ConnectButton->setText("接続開始");
         // 状態
@@ -162,9 +155,9 @@ void ClientSettingForm::ConnectionToggled(bool state)
 void ClientSettingForm::Connected()
 {
     // IP
-    this->ui->IPLabel      ->setText(this->client->IP);
+    this->ui->IPLabel->setText(this->client->IP);
     // 状態
-    this->ui->StateLabel   ->setText("接続中");
+    this->ui->StateLabel->setText("接続中");
     // ボタンキャプション
     this->ui->ConnectButton->setText("　切断　");
 }
@@ -175,15 +168,14 @@ void ClientSettingForm::Connected()
 void ClientSettingForm::SetStandby()
 {
     // 接続名
-    this->ui->NameLabel ->setText(this->client->Name == "" ? "未設定" : this->client->Name);
+    this->ui->NameLabel->setText(this->client->Name == "" ? "未設定" : this->client->Name);
     // IP
-    this->ui->IPLabel   ->setText(this->client->IP);
+    this->ui->IPLabel->setText(this->client->IP);
     // 状態
     this->ui->StateLabel->setText("準備完了");
     //if(this->ui->ComboBox->currentText() != "TCPユーザー");
     // ボタンキャプション
     this->ui->ConnectButton->setText("　切断　");
-
     // 待機
     emit Standby(this,true);
 }
@@ -194,6 +186,7 @@ void ClientSettingForm::SetStandby()
 void ClientSettingForm::DisConnected() {
     // 切断シグナル･スロット解除
     disconnect(this->client, &TCPClient::Disconnected, this, &ClientSettingForm::DisConnected);
+
     // TCPクライアント有効
     if (dynamic_cast<TCPClient*>(this->client) != nullptr) {
         // ソケットクローズ
@@ -208,7 +201,6 @@ void ClientSettingForm::DisConnected() {
     connect(this->client, &TCPClient::Ready,        this, &ClientSettingForm::SetStandby);
     // 切断時のシグナル･スロット設定
     connect(this->client, &TCPClient::Disconnected, this, &ClientSettingForm::DisConnected);
-
     // シグナル･スロット設定直後処理
     this->client->Startup();
 

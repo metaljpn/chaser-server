@@ -29,7 +29,7 @@ private:
     Ui::GameBoard *ui;                      // UI
 
 protected:
-    void paintEvent (QPaintEvent *event);   // ペイントイベント
+    void paintEvent(QPaintEvent *event);    // ペイントイベント
     void resizeEvent(QResizeEvent *event);  // リサイズイベント
 
 public:
@@ -57,15 +57,15 @@ public:
     void setMap(const GameSystem::Map &map);
     // オブジェクト数算出
     int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
-    // オーバーレイ(行動効果)消去
-    void RefreshOverlay();
+    // オーバーレイ(行動効果)初期化
+    void ResetOverlay();
 
     explicit GameBoard(QWidget *parent = 0);
     ~GameBoard();
 
 public slots:
-    // テクスチャ再読込
-    void ReloadTexture(QString texture_dir_path);
+    // テクスチャ読込
+    void LoadTexture(QString texture_dir_path);
 };
 
 #endif // GRAPHICFIELD_H

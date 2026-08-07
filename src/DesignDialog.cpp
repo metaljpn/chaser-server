@@ -25,7 +25,7 @@ DesignDialog::DesignDialog(QWidget *parent) :
     // 設定読込
     mSettings = new QSettings( "design.ini", QSettings::IniFormat );
 
-    // ステージの暗転取得
+    // 暗闇モード取得
     QVariant v = mSettings->value( "Dark" );
     // 設定有効
     if (v.typeId() != QMetaType::UnknownType)
@@ -33,7 +33,7 @@ DesignDialog::DesignDialog(QWidget *parent) :
         // 設定表示
         ui->DarkBox->setChecked(v.toBool());
     }
-    // ボット戦取得
+    // ボット戦モード取得
     v = mSettings->value( "Bot" );
     // 設定有効
     if (v.typeId() != QMetaType::UnknownType){
@@ -43,7 +43,7 @@ DesignDialog::DesignDialog(QWidget *parent) :
 }
 
 /****************************************************************************
-*   ステージの暗転設定取得
+*   暗闇モード設定取得
 *
 *   @return 設定内容
 ****************************************************************************/
@@ -52,7 +52,7 @@ bool DesignDialog::GetCheckDark() const {
 }
 
 /****************************************************************************
-*   ボット戦設定取得
+*   ボット戦モード設定取得
 *
 *   @return 設定内容
 ****************************************************************************/
@@ -61,7 +61,7 @@ bool DesignDialog::GetCheckBot() const {
 }
 
 /****************************************************************************
-*   設定保存
+*   設定書込
 ****************************************************************************/
 void DesignDialog::Export(){
     // デザイン設定
@@ -69,9 +69,9 @@ void DesignDialog::Export(){
     // 設定読込
     mSettings = new QSettings( "design.ini", QSettings::IniFormat );
 
-    // ステージの暗転取得
+    // 暗闇モード設定取得
     mSettings->setValue( "Dark"    , GetCheckDark());
-    // ボット戦取得
+    // ボット戦モード設定取得
     mSettings->setValue( "Bot"     , GetCheckBot());
 }
 

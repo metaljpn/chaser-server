@@ -35,7 +35,7 @@
    <item>
     <layout class="QFormLayout" name="formLayout">
      <property name="fieldGrowthPolicy">
-      <enum>QFormLayout::FieldsStayAtSizeHint</enum>
+      <enum>QFormLayout::FieldGrowthPolicy::FieldsStayAtSizeHint</enum>
      </property>
      <property name="verticalSpacing">
       <number>2</number>
@@ -112,7 +112,7 @@
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+        <enum>Qt::Orientation::Horizontal</enum>
        </property>
        <property name="sizeHint" stdset="0">
         <size>
@@ -183,21 +183,21 @@
    <sender>ComboBox</sender>
    <signal>currentTextChanged(QString)</signal>
    <receiver>ClientSettingForm</receiver>
-   <slot>ComboBoxChenged(QString)</slot>
+   <slot>ComboBoxChanged(QString)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>38</x>
-     <y>115</y>
+     <x>106</x>
+     <y>117</y>
     </hint>
     <hint type="destinationlabel">
-     <x>17</x>
-     <y>88</y>
+     <x>122</x>
+     <y>68</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <slots>
-  <slot>ComboBoxChenged(QString)</slot>
   <slot>ConnectionToggled(bool)</slot>
+  <slot>ComboBoxChanged(QString)</slot>
  </slots>
 </ui>

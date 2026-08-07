@@ -20,7 +20,7 @@ private:
     Ui::SettingDialog *ui;              // UI
 
 public:
-    void Export();                      // 設定保存
+    void Export();                      // 設定書込
 
     explicit SettingDialog(QWidget *parent = 0);
     ~SettingDialog();

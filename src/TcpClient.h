@@ -15,13 +15,12 @@ class TCPClient : public BaseClient
     Q_OBJECT
 
 private:
-    // 無効ライン無視最大回数
+    // 無効行無視最大回数
     const static int IGNORE_INVALD = 10;
-    // クライアント名1行分の最大ピクセルサイズ
+    // チーム名1行分の最大ピクセルサイズ
     const static int LIMIT_NAME_PIXEL_SIZE = 250;
 
-    // タイムアウト
-    int TIMEOUT = 5000;
+    int timeout = 5000;                 // タイムアウト
 
     QTcpServer*  server;                // TCPサーバー
     QTcpSocket*  client;                // TCPクライアント
@@ -46,8 +45,8 @@ public:
     virtual ~TCPClient();
 
 private slots:
-    void NewConnection ();              // 新規接続
-    void DisConnected ();               // 切断
+    void NewConnection();               // 新規接続
+    void DisConnected();                // 切断
 
 public slots:
     QString GetTeamName();              // チーム名取得

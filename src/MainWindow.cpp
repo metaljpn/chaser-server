@@ -14,7 +14,7 @@
 #include <QSettings>                    // アプリケーション設定情報
 #include <QTimer>                       // 時間管理
 
-// staticメンバ変数
+// staticメンバ初期化
 MainWindow* MainWindow::s_instance = nullptr;
 QtMessageHandler MainWindow::s_prevMsgHandler = nullptr;
 
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent) :
             qDebug() << this->ui->Field->team_pos[i];
         }
         // UI初期化
-        this->ui->Field  ->setMap(this->startup->map);          // マップ設定
+        this->ui->Field->setMap(this->startup->map);            // マップ設定
         this->ui->TimeBar->setMaximum(this->startup->map.turn); // 進捗バー最大値
         this->ui->TimeBar->setValue  (this->startup->map.turn); // 進捗バー現在値
         // 残りターン数
@@ -59,7 +59,6 @@ MainWindow::MainWindow(QWidget *parent) :
             this->startup->team_client[static_cast<int>(GameSystem::TEAM::HOT )]->client->Name == "" ?
                 "Hot" :
                 this->startup->team_client[static_cast<int>(GameSystem::TEAM::HOT )]->client->Name);
-
     }else{
         // アプリケーション終了
         exit(0);
@@ -75,7 +74,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (v.typeId() != QMetaType::UnknownType)path = v.toString();
     // フレームレート
     v = mSettings->value( "Gamespeed" );
-    if (v.typeId() != QMetaType::UnknownType)FRAME_RATE = v.toInt();
+    if (v.typeId() != QMetaType::UnknownType)frame_rate = v.toInt();
     // 消音モード
     v = mSettings->value( "Silent" );
     if (v.typeId() != QMetaType::UnknownType)silent = v.toBool();
@@ -88,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QVariant v2;                        // 設定値
     // デザイン設定
     dSettings = new QSettings( "design.ini", QSettings::IniFormat );
-    // 暗転モード
+    // 暗闇モード
     v2 = dSettings->value( "Dark" );
     if (v2.typeId() != QMetaType::UnknownType)dark = v2.toBool();
     else dark = false;
@@ -96,7 +95,7 @@ MainWindow::MainWindow(QWidget *parent) :
     v2 = dSettings->value( "Bot" );
     if (v2.typeId() != QMetaType::UnknownType)isbotbattle = v2.toBool();
     else isbotbattle = false;
-    // 暗転モードならば、マップ描画時間を調整
+    // 暗闇モードならば、マップ描画時間を調整
     if(dark == true)this->anime_map_time -= this->anime_blind_time;
 
     // ボット戦モード
@@ -129,7 +128,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // タイマー
     startup_anime = new QTimer();
     // マップ描画時シグナル･スロット設定
-    connect(startup_anime, &QTimer::timeout, this, &MainWindow::StartAnimation);
+    connect(startup_anime, &QTimer::timeout, this, &MainWindow::DrawMapAnimation);
     // マップ描画間隔設定
     startup_anime->start(anime_map_time / (startup->map.size.x()*startup->map.size.y()));
 
@@ -178,9 +177,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if (v.typeId() != QMetaType::UnknownType && v.toBool()){
         // ウィンドウ最大化
         setWindowState(Qt::WindowMaximized);
-
     }
-
 
     // アニメーション設定
     mSettings = new QSettings( "AnimationTime.ini", QSettings::IniFormat );
@@ -189,13 +186,12 @@ MainWindow::MainWindow(QWidget *parent) :
     // マップ描画時間設定
     if (v.typeId() != QMetaType::UnknownType)anime_map_time = v.toInt();
     else{
-        QSettings* mSettings;           // アニメーション設定
         // アニメーション設定
+        QSettings* mSettings;
+        // 設定読込
         mSettings = new QSettings( "AnimationTime.ini", QSettings::IniFormat );
-
         // マップ描画時間
         mSettings->setValue( "Map" , anime_map_time );
-
     }
 
     // プレイヤー情報ログ出力(プレイヤー名、IPアドレス)
@@ -281,7 +277,7 @@ QString MainWindow::getTime()
 /****************************************************************************
 *   マップ描画
 ****************************************************************************/
-void MainWindow::StartAnimation()
+void MainWindow::DrawMapAnimation()
 {
     // 描画数
     static int timer = 1;
@@ -296,8 +292,8 @@ void MainWindow::StartAnimation()
     // カウンタ初期化
     int count = 0;
 
-    // フィールドオーバーレイ(行動効果)消去
-    ui->Field->RefreshOverlay();
+    // フィールドオーバーレイ(行動効果)初期化
+    ui->Field->ResetOverlay();
 
     // 位置
     QPoint pos[2];
@@ -306,7 +302,7 @@ void MainWindow::StartAnimation()
         // 表示数
         int i_max = 2;
         // 初回ならばループ上限補正
-        if(timer == 1)i_max ++;
+        if(timer == 1)i_max++;
         // 指定個数分
         for(int i=0;i<i_max;i++){
             do{
@@ -389,11 +385,11 @@ void MainWindow::StartAnimation()
         // タイマー
         teamshow_anime = new QTimer();
         // チーム配置シグナル･スロット設定
-        connect(teamshow_anime, &QTimer::timeout, this, &MainWindow::ShowTeamAnimation);
+        connect(teamshow_anime, &QTimer::timeout, this, &MainWindow::SetTeamAnimation);
         // タイマー始動
         teamshow_anime->start(anime_team_time/TEAM_COUNT);
         // シグナル･スロット解除
-        disconnect(startup_anime, &QTimer::timeout, this, &MainWindow::StartAnimation);
+        disconnect(startup_anime, &QTimer::timeout, this, &MainWindow::DrawMapAnimation);
     }
     // 描画数更新
     timer += 2;
@@ -404,7 +400,7 @@ void MainWindow::StartAnimation()
 /****************************************************************************
 *   チーム配置
 ****************************************************************************/
-void MainWindow::ShowTeamAnimation()
+void MainWindow::SetTeamAnimation()
 {
     static int team_count;              // カウンタ
 
@@ -413,25 +409,25 @@ void MainWindow::ShowTeamAnimation()
 
     // チーム数到達
     if(team_count == TEAM_COUNT){
-        // 暗転モード
+        // 暗闇モード
         if(dark == true){
             // タイマー
             blind_anime = new QTimer();
-            // 暗転描画シグナル･スロット設定
+            // 暗闇描画シグナル･スロット設定
             connect(blind_anime, &QTimer::timeout, this, &MainWindow::BlindAnimation);
             // タイマー始動
             blind_anime->start(anime_blind_time / (startup->map.size.x()*startup->map.size.y()));
             // シグナル･スロット解除
-            disconnect(teamshow_anime, &QTimer::timeout, this, &MainWindow::ShowTeamAnimation);
+            disconnect(teamshow_anime, &QTimer::timeout, this, &MainWindow::SetTeamAnimation);
         }else{
             // タイマー
             clock = new QTimer();
             // ゲーム進行シグナル･スロット設定
             connect(clock, &QTimer::timeout, this, &MainWindow::StepGame);
             // タイマー始動
-            clock->start(FRAME_RATE);
+            clock->start(frame_rate);
             // シグナル･スロット解除
-			disconnect(teamshow_anime, &QTimer::timeout, this, &MainWindow::ShowTeamAnimation);
+            disconnect(teamshow_anime, &QTimer::timeout, this, &MainWindow::SetTeamAnimation);
         }
     }else{
         // 探索済設定
@@ -445,7 +441,7 @@ void MainWindow::ShowTeamAnimation()
 }
 
 /****************************************************************************
-*   暗転描画
+*   暗闇描画
 ****************************************************************************/
 void MainWindow::BlindAnimation()
 {
@@ -456,8 +452,8 @@ void MainWindow::BlindAnimation()
     // アニメーションタイプ
     static int ANIMATION_TYPE = QRandomGenerator::global()->generate() % ANIMATION_SIZE;
 
-    // フィールドオーバーレイ(行動効果)消去
-    ui->Field->RefreshOverlay();
+    // フィールドオーバーレイ(行動効果)初期化
+    ui->Field->ResetOverlay();
 
     // 位置
     QPoint pos[2];
@@ -486,7 +482,7 @@ void MainWindow::BlindAnimation()
         // ゲーム進行シグナル･スロット設定
         connect(clock, &QTimer::timeout, this, &MainWindow::StepGame);
         // タイマー始動
-        clock->start(FRAME_RATE);
+        clock->start(frame_rate);
         // シグナル･スロット解除
         disconnect(blind_anime, &QTimer::timeout, this,&MainWindow::BlindAnimation);
     }
@@ -503,10 +499,11 @@ void MainWindow::StepGame()
 {
     // クライアント行動情報
     static GameSystem::Method team_mehod[TEAM_COUNT];
-    // フィールドオーバーレイ(行動効果)消去
-    this->ui->Field->RefreshOverlay();
     static int turn_count;              // ターン数
     static bool getready_flag=true;     // ターン状態
+
+    // フィールドオーバーレイ(行動効果)初期化
+    this->ui->Field->ResetOverlay();
 
     // ターンログ出力
     if(ui->TimeBar->value() != turn_count){
@@ -535,7 +532,6 @@ void MainWindow::StepGame()
             // 周辺情報応答結果取得
             team_mehod[player] = startup->team_client[player]->client->WaitReturnMethod(buffer);
 
-
             // ターン開始動作
             if(team_mehod[player].action == GameSystem::Method::ACTION::GETREADY){
                 // 異常ログ出力
@@ -546,8 +542,8 @@ void MainWindow::StepGame()
             // チーム取得
             team_mehod[player].team = static_cast<GameSystem::TEAM>(player);
         }
-        // アイテム回収
-        RefreshItem(team_mehod[player]);
+        // 得点更新
+        ScoreUpdate(team_mehod[player]);
         // 勝者判定
         this->win = Judge();
         // 勝敗決定
@@ -570,13 +566,11 @@ void MainWindow::StepGame()
             // 終了
             Finish(win);
         }
-
     }else{
-
         // 行動後フィールド周辺情報取得
         GameSystem::AroundData around = ui->Field->FieldAccessMethod(team_mehod[player]);
-        // アイテム回収
-        RefreshItem(team_mehod[player]);
+        // 得点更新
+        ScoreUpdate(team_mehod[player]);
         // 勝者判定
         this->win = Judge();
         // 勝敗決定
@@ -629,7 +623,6 @@ void MainWindow::StepGame()
                     ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
                     // HOT側スコア表示
                     ui->HotScoreLabel ->setText(QString::number(ui->TimeBar->value() + ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
-
                 }
             }
         }else{
@@ -658,7 +651,6 @@ void MainWindow::StepGame()
             // 終了
             Finish(win);
         }
-
     }
 
     // フィールド再描画
@@ -668,14 +660,15 @@ void MainWindow::StepGame()
 }
 
 /****************************************************************************
-*   アイテム取得判定
+*   得点更新
 *
 *   @param method クライアント行動情報
 ****************************************************************************/
-void MainWindow::RefreshItem(GameSystem::Method method)
+void MainWindow::ScoreUpdate(GameSystem::Method method)
 {
     // 前回アイテム数
     static int leave_item = 0;
+
     // アイテム数取得
     if(leave_item == 0)leave_item = this->ui->Field->leave_items;
     // アイテム数が変化
@@ -684,7 +677,7 @@ void MainWindow::RefreshItem(GameSystem::Method method)
         ui->ItemLeaveLabel->setText(QString::number(this->ui->Field->leave_items));
         // アイテム取得をログ出力
         log << getTime() + "[取得]" + GameSystem::TEAM_PROPERTY::getTeamName(method.team) + "がアイテムを取得しました。" << "\r\n";
-        // ボット戦
+        // ボット戦モード
         if(this->isbotbattle){
             // COOL側点数表示
             int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
@@ -737,13 +730,12 @@ QString MainWindow::convertString(GameSystem::Method method)
 ****************************************************************************/
 GameSystem::WINNER MainWindow::Judge()
 {
-    bool team_lose[TEAM_COUNT];         // 敗者チーム
-    int _player = player;               // 次ターンのチーム
+    bool team_lose[TEAM_COUNT];             // 敗者チーム
+    int _player = player;                   // 次ターンのチーム
+    GameBoard*& board = this->ui->Field;    // ボード盤
+
     // 敗者チーム初期化
     for(int i=0;i<TEAM_COUNT;i++)team_lose[i] = false;
-    // ボード盤
-    GameBoard*& board = this->ui->Field;
-
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // 現在のチームを取得
@@ -756,7 +748,7 @@ GameSystem::WINNER MainWindow::Judge()
             // 敗因ログ出力
             log << getTime() + "[死因]" + GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(_player)) + "ブロック下敷き" << "\r\n";
             // ゲーム終了
-            team_around.finish();
+            team_around.Finish();
             // 敗者チーム決定
             team_lose[_player]=true;
             // ループ脱出
@@ -765,13 +757,13 @@ GameSystem::WINNER MainWindow::Judge()
 
         // ブロック囲まれ
         if(team_around.data[1] == GameSystem::MAP_OBJECT::BLOCK &&
-            team_around.data[3] == GameSystem::MAP_OBJECT::BLOCK &&
-            team_around.data[5] == GameSystem::MAP_OBJECT::BLOCK &&
-            team_around.data[7] == GameSystem::MAP_OBJECT::BLOCK){
+           team_around.data[3] == GameSystem::MAP_OBJECT::BLOCK &&
+           team_around.data[5] == GameSystem::MAP_OBJECT::BLOCK &&
+           team_around.data[7] == GameSystem::MAP_OBJECT::BLOCK){
             // 敗因ログ出力
             log << getTime() + "[死因]" + GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(_player)) + "ブロック囲まれ" << "\r\n";
             // ゲーム終了
-            team_around.finish();
+            team_around.Finish();
             // 敗者チーム決定
             team_lose[_player]=true;
             // ループ脱出
@@ -783,13 +775,12 @@ GameSystem::WINNER MainWindow::Judge()
             // 敗因ログ出力
             log << getTime() + "[死因]" + GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(_player)) + "通信切断" << "\r\n";
             // ゲーム終了
-            team_around.finish();
+            team_around.Finish();
             // 敗者チーム決定
             team_lose[_player]=true;
             // ループ脱出
             break;
         }
-
     }
 
     // 相打ち or 時間切れ
@@ -877,9 +868,9 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         this->ui->WinnerLabel->setText("COOL WIN!" + append_str);
         // 勝利ログ出力
         log << getTime() + "[決着]COOLが勝利しました。" << "\r\n";
-        // ボット戦
+        // ボット戦モード
         if(this->isbotbattle){
-            // 負けチームのスコア更新（ターン数分減らす）
+            // 敗者チームのスコア更新（ターン数分減らす）
             int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
             ui->HotScoreLabel ->setText(QString::number(ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
         }
@@ -890,9 +881,9 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         this->ui->WinnerLabel->setText("HOT WIN!"  + append_str);
         // 勝利ログ出力
         log << getTime() + "[決着]HOTが勝利しました。" << "\r\n";
-        // ボット戦
+        // ボット戦モード
         if(this->isbotbattle){
-            // 負けチームのスコア更新（ターン数分減らす）
+            // 敗者チームのスコア更新（ターン数分減らす）
             int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
             ui->CoolScoreLabel->setText(QString::number(ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
         }
@@ -932,10 +923,8 @@ MainWindow::~MainWindow()
     if(ret == QMessageBox::Yes){
         // 引数取得
         QStringList argv = QApplication::arguments();
-
         // サーバーのファイルパスを取得
         QString command = argv.takeAt(0);
-
         // MainWindowを閉じた後に、
         // コマンドライン引数付きでサーバー再起動
         QProcess::startDetached(command, argv);

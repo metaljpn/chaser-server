@@ -71,7 +71,7 @@ void SettingDialog::openDirectory()
 }
 
 /****************************************************************************
-*   設定保存
+*   設定書込
 ****************************************************************************/
 void SettingDialog::Export()
 {
@@ -79,7 +79,6 @@ void SettingDialog::Export()
     QSettings *mSettings;
     // 設定読込
     mSettings = new QSettings("setting.ini", QSettings::IniFormat);
-
     // ログファイルパス取得
     mSettings->setValue("LogFilepath", ui->Log->text());
     // 通信タイムアウト取得
