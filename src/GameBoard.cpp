@@ -49,13 +49,13 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
     // アニメーション無効
     if(!animation){
         // フィールド高さ分
-        for(int i=0;i<field.size.y();i++){
+        for(int i=0;i<map.size.y();i++){
             // フィールド幅分
-            for(int j=0;j<field.size.x();j++){
+            for(int j=0;j<map.size.x();j++){
                 // マップ描画済
                 if(overlay[i][j] != GameSystem::MAP_OVERLAY::ERASE){
                     // 物体が存在しない
-                    if(field.field[i][j] == GameSystem::MAP_OBJECT::NOTHING){
+                    if(map.field[i][j] == GameSystem::MAP_OBJECT::NOTHING){
                         // 空白の描画
                         painter.drawPixmap(j * image_part.width(),
                                            i * image_part.height(),
@@ -68,28 +68,28 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
         // チーム数分
         for(int i=0;i<TEAM_COUNT;i++){
             // 座標有効
-            if(0 <= team_pos[i].x() && team_pos[i].x() < field.size.x() &&
-               0 <= team_pos[i].y() && team_pos[i].y() < field.size.y()){
+            if(0 <= team_pos[i].x() && team_pos[i].x() < map.size.x() &&
+               0 <= team_pos[i].y() && team_pos[i].y() < map.size.y()){
                 // チーム描画
                 painter.drawPixmap(team_pos[i].x() * image_part.width(),team_pos[i].y() * image_part.height(),team_resource[i]);
             }
         }
 
         // フィールド高さ分
-        for(int i=0;i<field.size.y();i++){
+        for(int i=0;i<map.size.y();i++){
             // フィールド幅分
-            for(int j=0;j<field.size.x();j++){
+            for(int j=0;j<map.size.x();j++){
                 // マップ描画済
                 if(overlay[i][j] != GameSystem::MAP_OVERLAY::ERASE){
                     // 物体有り
-                    if(field.field[i][j] != GameSystem::MAP_OBJECT::NOTHING){
+                    if(map.field[i][j] != GameSystem::MAP_OBJECT::NOTHING){
                         // 物体上書き
                         painter.drawPixmap(j * image_part.width(),
                                            i * image_part.height(),
-                                           field_resource[static_cast<int>(field.field[i][j])]);
+                                           field_resource[static_cast<int>(map.field[i][j])]);
                     }
                     // 暗闇モード時未探索
-                    if(field.discover[i][j] == GameSystem::DISCOVER::UNKNOWN){
+                    if(map.discover[i][j] == GameSystem::DISCOVER::UNKNOWN){
                         // 暗闇描画
                         painter.drawPixmap(j * image_part.width() ,
                                            i * image_part.height(),
@@ -116,13 +116,13 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
 void GameBoard::resizeEvent(QResizeEvent *event){
 
     // イメージ幅
-    image_part.setWidth (event->size().width() / field.size.x());
+    image_part.setWidth (event->size().width() / map.size.x());
     // イメージ高さ
-    image_part.setHeight(event->size().height() / field.size.y());
+    image_part.setHeight(event->size().height() / map.size.y());
     // イベント実行済
     event->ignore();
     // リサイズ
-    resize(image_part.width() * field.size.x(), image_part.height() * field.size.y());
+    resize(image_part.width() * map.size.x(), image_part.height() * map.size.y());
     // テクスチャ読込
     LoadTexture(texture_dir_path);
 }
@@ -137,11 +137,11 @@ void GameBoard::resizeEvent(QResizeEvent *event){
 ****************************************************************************/
 GameSystem::MAP_OBJECT GameBoard::FieldAccess(GameSystem::Method method, const QPoint& pos){
     // 場外ならば戻り値[ブロック]
-    if(pos.x() <  0              || pos.y() <  0)             return GameSystem::MAP_OBJECT::BLOCK;
-    if(pos.x() >= field.size.x() || pos.y() >= field.size.y())return GameSystem::MAP_OBJECT::BLOCK;
+    if(pos.x() <  0            || pos.y() <  0)           return GameSystem::MAP_OBJECT::BLOCK;
+    if(pos.x() >= map.size.x() || pos.y() >= map.size.y())return GameSystem::MAP_OBJECT::BLOCK;
 
     // 探索済設定
-    field.discover[pos.y()][pos.x()] = GameSystem::DISCOVER::EXPLORED;
+    map.discover[pos.y()][pos.x()] = GameSystem::DISCOVER::EXPLORED;
 
     // オーバーレイ(行動効果)設定
     if(method.action == GameSystem::Method::ACTION::LOOK    )overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::LOOK;
@@ -157,7 +157,7 @@ GameSystem::MAP_OBJECT GameBoard::FieldAccess(GameSystem::Method method, const Q
     }
 
     // 戻り値[物体種別]
-    return this->field.field[pos.y()][pos.x()];
+    return this->map.field[pos.y()][pos.x()];
 }
 
 /****************************************************************************
@@ -209,17 +209,17 @@ GameSystem::AroundData GameBoard::FieldAccessMethod(GameSystem::Method method){
             // 指定座標が有効
             if((team_pos[static_cast<int>(method.team)] + method.GetRoteVector()).y() >= 0 &&
                (team_pos[static_cast<int>(method.team)] + method.GetRoteVector()).x() >= 0 &&
-               (team_pos[static_cast<int>(method.team)] + method.GetRoteVector()).y() < field.size.y() &&
-               (team_pos[static_cast<int>(method.team)] + method.GetRoteVector()).x() < field.size.x()){
+               (team_pos[static_cast<int>(method.team)] + method.GetRoteVector()).y() < map.size.y() &&
+               (team_pos[static_cast<int>(method.team)] + method.GetRoteVector()).x() < map.size.x()){
                 // 指定座標
                 QPoint get_pos = team_pos[static_cast<int>(method.team)] + method.GetRoteVector();
                 // PUT先にアイテムが存在
-                if(this->field.field[get_pos.y()][get_pos.x()] == GameSystem::MAP_OBJECT::ITEM){
+                if(this->map.field[get_pos.y()][get_pos.x()] == GameSystem::MAP_OBJECT::ITEM){
                     // アイテム数更新
                     this->leave_items --;
                 }
                 // ブロック配置
-                this->field.field[get_pos.y()][get_pos.x()] = GameSystem::MAP_OBJECT::BLOCK;
+                this->map.field[get_pos.y()][get_pos.x()] = GameSystem::MAP_OBJECT::BLOCK;
             }
             // 戻り値[周辺情報]
             return FieldAccessAround(method,team_pos[static_cast<int>(method.team)]);
@@ -262,9 +262,9 @@ void GameBoard::PickItem(GameSystem::Method method){
     // 移動先がアイテム
     if(this->FieldAccess(method,pos) == GameSystem::MAP_OBJECT::ITEM){
         // 移動元のフィールドを初期化
-        this->field.field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::NOTHING;
+        this->map.field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::NOTHING;
         // 移動先のフィールドを壁に設定
-        this->field.field[(pos-method.GetRoteVector()).y()][(pos-method.GetRoteVector()).x()] = GameSystem::MAP_OBJECT::BLOCK;
+        this->map.field[(pos-method.GetRoteVector()).y()][(pos-method.GetRoteVector()).x()] = GameSystem::MAP_OBJECT::BLOCK;
         // 点数更新
         this->team_score[static_cast<int>(method.team)]++;
         // 残りアイテム数更新
@@ -273,30 +273,13 @@ void GameBoard::PickItem(GameSystem::Method method){
 }
 
 /****************************************************************************
-*   接続終了
-*
-*   @return 周辺情報
-*
-*   @param team チーム
-****************************************************************************/
-GameSystem::AroundData GameBoard::FinishConnecting(GameSystem::TEAM team){
-    // 周辺情報取得
-    GameSystem::AroundData around = FieldAccessAround(GameSystem::Method{team,GameSystem::Method::ACTION::UNKNOWN,GameSystem::Method::ROTE::UNKNOWN},
-                                                      team_pos[static_cast<int>(team)]);
-    // 終了
-    around.Finish();
-    // 戻り値[周辺情報]
-    return around;
-}
-
-/****************************************************************************
 *   マップ設定
 *
-*   @param map マップ情報
+*   @param mapinfo マップ情報
 ****************************************************************************/
-void GameBoard::setMap(const GameSystem::Map& map){
-    // フィールド状態取得
-    field = map;
+void GameBoard::setMap(const GameSystem::Map& mapinfo){
+    // マップ情報取得
+    map = mapinfo;
     // 使用テクスチャディレクトリ取得
     this->texture_dir_path = map.texture_dir_path;
     // テクスチャ読込
@@ -304,20 +287,20 @@ void GameBoard::setMap(const GameSystem::Map& map){
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // チーム位置取得
-        team_pos[i] = field.team_first_point[i];
+        team_pos[i] = map.team_first_point[i];
     }
     // マップ高さ取得
-    map_height = field.field.size();
+    map_height = map.field.size();
     // マップ幅取得
-    map_width  = field.field[0].size();
+    map_width  = map.field[0].size();
     // オーバーレイ(行動効果)サイズ設定
     overlay.resize(map_height);
     // オーバーレイ(行動効果)初期化
     for(auto& v : overlay)v = QVector<GameSystem::MAP_OVERLAY>(map_width,GameSystem::MAP_OVERLAY::NOTHING);
     // 探索状態サイズ設定
-    field.discover.resize(map_height);
+    map.discover.resize(map_height);
     // 探索状態初期化
-    for(auto& v : field.discover)v = QVector<GameSystem::DISCOVER>(map_width,GameSystem::DISCOVER::EXPLORED);
+    for(auto& v : map.discover)v = QVector<GameSystem::DISCOVER>(map_width,GameSystem::DISCOVER::EXPLORED);
 }
 
 /****************************************************************************
@@ -325,9 +308,9 @@ void GameBoard::setMap(const GameSystem::Map& map){
 ****************************************************************************/
 void GameBoard::ResetOverlay(){
     // フィールド高さ分
-    for(int i=0;i<field.size.y();i++){
+    for(int i=0;i<map.size.y();i++){
         // フィールド幅分
-        for(int j=0;j<field.size.x();j++){
+        for(int j=0;j<map.size.x();j++){
             // オーバーレイ(行動効果)消去
             overlay[i][j] = GameSystem::MAP_OVERLAY::NOTHING;
         }
@@ -345,11 +328,11 @@ int GameBoard::GetMapObjectCount(GameSystem::MAP_OBJECT mb){
     // オブジェクト数
     int result = 0;
     // フィールド高さ分
-    for(int i=0; i<field.size.y();i++){
+    for(int i=0; i<map.size.y();i++){
         // フィールド幅分
-        for(int j=0;j<field.size.x();j++){
+        for(int j=0;j<map.size.x();j++){
             // 物体検出
-            if(field.field[i][j] == mb){
+            if(map.field[i][j] == mb){
                 // オブジェクト数更新
                 result++;
             }

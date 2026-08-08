@@ -33,9 +33,6 @@ public:
 
     // チーム情報
     struct TEAM_PROPERTY {
-        // チーム数
-        const static int TEAMS_COUNT = TEAM_COUNT;
-
         // チーム名文字列変換
         static QString getTeamName(GameSystem::TEAM team);
     };

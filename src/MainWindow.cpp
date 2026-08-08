@@ -39,12 +39,12 @@ MainWindow::MainWindow(QWidget *parent) :
         // チーム数分
         for(int i=0;i<TEAM_COUNT;i++){
             // 初期位置取得
-            this->ui->Field->team_pos[i] = this->startup->map.team_first_point[i];
+            this->ui->Board->team_pos[i] = this->startup->map.team_first_point[i];
             // デバッグ出力
-            qDebug() << this->ui->Field->team_pos[i];
+            qDebug() << this->ui->Board->team_pos[i];
         }
         // UI初期化
-        this->ui->Field->setMap(this->startup->map);            // マップ設定
+        this->ui->Board->setMap(this->startup->map);            // マップ設定
         this->ui->TimeBar->setMaximum(this->startup->map.turn); // 進捗バー最大値
         this->ui->TimeBar->setValue  (this->startup->map.turn); // 進捗バー現在値
         // 残りターン数
@@ -156,8 +156,8 @@ MainWindow::MainWindow(QWidget *parent) :
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // 位置初期化
-        ui->Field->team_pos[i].setX(-1);
-        ui->Field->team_pos[i].setY(-1);
+        ui->Board->team_pos[i].setX(-1);
+        ui->Board->team_pos[i].setY(-1);
     }
 
     // マップ縦サイズ分
@@ -165,11 +165,11 @@ MainWindow::MainWindow(QWidget *parent) :
         // マップ横サイズ分
         for(int j=0;j<startup->map.size.x();j++){
             // アイテム数取得
-            if(startup->map.field[i][j] == GameSystem::MAP_OBJECT::ITEM)this->ui->Field->leave_items++;
+            if(startup->map.field[i][j] == GameSystem::MAP_OBJECT::ITEM)this->ui->Board->leave_items++;
         }
     }
     // アイテム数表示
-    ui->ItemLeaveLabel->setText(QString::number(this->ui->Field->leave_items));
+    ui->ItemLeaveLabel->setText(QString::number(this->ui->Board->leave_items));
 
     // 最大化設定取得
     v = mSettings->value( "Maximum" );
@@ -204,7 +204,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     // マップ情報ログ出力
     log << "[ Map : \r\n";
-    ui->Field->field.Export(log.filename());
+    ui->Board->map.Export(log.filename());
     log << "]\r\n";
 
     // セットアップ完了ログ出力
@@ -293,7 +293,7 @@ void MainWindow::DrawMapAnimation()
     int count = 0;
 
     // フィールドオーバーレイ(行動効果)初期化
-    ui->Field->ResetOverlay();
+    ui->Board->ResetOverlay();
 
     // 位置
     QPoint pos[2];
@@ -319,7 +319,7 @@ void MainWindow::DrawMapAnimation()
             // マップX軸数分
             for(int j=0;j<this->startup->map.size.x();j++){
                 // フィールドオーバーレイ状態設定
-                this->ui->Field->overlay[i][j] = f[i][j];
+                this->ui->Board->overlay[i][j] = f[i][j];
             }
         }
     // 上から下に向かってフィールド描画
@@ -331,7 +331,7 @@ void MainWindow::DrawMapAnimation()
                 // 初回以外
                 if(count >= timer){
                     // フィールドオーバーレイ状態設定
-                    this->ui->Field->overlay[j][k] = f[j][k];
+                    this->ui->Board->overlay[j][k] = f[j][k];
                 }
                 // カウンタ更新
                 count++;
@@ -360,7 +360,7 @@ void MainWindow::DrawMapAnimation()
             // マップX軸数分
             for(int j=0;j<this->startup->map.size.x();j++){
                 // フィールドオーバーレイ状態設定
-                this->ui->Field->overlay[i][j] = f[i][j];
+                this->ui->Board->overlay[i][j] = f[i][j];
             }
         }
     // 下から上に向かってフィールド描画
@@ -372,7 +372,7 @@ void MainWindow::DrawMapAnimation()
                 // 初回以外
                 if(count >= timer){
                     // フィールドオーバーレイ状態設定
-                    this->ui->Field->overlay[j][k] = f[j][k];
+                    this->ui->Board->overlay[j][k] = f[j][k];
                 }
                 // カウンタ更新
                 count++;
@@ -405,7 +405,7 @@ void MainWindow::SetTeamAnimation()
     static int team_count;              // カウンタ
 
     // チーム初期位置取得
-    ui->Field->team_pos[team_count] = this->startup->map.team_first_point[team_count];
+    ui->Board->team_pos[team_count] = this->startup->map.team_first_point[team_count];
 
     // チーム数到達
     if(team_count == TEAM_COUNT){
@@ -431,8 +431,8 @@ void MainWindow::SetTeamAnimation()
         }
     }else{
         // 探索済設定
-        ui->Field->field.discover[ui->Field->team_pos[team_count].y()]
-                [ui->Field->team_pos[team_count].x()] = GameSystem::DISCOVER::EXPLORED;
+        ui->Board->map.discover[ui->Board->team_pos[team_count].y()]
+                [ui->Board->team_pos[team_count].x()] = GameSystem::DISCOVER::EXPLORED;
     }
     // 描画更新
     repaint();
@@ -453,7 +453,7 @@ void MainWindow::BlindAnimation()
     static int ANIMATION_TYPE = QRandomGenerator::global()->generate() % ANIMATION_SIZE;
 
     // フィールドオーバーレイ(行動効果)初期化
-    ui->Field->ResetOverlay();
+    ui->Board->ResetOverlay();
 
     // 位置
     QPoint pos[2];
@@ -467,16 +467,16 @@ void MainWindow::BlindAnimation()
                 pos[i].setY(QRandomGenerator::global()->generate() % this->startup->map.size.y());
             // マップサイズ分の回数未到達 and 未探索(座標取得済)の間
             }while(timer < startup->map.size.x() * startup->map.size.y() &&
-                   ui->Field->field.discover[pos[i].y()][pos[i].x()] == GameSystem::DISCOVER::UNKNOWN);
+                   ui->Board->map.discover[pos[i].y()][pos[i].x()] == GameSystem::DISCOVER::UNKNOWN);
             // 未探索設定
-            ui->Field->field.discover[pos[i].y()][pos[i].x()] = GameSystem::DISCOVER::UNKNOWN;
+            ui->Board->map.discover[pos[i].y()][pos[i].x()] = GameSystem::DISCOVER::UNKNOWN;
         }
     }
     // マップサイズ分の回数到達
     if(timer >= startup->map.size.x() * startup->map.size.y()){
         // 探索状態初期化
-        for(auto& v : this->ui->Field->field.discover)v = QVector<GameSystem::DISCOVER>
-                (this->ui->Field->field.size.x(),GameSystem::DISCOVER::UNKNOWN);
+        for(auto& v : this->ui->Board->map.discover)v = QVector<GameSystem::DISCOVER>
+                (this->ui->Board->map.size.x(),GameSystem::DISCOVER::UNKNOWN);
         // タイマー
         clock = new QTimer();
         // ゲーム進行シグナル･スロット設定
@@ -503,7 +503,7 @@ void MainWindow::StepGame()
     static bool getready_flag=true;     // ターン状態
 
     // フィールドオーバーレイ(行動効果)初期化
-    this->ui->Field->ResetOverlay();
+    this->ui->Board->ResetOverlay();
 
     // ターンログ出力
     if(ui->TimeBar->value() != turn_count){
@@ -525,10 +525,10 @@ void MainWindow::StepGame()
             startup->team_client[player]->client->is_disconnected = true;
         }else{
             // フィールド周辺確認
-            GameSystem::AroundData buffer = ui->Field->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
+            GameSystem::AroundData buffer = ui->Board->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
                                                                                             GameSystem::Method::ACTION::GETREADY,
                                                                                             GameSystem::Method::ROTE::UNKNOWN},
-                                                                         ui->Field->team_pos[player]);
+                                                                         ui->Board->team_pos[player]);
             // 周辺情報応答結果取得
             team_mehod[player] = startup->team_client[player]->client->WaitReturnMethod(buffer);
 
@@ -555,10 +555,10 @@ void MainWindow::StepGame()
             // ターン開始
             startup->team_client[player]->client->WaitGetReady();
             // フィールド周辺確認
-            GameSystem::AroundData buffer = ui->Field->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
+            GameSystem::AroundData buffer = ui->Board->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
                                                                                             GameSystem::Method::ACTION::GETREADY,
                                                                                             GameSystem::Method::ROTE::UNKNOWN},
-                                                                         ui->Field->team_pos[player]);
+                                                                         ui->Board->team_pos[player]);
             // 接続終了
             buffer.connect = GameSystem::CONNECTING_STATUS::FINISHED;
             // 周辺情報応答結果取得
@@ -568,7 +568,7 @@ void MainWindow::StepGame()
         }
     }else{
         // 行動後フィールド周辺情報取得
-        GameSystem::AroundData around = ui->Field->FieldAccessMethod(team_mehod[player]);
+        GameSystem::AroundData around = ui->Board->FieldAccessMethod(team_mehod[player]);
         // 得点更新
         ScoreUpdate(team_mehod[player]);
         // 勝者判定
@@ -599,7 +599,7 @@ void MainWindow::StepGame()
             log << getTime() + "[行動]" + GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(player)) + "が" + convertString(team_mehod[player]) + "を行いました。" << "\r\n";
 
             // フィールド情報
-            GameBoard*& board = this->ui->Field;
+            GameBoard*& board = this->ui->Board;
             // チーム周辺情報
             GameSystem::AroundData team_around = board->FieldAccessAround(static_cast<GameSystem::TEAM>(player));
             // チーム周辺情報ログ出力
@@ -616,11 +616,11 @@ void MainWindow::StepGame()
                 // ボット戦モード
                 if(this->isbotbattle){
                     // COOL側スコア取得
-                    int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
+                    int ScoreBuf = this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
                     // COOL側スコア表示
                     ui->CoolScoreLabel->setText(QString::number(ui->TimeBar->value() + ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
                     // HOT側スコア取得
-                    ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
+                    ScoreBuf = this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
                     // HOT側スコア表示
                     ui->HotScoreLabel ->setText(QString::number(ui->TimeBar->value() + ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
                 }
@@ -640,10 +640,10 @@ void MainWindow::StepGame()
             // 周辺情報要求
             startup->team_client[player]->client->WaitGetReady();
             // フィールド周辺確認
-            GameSystem::AroundData buffer = ui->Field->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
+            GameSystem::AroundData buffer = ui->Board->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
                                                                                             GameSystem::Method::ACTION::GETREADY,
                                                                                             GameSystem::Method::ROTE::UNKNOWN},
-                                                                         ui->Field->team_pos[player]);
+                                                                         ui->Board->team_pos[player]);
             // 接続終了
             buffer.connect = GameSystem::CONNECTING_STATUS::FINISHED;
             // 周辺情報応答結果取得
@@ -653,8 +653,8 @@ void MainWindow::StepGame()
         }
     }
 
-    // フィールド再描画
-    ui->Field->repaint();
+    // ボード盤再描画
+    ui->Board->repaint();
     // ターン状態更新
     getready_flag = !getready_flag;
 }
@@ -670,28 +670,28 @@ void MainWindow::ScoreUpdate(GameSystem::Method method)
     static int leave_item = 0;
 
     // アイテム数取得
-    if(leave_item == 0)leave_item = this->ui->Field->leave_items;
+    if(leave_item == 0)leave_item = this->ui->Board->leave_items;
     // アイテム数が変化
-    if(this->ui->Field->leave_items != leave_item){
+    if(this->ui->Board->leave_items != leave_item){
         // 残りアイテム数表示
-        ui->ItemLeaveLabel->setText(QString::number(this->ui->Field->leave_items));
+        ui->ItemLeaveLabel->setText(QString::number(this->ui->Board->leave_items));
         // アイテム取得をログ出力
         log << getTime() + "[取得]" + GameSystem::TEAM_PROPERTY::getTeamName(method.team) + "がアイテムを取得しました。" << "\r\n";
         // ボット戦モード
         if(this->isbotbattle){
             // COOL側点数表示
-            int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
+            int ScoreBuf = this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
             ui->CoolScoreLabel->setText(QString::number(ui->TimeBar->value() + ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
             // HOT側点数表示
-            ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
+            ScoreBuf = this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
             ui->HotScoreLabel ->setText(QString::number(ui->TimeBar->value() + ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
         }else{
             // 点数表示
-            ui->CoolScoreLabel->setText(QString::number(this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::COOL)]));
-            ui->HotScoreLabel ->setText(QString::number(this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::HOT)]));
+            ui->CoolScoreLabel->setText(QString::number(this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::COOL)]));
+            ui->HotScoreLabel ->setText(QString::number(this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::HOT)]));
         }
         // 前回アイテム数更新
-        leave_item = this->ui->Field->leave_items;
+        leave_item = this->ui->Board->leave_items;
     }
 }
 
@@ -732,7 +732,7 @@ GameSystem::WINNER MainWindow::Judge()
 {
     bool team_lose[TEAM_COUNT];             // 敗者チーム
     int _player = player;                   // 次ターンのチーム
-    GameBoard*& board = this->ui->Field;    // ボード盤
+    GameBoard*& board = this->ui->Board;    // ボード盤
 
     // 敗者チーム初期化
     for(int i=0;i<TEAM_COUNT;i++)team_lose[i] = false;
@@ -791,7 +791,7 @@ GameSystem::WINNER MainWindow::Judge()
         // チーム数分
         for(int i=0;i<TEAM_COUNT;i++){
             // チーム名､得点をログ出力
-            log << GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(i)) + ":" + QString::number(this->ui->Field->team_score[i]) + "  ";
+            log << GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(i)) + ":" + QString::number(this->ui->Board->team_score[i]) + "  ";
             // 敗者チーム初期化
             team_lose[i] = false;
         }
@@ -802,7 +802,7 @@ GameSystem::WINNER MainWindow::Judge()
         // チーム数分
         for(int i=0;i<TEAM_COUNT;i++){
             // 得点取得
-            team_score_set.insert(this->ui->Field->team_score[i]);
+            team_score_set.insert(this->ui->Board->team_score[i]);
         }
         // 同点ならば、戻り値[引き分け]
         if(team_score_set.size()==1)return GameSystem::WINNER::DRAW;
@@ -811,7 +811,7 @@ GameSystem::WINNER MainWindow::Judge()
         // チーム数分
         for(int i=0;i<TEAM_COUNT;i++){
             // 最高得点更新ならば勝者
-            if(this->ui->Field->team_score[index] < this->ui->Field->team_score[i])index = i;
+            if(this->ui->Board->team_score[index] < this->ui->Board->team_score[i])index = i;
         }
         // 戻り値[勝者]
         return static_cast<GameSystem::WINNER>(index);
@@ -871,7 +871,7 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         // ボット戦モード
         if(this->isbotbattle){
             // 敗者チームのスコア更新（ターン数分減らす）
-            int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
+            int ScoreBuf = this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::HOT)];
             ui->HotScoreLabel ->setText(QString::number(ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
         }
     }
@@ -884,7 +884,7 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         // ボット戦モード
         if(this->isbotbattle){
             // 敗者チームのスコア更新（ターン数分減らす）
-            int ScoreBuf = this->ui->Field->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
+            int ScoreBuf = this->ui->Board->team_score[static_cast<int>(GameSystem::TEAM::COOL)];
             ui->CoolScoreLabel->setText(QString::number(ScoreBuf*3) + "(ITEM:" + QString::number(ScoreBuf) + ")");
         }
     }

@@ -39,7 +39,7 @@ MapEditerDialog::MapEditerDialog(GameSystem::Map map, QWidget *parent) :
     // エリア初期化
     ComboChanged();
     // マップ設定
-    ui->widget->setMap(map);
+    ui->Board->setMap(map);
     // オブジェクトリスト生成
     ui->listWidget->addItem(new QListWidgetItem("Nothing"));
     ui->listWidget->addItem(new QListWidgetItem("Target"));
@@ -64,7 +64,7 @@ MapEditerDialog::MapEditerDialog(GameSystem::Map map, QWidget *parent) :
     // オブジェクトリスト先頭選択
     ui->listWidget->setCurrentRow(0);
     // ターン数設定
-    ui->TurnSpin->setValue(ui->widget->field.turn);
+    ui->TurnSpin->setValue(ui->Board->map.turn);
 
     // [ランダム生成]ボタンイベント設定
     connect(ui->randomGenerateButton, &QPushButton::pressed, this, &MapEditerDialog::randomGenerateButtonPressed);
@@ -77,10 +77,10 @@ void MapEditerDialog::ReCount()
 {
     // ブロック数表示
     int counter = 0;
-    counter = ui->widget->GetMapObjectCount(GameSystem::MAP_OBJECT::BLOCK);
+    counter = ui->Board->GetMapObjectCount(GameSystem::MAP_OBJECT::BLOCK);
     ui->ObjectCounter->item(0)->setText("×" + QString(QString::number(counter)));
     // アイテム数表示
-    counter = ui->widget->GetMapObjectCount(GameSystem::MAP_OBJECT::ITEM);
+    counter = ui->Board->GetMapObjectCount(GameSystem::MAP_OBJECT::ITEM);
     ui->ObjectCounter->item(1)->setText("×" + QString(QString::number(counter)));
 }
 
@@ -121,11 +121,11 @@ void MapEditerDialog::FillItem(const QPoint& pos)
     // マージン取得
     this->layout()->getContentsMargins(&left_m, &top_m, nullptr, nullptr);
     // 配置位置
-    QPoint fill_point((pos.x() - left_m)/ui->widget->image_part.width(), (pos.y() - top_m)/ui->widget->image_part.height());
+    QPoint fill_point((pos.x() - left_m)/ui->Board->image_part.width(), (pos.y() - top_m)/ui->Board->image_part.height());
 
     // 有効範囲外ならば関数終了
-    if(fill_point.x() < 0 || fill_point.x() >= ui->widget->field.size.x() ||
-       fill_point.y() < 0 || fill_point.y() >= ui->widget->field.size.y())return;
+    if(fill_point.x() < 0 || fill_point.x() >= ui->Board->map.size.x() ||
+       fill_point.y() < 0 || fill_point.y() >= ui->Board->map.size.y())return;
 
     // 物体
     GameSystem::MAP_OBJECT obj = GameSystem::MAP_OBJECT::NOTHING;
@@ -136,19 +136,19 @@ void MapEditerDialog::FillItem(const QPoint& pos)
     // ターゲット(相手)
     if(ui->listWidget->selectedItems().first()->text() == "Target" ){
         // 初期位置変更
-        this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)] = fill_point;
-        this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )] = ui->widget->field.MirrorPoint(fill_point);
-        this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = fill_point;
-        this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = ui->widget->field.MirrorPoint(fill_point);
+        this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)] = fill_point;
+        this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )] = ui->Board->map.MirrorPoint(fill_point);
+        this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = fill_point;
+        this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = ui->Board->map.MirrorPoint(fill_point);
     }else{
         // オブジェクト配置
-        this->ui->widget->field.field[fill_point.y()][fill_point.x()] = obj;
+        this->ui->Board->map.field[fill_point.y()][fill_point.x()] = obj;
         // 対称設定有効
         if(ui->SymmetryCheck->isChecked()){
             // 対称位置
-            QPoint r_fill_point(ui->widget->field.MirrorPoint(fill_point));
+            QPoint r_fill_point(ui->Board->map.MirrorPoint(fill_point));
             // オブジェクト配置
-            this->ui->widget->field.field[r_fill_point.y()][r_fill_point.x()] = obj;
+            this->ui->Board->map.field[r_fill_point.y()][r_fill_point.x()] = obj;
         }
     }
     // オブジェクト数更新
@@ -174,7 +174,7 @@ void MapEditerDialog::ComboChanged()
     // [ランダム生成]ボタン押下
     randomGenerateButtonPressed();
     // ウインドウ縦横比算出
-    double window_width_per_height = static_cast<double>(ui->widget->field.size.x())/ui->widget->field.size.y();
+    double window_width_per_height = static_cast<double>(ui->Board->map.size.x())/ui->Board->map.size.y();
     // 画面の最大高さをもとに、ウインドウ高さを算出
     int window_height = static_cast<int>(QGuiApplication::primaryScreen()->size().height()*0.8);
     // リサイズ
@@ -192,7 +192,7 @@ void MapEditerDialog::ComboChanged()
 ****************************************************************************/
 void MapEditerDialog::SpinChanged(int value){
     // ターン数変更
-    ui->widget->field.turn = value;
+    ui->Board->map.turn = value;
 }
 
 /****************************************************************************
@@ -206,21 +206,21 @@ void MapEditerDialog::randomGenerateButtonPressed()
     // 広域
     if(fieldSizeText=="広域(21x17)"){
         // フィールドサイズ設定
-        this->ui->widget->field.SetSize(QPoint(21,17), ui->BlockSpin->value(), ui->ItemSpin->value());
+        this->ui->Board->map.SetSize(QPoint(21,17), ui->BlockSpin->value(), ui->ItemSpin->value());
     }
     // 決戦
     else if(fieldSizeText=="決戦(15x17)"){
         // フィールドサイズ設定
-        this->ui->widget->field.SetSize(QPoint(15,17), ui->BlockSpin->value(), ui->ItemSpin->value());
+        this->ui->Board->map.SetSize(QPoint(15,17), ui->BlockSpin->value(), ui->ItemSpin->value());
     }
 
     // COOL側初期位置
-    this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)];
+    this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)];
     // HOT側初期位置
-    this->ui->widget->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = this->ui->widget->field.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )];
+    this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )];
 
     // マップ設定
-    ui->widget->setMap(ui->widget->field);
+    ui->Board->setMap(ui->Board->map);
     // 描画更新
     paintEvent(nullptr);
     // オブジェクト数更新
@@ -245,7 +245,7 @@ void MapEditerDialog::randomGenerateButtonPressed()
 void MapEditerDialog::Clear()
 {
     // フィールド内
-    for(auto& v1 : ui->widget->field.field){
+    for(auto& v1 : ui->Board->map.field){
         for(auto& v2 : v1){
             // オブジェクト破棄
             v2 = GameSystem::MAP_OBJECT::NOTHING;
@@ -269,7 +269,7 @@ void MapEditerDialog::Export()
         QDir::currentPath()+"/Map/",
         tr("マップデータ (*.map)"));
     // マップ保存
-    if(filepath != "")ui->widget->field.Export(filepath);
+    if(filepath != "")ui->Board->map.Export(filepath);
 }
 
 /****************************************************************************
@@ -286,7 +286,7 @@ void MapEditerDialog::SelectItem(QListWidgetItem *next)
         // カーソル
         QCursor myCursor = QCursor(icon.pixmap(icon.actualSize(QSize(ICON_SIZE*0.8, ICON_SIZE*0.8))));
         // カーソル設定
-        ui->widget->setCursor(myCursor);
+        ui->Board->setCursor(myCursor);
     }
 }
 
@@ -297,7 +297,7 @@ void MapEditerDialog::SelectItem(QListWidgetItem *next)
 ****************************************************************************/
 GameSystem::Map MapEditerDialog::GetMap(){
     // 戻り値[マップ]
-    return ui->widget->field;
+    return ui->Board->map;
 }
 
 /****************************************************************************

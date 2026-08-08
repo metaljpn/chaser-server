@@ -26,7 +26,7 @@ private:
     QTimer* startup_anime;              // 開始アニメーション
     QTimer* teamshow_anime;             // チーム表示アニメーション
     QTimer* blind_anime;                // 暗闇アニメーション
-    StartupDialog* startup;             // スタートアップダイアログ
+    StartupDialog* startup;             // 起動ダイアログ
     QMediaPlayer* bgm;                  // BGM
     QAudioOutput* audio_output;         // 音声出力チャンネル
     bool silent;                        // 消音モード
