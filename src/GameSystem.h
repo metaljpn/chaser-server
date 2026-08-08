@@ -31,12 +31,6 @@ public:
         UNKNOWN
     };
 
-    // チーム情報
-    struct TEAM_PROPERTY {
-        // チーム名文字列変換
-        static QString getTeamName(GameSystem::TEAM team);
-    };
-
     // 勝者
     enum class WINNER{
         TEAMS,                          // チーム
@@ -96,6 +90,8 @@ public:
         bool Import(QString Filename);
         // 設定書込
         bool Export(QString Filename);
+        // チーム名先頭文字取得
+        QString getTeamName(GameSystem::TEAM team);
         // ブロック配置確認
         bool CheckBlockRole(QPoint pos);
     };

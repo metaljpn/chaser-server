@@ -58,6 +58,8 @@ private:
     GameSystem::WINNER Judge();
     // 勝敗通知
     void Finish(GameSystem::WINNER win);
+    // チーム名取得
+    QString getTeamName(GameSystem::TEAM team);
 
 public:
     explicit MainWindow(QWidget *parent = 0);

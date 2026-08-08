@@ -10,22 +10,6 @@
 #include <QRandomGenerator>             // 乱数発生
 
 /****************************************************************************
-*   チーム情報-チーム名文字列変換
-*
-*   @return 文字列
-*
-*   @param team チーム種別
-****************************************************************************/
-QString GameSystem::TEAM_PROPERTY::getTeamName(GameSystem::TEAM team){
-    // COOL文字列
-    if(team == GameSystem::TEAM::COOL)return "COOL";
-    // HOT文字列
-    if(team == GameSystem::TEAM::HOT) return "HOT";
-    // 不明
-    return "UNKNOWN";
-}
-
-/****************************************************************************
 *   マップ-コンストラクタ
 ****************************************************************************/
 GameSystem::Map::Map():
@@ -212,7 +196,7 @@ bool GameSystem::Map::Import(QString Filename){
             // チーム数分
             for(int i=0;i<TEAM_COUNT;i++){
                 // チーム名検出
-                if(str[0]==GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(i)).at(0)){
+                if(str[0]==GameSystem::Map::getTeamName(static_cast<GameSystem::TEAM>(i)).at(0)){
                     // 座標取得
                     QStringList list = str.remove(0,2).split(",");
                     // 初期位置設定
@@ -283,7 +267,7 @@ bool GameSystem::Map::Export(QString Filename){
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // チーム名及び初期位置を出力
-        stream << QString(GameSystem::TEAM_PROPERTY::getTeamName(static_cast<GameSystem::TEAM>(i)).at(0))
+        stream << QString(GameSystem::Map::getTeamName(static_cast<GameSystem::TEAM>(i)).at(0))
                       + ":"
                       + QString::number(team_first_point[i] .x())
                       + ","
@@ -295,6 +279,22 @@ bool GameSystem::Map::Export(QString Filename){
     file.close();
     // 戻り値[正常]
     return true;
+}
+
+/****************************************************************************
+*   マップ-チーム名先頭文字取得
+*
+*   @return 文字列
+*
+*   @param team チーム種別
+****************************************************************************/
+QString GameSystem::Map::getTeamName(GameSystem::TEAM team){
+    // COOL文字列
+    if(team == GameSystem::TEAM::COOL)return "C";
+    // HOT文字列
+    if(team == GameSystem::TEAM::HOT) return "H";
+    // 不明
+    return "UNKNOWN";
 }
 
 /****************************************************************************
