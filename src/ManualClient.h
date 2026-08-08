@@ -13,9 +13,7 @@ class ManualClient : public BaseClient
 {
     Q_OBJECT
 
-public:
-    ManualClientDialog* diag;           // 手動クライアント画面
-
+private:
     // 周辺情報要求
     bool WaitGetReady() override;
     // 周辺情報応答
@@ -25,12 +23,14 @@ public:
     // シグナルスロット設定後処理
     void Startup() override;
 
+public:
+    ManualClientDialog* diag;           // 手動クライアント画面
+
     ManualClient(QWidget *parent=0);
     ~ManualClient();
 
-public slots:
-    // クローズ
-    void closeEvent();
+private slots:
+    void closeEvent();                  // クローズ
 };
 
 #endif // MANUALCLIENT_H

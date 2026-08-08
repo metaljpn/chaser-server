@@ -20,14 +20,9 @@ class ManualClientDialog : public QDialog
 private:
     Ui::ManualClientDialog *ui;         // UI
 
-    // 行動定数取得
-    GameSystem::Method::ACTION GetAction();
-
-protected:
-    // キー押下
-    void keyPressEvent(QKeyEvent* event);
-    // クローズ
-    void closeEvent(QCloseEvent* ce);
+    void keyPressEvent(QKeyEvent* event);   // キー押下
+    void closeEvent(QCloseEvent* ce);       // クローズ
+    GameSystem::Method::ACTION GetAction(); // 行動定数取得
 
 public:
     GameSystem::Method next_method;     // 実行行動

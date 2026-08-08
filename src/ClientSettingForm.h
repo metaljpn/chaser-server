@@ -26,6 +26,8 @@ private:
 public:
     BaseClient* client;                 // TCPクライアント
 
+    void SetPortSpin(int num);          // ポート番号設定
+
     explicit ClientSettingForm(QWidget *parent = 0);
     ~ClientSettingForm();
 
@@ -33,13 +35,14 @@ signals:
     // 準備完了
     void Standby(ClientSettingForm* client,bool complate);
 
-public slots:
-    void SetPortSpin(int num);          // ポート番号設定
+private slots:
     void ComboBoxChanged(QString text); // クライアント種別切替
-    void ConnectionToggled(bool state); // 待機切替
     void Connected();                   // 接続
     void SetStandby();                  // 準備完了
     void DisConnected();                // 切断
+
+public slots:
+    void ConnectionToggled(bool state); // 待機切替
 };
 
 #endif // CLIENTSETTINGFORM_H

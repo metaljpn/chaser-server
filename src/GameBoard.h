@@ -28,9 +28,10 @@ private:
 
     Ui::GameBoard *ui;                      // UI
 
-protected:
-    void paintEvent(QPaintEvent *event);    // ペイントイベント
-    void resizeEvent(QResizeEvent *event);  // リサイズイベント
+    void paintEvent(QPaintEvent *event);        // ペイントイベント
+    void resizeEvent(QResizeEvent *event);      // リサイズイベント
+    void PickItem(GameSystem::Method method);   // アイテム取得
+    void LoadTexture(QString texture_dir_path); // テクスチャ読込
 
 public:
     GameSystem::Map field;                  // ゲーム盤
@@ -48,8 +49,6 @@ public:
     GameSystem::AroundData FieldAccessAround(GameSystem::Method method, const QPoint& center);
     // 行動後周辺確認
     GameSystem::AroundData FieldAccessMethod(GameSystem::Method method);
-    // アイテム取得
-    void PickItem(GameSystem::Method method);
     // 接続終了
     GameSystem::AroundData FinishConnecting(GameSystem::TEAM team);
 
@@ -62,10 +61,6 @@ public:
 
     explicit GameBoard(QWidget *parent = 0);
     ~GameBoard();
-
-public slots:
-    // テクスチャ読込
-    void LoadTexture(QString texture_dir_path);
 };
 
 #endif // GRAPHICFIELD_H

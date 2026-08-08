@@ -23,6 +23,14 @@ private:
 
     Ui::StartupDialog *ui;              // UI
 
+    void setMusicFileList();            // BGMリスト生成
+    void setImageThemeList();           // テクスチャリスト生成
+    // クライアント準備設定
+    void ClientStandby(ClientSettingForm* client,bool complate);
+    void SetMapStandby(bool state);     // マップ準備設定
+    bool MapRead(const QString& dir);   // マップ読込
+    void CheckStandby();                // ゲーム開始可否確認
+
 public:
     GameSystem::Map map;                // マップ情報
     QString music_text;                 // BGM名
@@ -30,18 +38,10 @@ public:
     // クライアント設定画面
     ClientSettingForm* team_client[TEAM_COUNT];
 
-    void setMusicFileList();            // BGMリスト生成
-    void setImageThemeList();           // テクスチャリスト生成
-    bool MapRead(const QString& dir);   // マップ読込
-
     explicit StartupDialog(QWidget *parent = 0);
     ~StartupDialog();
 
-public slots:
-    // クライアント準備設定
-    void ClientStandby(ClientSettingForm* client,bool complate);
-    void SetMapStandby(bool state);         // マップ準備設定
-    void CheckStandby();                    // ゲーム開始可否確認
+private slots:
     void PushedMapSelect();                 // マップ選択
     void ShowMapEditDialog();               // [マップの編集]ボタン押下
     void ChangedTexture(QString text);      // テクスチャ選択

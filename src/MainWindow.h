@@ -64,14 +64,10 @@ public:
     ~MainWindow();
 
 private slots:
-    // マップ描画
-    void DrawMapAnimation();
-    // チーム配置
-    void SetTeamAnimation();
-    // 暗闇描画
-    void BlindAnimation();
-    // ゲーム進行
-    void StepGame();
+    void DrawMapAnimation();            // マップ描画
+    void SetTeamAnimation();            // チーム配置
+    void BlindAnimation();              // 暗闇描画
+    void StepGame();                    // ゲーム進行
 };
 
 #endif // MAINWINDOW_H

@@ -11,7 +11,7 @@
 
 class ComClient : virtual public BaseClient
 {
-public:
+private:
     // 周辺情報要求
     bool WaitGetReady() override;
     // 周辺情報応答
@@ -21,6 +21,7 @@ public:
     // シグナルスロット設定後処理
     void Startup() override;
 
+public:
     explicit ComClient(QObject *parent = 0);
     ~ComClient();
 };

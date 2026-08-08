@@ -19,9 +19,10 @@ class DesignDialog : public QDialog
 private:
     Ui::DesignDialog *ui;               // UI
 
-public:
     bool GetCheckDark() const;          // 暗闇モード設定取得
     bool GetCheckBot() const;           // ボット戦モード設定取得
+
+public:
     void Export();                      // 設定書込
 
     explicit DesignDialog(QWidget *parent = 0);

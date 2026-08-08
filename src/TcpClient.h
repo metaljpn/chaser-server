@@ -25,11 +25,6 @@ private:
     QTcpServer*  server;                // TCPサーバー
     QTcpSocket*  client;                // TCPクライアント
 
-public:
-    bool OpenSocket(int Port);          // ソケットオープン
-    bool CloseSocket();                 // ソケットクローズ
-    bool isConnecting();                // 接続待機中
-
     // 周辺情報要求
     bool WaitGetReady() override;
     // 周辺情報応答
@@ -40,16 +35,20 @@ public:
     QString WaitResponce();
     // 改行変換
     QString VisibilityString(QString str);
+    // 接続待機中
+    bool isConnecting();
+
+public:
+    bool OpenSocket(int Port);          // ソケットオープン
+    bool CloseSocket();                 // ソケットクローズ
 
     explicit TCPClient(QObject *parent = 0);
     virtual ~TCPClient();
 
 private slots:
     void NewConnection();               // 新規接続
-    void DisConnected();                // 切断
-
-public slots:
     QString GetTeamName();              // チーム名取得
+    void DisConnected();                // 切断
 };
 
 #endif // TCPCLIENT_H

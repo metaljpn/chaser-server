@@ -19,11 +19,12 @@ using Field = QVector<QVector<T>>;
 
 class GameSystem
 {
-public:
+private:
     // マップサイズ
     const static int DEFAULT_MAP_WIDTH  = 15;
     const static int DEFAULT_MAP_HEIGHT = 17;
 
+public:
     // チーム種別
     enum class TEAM{
         TEAMS,

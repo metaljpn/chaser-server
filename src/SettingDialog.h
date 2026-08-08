@@ -1,7 +1,7 @@
 /****************************************************************************
 *   SYSTEM  :   CHaserサーバー
 *----------------------------------------------------------------------------
-*   NOTE    :   設定画面
+*   NOTE    :   サーバー設定画面
 ****************************************************************************/
 #ifndef SETTINGDIALOG_H
 #define SETTINGDIALOG_H
@@ -25,7 +25,7 @@ public:
     explicit SettingDialog(QWidget *parent = 0);
     ~SettingDialog();
 
-public slots:
+private slots:
     void openDirectory();               // ログ保存フォルダ[選択]ボタン押下
 };
 
