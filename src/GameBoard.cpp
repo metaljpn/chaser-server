@@ -46,62 +46,59 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
     // 背景描画
     painter.fillRect(QRect(0,0,width(),height()),Qt::white);
 
-    // アニメーション無効
-    if(!animation){
-        // フィールド高さ分
-        for(int i=0;i<map.size.y();i++){
-            // フィールド幅分
-            for(int j=0;j<map.size.x();j++){
-                // マップ描画済
-                if(overlay[i][j] != GameMap::OVERLAY::ERASE){
-                    // 物体が存在しない
-                    if(map.field[i][j] == GameMap::OBJECT::NOTHING){
-                        // 空白の描画
-                        painter.drawPixmap(j * image_part.width(),
-                                           i * image_part.height(),
-                                           field_resource[static_cast<int>(GameMap::OBJECT::NOTHING)]);
-                    }
+    // フィールド高さ分
+    for(int i=0;i<map.size.y();i++){
+        // フィールド幅分
+        for(int j=0;j<map.size.x();j++){
+            // 描画対象
+            if(effect[i][j] != GameMap::EFFECT::ERASE){
+                // 物体が存在しない
+                if(map.field[i][j] == GameMap::OBJECT::NOTHING){
+                    // 空白の描画
+                    painter.drawPixmap(j * image_part.width(),
+                                       i * image_part.height(),
+                                       field_resource[static_cast<int>(GameMap::OBJECT::NOTHING)]);
                 }
             }
         }
+    }
 
-        // チーム数分
-        for(int i=0;i<TEAM_COUNT;i++){
-            // 座標有効
-            if(0 <= team_pos[i].x() && team_pos[i].x() < map.size.x() &&
-               0 <= team_pos[i].y() && team_pos[i].y() < map.size.y()){
-                // チーム描画
-                painter.drawPixmap(team_pos[i].x() * image_part.width(),team_pos[i].y() * image_part.height(),team_resource[i]);
-            }
+    // チーム数分
+    for(int i=0;i<TEAM_COUNT;i++){
+        // 座標有効
+        if(0 <= team_pos[i].x() && team_pos[i].x() < map.size.x() &&
+           0 <= team_pos[i].y() && team_pos[i].y() < map.size.y()){
+            // チーム描画
+            painter.drawPixmap(team_pos[i].x() * image_part.width(),team_pos[i].y() * image_part.height(),team_resource[i]);
         }
+    }
 
-        // フィールド高さ分
-        for(int i=0;i<map.size.y();i++){
-            // フィールド幅分
-            for(int j=0;j<map.size.x();j++){
-                // マップ描画済
-                if(overlay[i][j] != GameMap::OVERLAY::ERASE){
-                    // 物体有り
-                    if(map.field[i][j] != GameMap::OBJECT::NOTHING){
-                        // 物体上書き
-                        painter.drawPixmap(j * image_part.width(),
-                                           i * image_part.height(),
-                                           field_resource[static_cast<int>(map.field[i][j])]);
-                    }
-                    // 暗闇モード時未探索
-                    if(map.discover[i][j] == GameMap::DISCOVER::UNKNOWN){
-                        // 暗闇描画
-                        painter.drawPixmap(j * image_part.width() ,
-                                           i * image_part.height(),
-                                           overray_resource[static_cast<int>(GameMap::OVERLAY::BLIND)]);
-                    }
-                    // オーバーレイ(行動効果)有り
-                    if(overlay[i][j] != GameMap::OVERLAY::NOTHING){
-                        // オーバーレイ(行動効果)描画
-                        painter.drawPixmap(j * image_part.width() ,
-                                           i * image_part.height(),
-                                           overray_resource[static_cast<int>(overlay[i][j])]);
-                    }
+    // フィールド高さ分
+    for(int i=0;i<map.size.y();i++){
+        // フィールド幅分
+        for(int j=0;j<map.size.x();j++){
+            // 描画対象
+            if(effect[i][j] != GameMap::EFFECT::ERASE){
+                // 物体有り
+                if(map.field[i][j] != GameMap::OBJECT::NOTHING){
+                    // 物体描画
+                    painter.drawPixmap(j * image_part.width(),
+                                       i * image_part.height(),
+                                       field_resource[static_cast<int>(map.field[i][j])]);
+                }
+                // 暗闇モード時未探索
+                if(map.discover[i][j] == GameMap::DISCOVER::UNKNOWN){
+                    // 暗闇描画
+                    painter.drawPixmap(j * image_part.width() ,
+                                       i * image_part.height(),
+                                       overray_resource[static_cast<int>(GameMap::EFFECT::BLIND)]);
+                }
+                // 行動効果有り
+                if(effect[i][j] != GameMap::EFFECT::NOTHING){
+                    // 行動効果描画
+                    painter.drawPixmap(j * image_part.width() ,
+                                       i * image_part.height(),
+                                       overray_resource[static_cast<int>(effect[i][j])]);
                 }
             }
         }
@@ -143,10 +140,10 @@ GameMap::OBJECT GameBoard::FieldAccess(Operation method, const QPoint& pos){
     // 探索済設定
     map.discover[pos.y()][pos.x()] = GameMap::DISCOVER::EXPLORED;
 
-    // オーバーレイ(行動効果)設定
-    if(method.action == Operation::ACTION::LOOK    )overlay[pos.y()][pos.x()] = GameMap::OVERLAY::LOOK;
-    if(method.action == Operation::ACTION::SEARCH  )overlay[pos.y()][pos.x()] = GameMap::OVERLAY::SEARCH;
-    if(method.action == Operation::ACTION::GETREADY)overlay[pos.y()][pos.x()] = GameMap::OVERLAY::GETREADY;
+    // 行動効果設定
+    if(method.action == Operation::ACTION::LOOK    )effect[pos.y()][pos.x()] = GameMap::EFFECT::LOOK;
+    if(method.action == Operation::ACTION::SEARCH  )effect[pos.y()][pos.x()] = GameMap::EFFECT::SEARCH;
+    if(method.action == Operation::ACTION::GETREADY)effect[pos.y()][pos.x()] = GameMap::EFFECT::GETREADY;
 
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
@@ -293,10 +290,10 @@ void GameBoard::setMap(const GameMap& mapinfo){
     map_height = map.field.size();
     // マップ幅取得
     map_width  = map.field[0].size();
-    // オーバーレイ(行動効果)サイズ設定
-    overlay.resize(map_height);
-    // オーバーレイ(行動効果)初期化
-    for(auto& v : overlay)v = QVector<GameMap::OVERLAY>(map_width,GameMap::OVERLAY::NOTHING);
+    // 行動効果サイズ設定
+    effect.resize(map_height);
+    // 行動効果初期化
+    for(auto& v : effect)v = QVector<GameMap::EFFECT>(map_width,GameMap::EFFECT::NOTHING);
     // 探索状態サイズ設定
     map.discover.resize(map_height);
     // 探索状態初期化
@@ -304,15 +301,15 @@ void GameBoard::setMap(const GameMap& mapinfo){
 }
 
 /****************************************************************************
-*   オーバーレイ(行動効果)初期化
+*   行動効果初期化
 ****************************************************************************/
-void GameBoard::ResetOverlay(){
+void GameBoard::ResetEffect(){
     // フィールド高さ分
     for(int i=0;i<map.size.y();i++){
         // フィールド幅分
         for(int j=0;j<map.size.x();j++){
-            // オーバーレイ(行動効果)消去
-            overlay[i][j] = GameMap::OVERLAY::NOTHING;
+            // 行動効果消去
+            effect[i][j] = GameMap::EFFECT::NOTHING;
         }
     }
 }
@@ -360,12 +357,12 @@ void GameBoard::LoadTexture(QString tex_dir_path){
     this->field_resource  [static_cast<int>(GameMap::OBJECT::TARGET)]    = QPixmap();
     this->field_resource  [static_cast<int>(GameMap::OBJECT::ITEM)]      = QPixmap(tex_dir_path + "/Item.png");
     this->field_resource  [static_cast<int>(GameMap::OBJECT::BLOCK)]     = QPixmap(tex_dir_path + "/Block.png");
-    // オーバーレイ画像読込
-    this->overray_resource[static_cast<int>(GameMap::OVERLAY::NOTHING)]  = QPixmap();
-    this->overray_resource[static_cast<int>(GameMap::OVERLAY::LOOK)]     = QPixmap(tex_dir_path + "/Look.png");
-    this->overray_resource[static_cast<int>(GameMap::OVERLAY::GETREADY)] = QPixmap(tex_dir_path + "/Getready.png");
-    this->overray_resource[static_cast<int>(GameMap::OVERLAY::SEARCH)]   = QPixmap(tex_dir_path + "/Search.png");
-    this->overray_resource[static_cast<int>(GameMap::OVERLAY::BLIND)]    = QPixmap(tex_dir_path + "/Blind.png");
+    // 行動効果画像読込
+    this->overray_resource[static_cast<int>(GameMap::EFFECT::NOTHING)]  = QPixmap();
+    this->overray_resource[static_cast<int>(GameMap::EFFECT::LOOK)]     = QPixmap(tex_dir_path + "/Look.png");
+    this->overray_resource[static_cast<int>(GameMap::EFFECT::GETREADY)] = QPixmap(tex_dir_path + "/Getready.png");
+    this->overray_resource[static_cast<int>(GameMap::EFFECT::SEARCH)]   = QPixmap(tex_dir_path + "/Search.png");
+    this->overray_resource[static_cast<int>(GameMap::EFFECT::BLIND)]    = QPixmap(tex_dir_path + "/Blind.png");
 
     // チーム画像サイズ変更
     for(QPixmap& img:team_resource )img = img.scaled(image_part.width(),image_part.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
@@ -373,7 +370,7 @@ void GameBoard::LoadTexture(QString tex_dir_path){
     for(QPixmap& img:field_resource){
         if(!img.isNull())img = img.scaled(image_part.width(),image_part.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     }
-    // オーバーレイ画像(行動効果)サイズ変更
+    // 行動効果画像サイズ変更
     for(QPixmap& img:overray_resource){
         if(!img.isNull())img = img.scaled(image_part.width(),image_part.height(),Qt::IgnoreAspectRatio,Qt::SmoothTransformation);
     }

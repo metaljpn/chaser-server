@@ -281,9 +281,10 @@ void MainWindow::DrawMapAnimation()
 {
     // 描画数
     static int timer = 1;
-    // フィールド情報
-    static Field<GameMap::OVERLAY> f(this->startup->map.size.y(),
-                                            QVector<GameMap::OVERLAY>(this->startup->map.size.x(),GameMap::OVERLAY::ERASE));
+    // 描画対象/描画無効情報
+    static Field<GameMap::EFFECT> f(this->startup->map.size.y(),
+                                    QVector<GameMap::EFFECT>(this->startup->map.size.x(),
+                                    GameMap::EFFECT::ERASE));
     // アニメーション種類
     static int ANIMATION_SIZE = 4;
     // アニメーションタイプ
@@ -292,8 +293,8 @@ void MainWindow::DrawMapAnimation()
     // カウンタ初期化
     int count = 0;
 
-    // フィールドオーバーレイ(行動効果)初期化
-    ui->Board->ResetOverlay();
+    // 行動効果初期化
+    ui->Board->ResetEffect();
 
     // 位置
     QPoint pos[2];
@@ -309,17 +310,17 @@ void MainWindow::DrawMapAnimation()
                 // ランダム座標取得
                 pos[i].setX(QRandomGenerator::global()->generate() % this->startup->map.size.x());
                 pos[i].setY(QRandomGenerator::global()->generate() % this->startup->map.size.y());
-            // マップサイズ分の回数未到達 and 対象位置が未選択以外の間
-            }while(timer < startup->map.size.x() * startup->map.size.y() && f[pos[i].y()][pos[i].x()] != GameMap::OVERLAY::ERASE);
-            // フィールド状態=無し(検出)
-            f[pos[i].y()][pos[i].x()] = GameMap::OVERLAY::NOTHING;
+            // マップサイズ分の回数未到達 and 取得座標が選択済の間
+            }while(timer < startup->map.size.x() * startup->map.size.y() && f[pos[i].y()][pos[i].x()] != GameMap::EFFECT::ERASE);
+            // 描画対象設定
+            f[pos[i].y()][pos[i].x()] = GameMap::EFFECT::NOTHING;
         }
         // マップY軸数分
         for(int i=0;i<this->startup->map.size.y();i++){
             // マップX軸数分
             for(int j=0;j<this->startup->map.size.x();j++){
-                // フィールドオーバーレイ状態設定
-                this->ui->Board->overlay[i][j] = f[i][j];
+                // 描画対象設定
+                this->ui->Board->effect[i][j] = f[i][j];
             }
         }
     // 上から下に向かってフィールド描画
@@ -330,8 +331,8 @@ void MainWindow::DrawMapAnimation()
             for(int k=0;k<this->startup->map.size.x();k++){
                 // 初回以外
                 if(count >= timer){
-                    // フィールドオーバーレイ状態設定
-                    this->ui->Board->overlay[j][k] = f[j][k];
+                    // 描画無効対象設定
+                    this->ui->Board->effect[j][k] = f[j][k];
                 }
                 // カウンタ更新
                 count++;
@@ -345,22 +346,21 @@ void MainWindow::DrawMapAnimation()
             for(int k=0;k<this->startup->map.size.x();k++){
                 // 描画数分
                 if(count*2 < timer){
-                    // 下側フィールド状態=無し(検出)
-                    f[startup->map.size.y() - j - 1][startup->map.size.x() - k - 1] = GameMap::OVERLAY::NOTHING;
-                    // 上側フィールド状態=無し(検出)
-                    f[j][k] = GameMap::OVERLAY::NOTHING;
+                    // 下側描画対象設定
+                    f[startup->map.size.y() - j - 1][startup->map.size.x() - k - 1] = GameMap::EFFECT::NOTHING;
+                    // 上側描画対象設定
+                    f[j][k] = GameMap::EFFECT::NOTHING;
                 }
                 // カウンタ更新
                 count++;
             }
         }
-
         // マップY軸数分
         for(int i=0;i<this->startup->map.size.y();i++){
             // マップX軸数分
             for(int j=0;j<this->startup->map.size.x();j++){
-                // フィールドオーバーレイ状態設定
-                this->ui->Board->overlay[i][j] = f[i][j];
+                // 描画対象設定
+                this->ui->Board->effect[i][j] = f[i][j];
             }
         }
     // 下から上に向かってフィールド描画
@@ -371,8 +371,8 @@ void MainWindow::DrawMapAnimation()
             for(int k=this->startup->map.size.x()-1;k>=0;k--){
                 // 初回以外
                 if(count >= timer){
-                    // フィールドオーバーレイ状態設定
-                    this->ui->Board->overlay[j][k] = f[j][k];
+                    // 描画対象設定
+                    this->ui->Board->effect[j][k] = f[j][k];
                 }
                 // カウンタ更新
                 count++;
@@ -452,8 +452,8 @@ void MainWindow::BlindAnimation()
     // アニメーションタイプ
     static int ANIMATION_TYPE = QRandomGenerator::global()->generate() % ANIMATION_SIZE;
 
-    // フィールドオーバーレイ(行動効果)初期化
-    ui->Board->ResetOverlay();
+    // 行動効果初期化
+    ui->Board->ResetEffect();
 
     // 位置
     QPoint pos[2];
@@ -502,8 +502,8 @@ void MainWindow::StepGame()
     static int turn_count;              // ターン数
     static bool getready_flag=true;     // ターン状態
 
-    // フィールドオーバーレイ(行動効果)初期化
-    this->ui->Board->ResetOverlay();
+    // 行動効果初期化
+    this->ui->Board->ResetEffect();
 
     // ターンログ出力
     if(ui->TimeBar->value() != turn_count){

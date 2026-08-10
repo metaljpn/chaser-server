@@ -35,8 +35,8 @@ public:
         EXPLORED,                       // 探索済
     };
 
-    // マップ上に描画する非物体(行動効果)
-    enum class OVERLAY{
+    // 行動効果
+    enum class EFFECT{
         NOTHING,                        // 無し
         LOOK,                           // 指定方向周囲確認
         SEARCH,                         // 指定方向直線確認

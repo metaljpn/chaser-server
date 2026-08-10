@@ -21,11 +21,10 @@ class GameBoard : public QWidget
 private:
     int map_height;                         // マップ高さ
     int map_width;                          // マップ幅
-    bool animation = false;                 // アニメーション有効
     QString texture_dir_path;               // 使用テクスチャディレクトリ
     QPixmap team_resource[TEAM_COUNT];      // チーム画像
     QPixmap field_resource[4];              // フィールド画像
-    QPixmap overray_resource[5];            // オーバーレイ(行動効果)画像
+    QPixmap overray_resource[5];            // 行動効果画像
 
     Ui::GameBoard *ui;                      // UI
 
@@ -35,8 +34,8 @@ private:
     void LoadTexture(QString texture_dir_path); // テクスチャ読込
 
 public:
-    GameMap map;                            // ゲーム盤
-    Field<GameMap::OVERLAY> overlay;        // オーバーレイ(行動効果)
+    GameMap map;                            // マップ
+    Field<GameMap::EFFECT> effect;          // 行動効果
     QSize image_part;                       // 単体画像サイズ
     QPoint team_pos[TEAM_COUNT];            // チーム位置
     int leave_items;                        // 残アイテム数
@@ -55,8 +54,8 @@ public:
     void setMap(const GameMap &mapinfo);
     // オブジェクト数算出
     int GetMapObjectCount(GameMap::OBJECT mb);
-    // オーバーレイ(行動効果)初期化
-    void ResetOverlay();
+    // 行動効果初期化
+    void ResetEffect();
 
     explicit GameBoard(QWidget *parent = 0);
     ~GameBoard();
