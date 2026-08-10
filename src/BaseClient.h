@@ -7,7 +7,8 @@
 #define CLIENT_H
 
 #include <QObject>                      // Qtオブジェクト
-#include "GameSystem.h"                 // マップ管理
+#include "GameSystem.h"                 // 動作管理
+#include "GameMap.h"                    // マップ管理
 
 class BaseClient : public QObject
 {
@@ -21,9 +22,9 @@ public:
     // 周辺情報要求
     virtual bool WaitGetReady()=0;
     // 周辺情報応答
-    virtual GameSystem::Method WaitReturnMethod(GameSystem::AroundData data)=0;
+    virtual Operation WaitReturnOperation(AroundData data)=0;
     // 行動に対する周辺情報送信及び受信完了待機
-    virtual bool WaitEndSharp(GameSystem::AroundData data)=0;
+    virtual bool WaitEndSharp(AroundData data)=0;
     // シグナルスロット設定後処理
     virtual void Startup();
 

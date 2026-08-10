@@ -7,7 +7,7 @@
 #define MANUALCLIENTDIALOG_H
 
 #include <QDialog>                      // ダイアログ
-#include "GameSystem.h"                 // マップ管理
+#include "GameSystem.h"                 // 動作管理
 
 namespace Ui {
 class ManualClientDialog;
@@ -22,10 +22,10 @@ private:
 
     void keyPressEvent(QKeyEvent* event);   // キー押下
     void closeEvent(QCloseEvent* ce);       // クローズ
-    GameSystem::Method::ACTION GetAction(); // 行動定数取得
+    Operation::ACTION GetAction();          // 行動定数取得
 
 public:
-    GameSystem::Method next_method;     // 実行行動
+    Operation next_method;              // 実行行動
 
     void AppendLog(const QString& str); // ログ追加
 

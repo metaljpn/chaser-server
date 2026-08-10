@@ -77,10 +77,10 @@ void MapEditerDialog::ReCount()
 {
     // ブロック数表示
     int counter = 0;
-    counter = ui->Board->GetMapObjectCount(GameSystem::MAP_OBJECT::BLOCK);
+    counter = ui->Board->GetMapObjectCount(GameMap::OBJECT::BLOCK);
     ui->ObjectCounter->item(0)->setText("×" + QString(QString::number(counter)));
     // アイテム数表示
-    counter = ui->Board->GetMapObjectCount(GameSystem::MAP_OBJECT::ITEM);
+    counter = ui->Board->GetMapObjectCount(GameMap::OBJECT::ITEM);
     ui->ObjectCounter->item(1)->setText("×" + QString(QString::number(counter)));
 }
 
@@ -128,11 +128,11 @@ void MapEditerDialog::FillItem(const QPoint& pos)
        fill_point.y() < 0 || fill_point.y() >= ui->Board->map.size.y())return;
 
     // 物体
-    GameSystem::MAP_OBJECT obj = GameSystem::MAP_OBJECT::NOTHING;
+    GameMap::OBJECT obj = GameMap::OBJECT::NOTHING;
     // 文字列→物体定数に変換
-    if     (ui->listWidget->selectedItems().first()->text() == "Nothing")obj = GameSystem::MAP_OBJECT::NOTHING;
-    else if(ui->listWidget->selectedItems().first()->text() == "Block"  )obj = GameSystem::MAP_OBJECT::BLOCK;
-    else if(ui->listWidget->selectedItems().first()->text() == "Item"   )obj = GameSystem::MAP_OBJECT::ITEM;
+    if     (ui->listWidget->selectedItems().first()->text() == "Nothing")obj = GameMap::OBJECT::NOTHING;
+    else if(ui->listWidget->selectedItems().first()->text() == "Block"  )obj = GameMap::OBJECT::BLOCK;
+    else if(ui->listWidget->selectedItems().first()->text() == "Item"   )obj = GameMap::OBJECT::ITEM;
     // ターゲット(相手)
     if(ui->listWidget->selectedItems().first()->text() == "Target" ){
         // 初期位置変更
@@ -248,7 +248,7 @@ void MapEditerDialog::Clear()
     for(auto& v1 : ui->Board->map.field){
         for(auto& v2 : v1){
             // オブジェクト破棄
-            v2 = GameSystem::MAP_OBJECT::NOTHING;
+            v2 = GameMap::OBJECT::NOTHING;
         }
     }
     // オブジェクト数更新

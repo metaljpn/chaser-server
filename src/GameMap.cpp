@@ -72,7 +72,7 @@ void GameMap::CreateRandomMap(int block_num, int item_num){
             // 座標再取得
             continue;
         if(pos.x() < size.x()/2 ||                          // 盤面の左側
-            (pos.x() == size.x()/2 && pos.y() < size.y()/2)){ // 盤面中心の縦列 and 盤面の上半分
+          (pos.x() == size.x()/2 && pos.y() < size.y()/2)){ // 盤面中心の縦列 and 盤面の上半分
             // COOL側初期位置取得
             team_first_point[0] = pos;
             // ループ脱出
@@ -88,7 +88,7 @@ void GameMap::CreateRandomMap(int block_num, int item_num){
     // フィールドY軸数分
     for(int i=0;i<size.y();i++){
         // 1行分のフィールドデータを取得
-        field.push_back(QVector<GameSystem::MAP_OBJECT>(size.x()));
+        field.push_back(QVector<GameMap::OBJECT>(size.x()));
     }
 
     // ブロック配置
@@ -102,12 +102,12 @@ void GameMap::CreateRandomMap(int block_num, int item_num){
         if(CheckBlockRole(pos) &&
             pos != team_first_point[0] &&
             pos != team_first_point[1] &&
-            field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::BLOCK &&
+            field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK &&
             pos != QPoint(size.x()/2, size.y()/2 )){
             // ブロック配置
-            field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::BLOCK;
+            field[pos.y()][pos.x()] = GameMap::OBJECT::BLOCK;
             // 点対称にブロック配置
-            field[mirrorPos.y()][mirrorPos.x()] = GameSystem::MAP_OBJECT::BLOCK;
+            field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::BLOCK;
         }else{
             // 座標再取得
             i--;
@@ -130,20 +130,20 @@ void GameMap::CreateRandomMap(int block_num, int item_num){
 
         // 配置有効 and アイテム以外 and ブロック以外 and マップ中心以外
         if(around_item_flag &&
-            field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::ITEM &&
-            field[pos.y()][pos.x()] != GameSystem::MAP_OBJECT::BLOCK &&
+            field[pos.y()][pos.x()] != GameMap::OBJECT::ITEM &&
+            field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK &&
             pos != QPoint(size.x()/2, size.y()/2) ){
             // アイテム配置
-            field[pos.y()][pos.x()] = GameSystem::MAP_OBJECT::ITEM;
+            field[pos.y()][pos.x()] = GameMap::OBJECT::ITEM;
             //点対称にアイテム配置
-            field[mirrorPos.y()][mirrorPos.x()] = GameSystem::MAP_OBJECT::ITEM;
+            field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::ITEM;
         }else{
             // 座標再取得
             i--;
         }
     }
     // マップ中心にアイテムを配置
-    field[size.y()/2][size.x()/2] = GameSystem::MAP_OBJECT::ITEM;
+    field[size.y()/2][size.x()/2] = GameMap::OBJECT::ITEM;
 }
 
 /****************************************************************************
@@ -179,11 +179,11 @@ bool GameMap::Import(QString Filename){
             if(str[0]=='D'){
                 // 座標リスト取得
                 QStringList list = str.remove(0,2).split(",");
-                QVector<GameSystem::MAP_OBJECT> vec;
+                QVector<GameMap::OBJECT> vec;
                 // 座標数分
                 foreach(QString s,list){
                     // 座標取得
-                    vec.push_back(static_cast<GameSystem::MAP_OBJECT>(s.toInt()));
+                    vec.push_back(static_cast<GameMap::OBJECT>(s.toInt()));
                 }
                 // サイズ設定
                 size.setX(vec.size());
@@ -268,10 +268,10 @@ bool GameMap::Export(QString Filename){
     for(int i=0;i<TEAM_COUNT;i++){
         // チーム名及び初期位置を出力
         stream << QString(getTeamName(static_cast<GameSystem::TEAM>(i)).at(0))
-                      + ":"
-                      + QString::number(team_first_point[i] .x())
-                      + ","
-                      + QString::number(team_first_point[i] .y());
+                          + ":"
+                          + QString::number(team_first_point[i] .x())
+                          + ","
+                          + QString::number(team_first_point[i] .y());
         // 改行
         stream << "\n";
     }
@@ -316,4 +316,36 @@ bool GameMap::CheckBlockRole(QPoint pos){
         return false;
     else
         return true;
+}
+
+/****************************************************************************
+*   周辺情報-文字列変換
+*
+*   @return 文字列
+****************************************************************************/
+QString AroundData::toString(){
+    // 文字列
+    QString str;
+
+    // 接続状態
+    str.append(static_cast<QChar>('0' + static_cast<int>(this->connect)));
+    // 周辺情報数分
+    for(int i=0;i<9;i++){
+        if     (this->data[i] == GameMap::OBJECT::NOTHING)str.append('0');  // 無し
+        else if(this->data[i] == GameMap::OBJECT::TARGET) str.append('1');  // 相手
+        else if(this->data[i] == GameMap::OBJECT::BLOCK)  str.append('2');  // ブロック
+        else if(this->data[i] == GameMap::OBJECT::ITEM)   str.append('3');  // アイテム
+    }
+    // 戻り値[文字列]
+    return str;
+}
+
+/****************************************************************************
+*   周辺情報-ゲーム終了
+****************************************************************************/
+void AroundData::Finish(){
+    // 周辺情報先頭を接続終了
+    this->data[0] = static_cast<GameMap::OBJECT>(CONNECTING_STATUS::FINISHED);
+    // 接続終了
+    this->connect = CONNECTING_STATUS::FINISHED;
 }

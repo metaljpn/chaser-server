@@ -8,7 +8,6 @@
 
 #include <QDialog>                      // ダイアログ
 #include <QListWidgetItem>              // アイテムリスト
-#include "GameSystem.h"                 // マップ管理
 #include "GameMap.h"                    // マップ管理
 
 namespace Ui {

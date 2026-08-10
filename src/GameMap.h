@@ -21,13 +21,31 @@ private:
     const static int DEFAULT_MAP_HEIGHT = 17;
 
 public:
+    // マップ上に存在する物体
+    enum class OBJECT{
+        NOTHING,                        // 無し
+        TARGET,                         // 相手
+        BLOCK,                          // ブロック
+        ITEM,                           // アイテム
+    };
+
     // 探索状態
     enum class DISCOVER{
         UNKNOWN,                        // 未探索
         EXPLORED,                       // 探索済
     };
 
-    Field<GameSystem::MAP_OBJECT> field;    // 物体フィールド
+    // マップ上に描画する非物体(行動効果)
+    enum class OVERLAY{
+        NOTHING,                        // 無し
+        LOOK,                           // 指定方向周囲確認
+        SEARCH,                         // 指定方向直線確認
+        GETREADY,                       // 周辺情報確認
+        BLIND,                          // 暗闇
+        ERASE,                          // 消去(未選択)
+    };
+
+    Field<OBJECT> field;                    // 物体フィールド
     Field<DISCOVER> discover;               // 探索状態
     int turn;                               // ターン
     QString name;                           // ステージ名
@@ -51,6 +69,21 @@ public:
     QString getTeamName(GameSystem::TEAM team);
     // ブロック配置確認
     bool CheckBlockRole(QPoint pos);
+};
+
+// 周辺情報
+struct AroundData{
+    // 接続状態
+    enum class CONNECTING_STATUS{
+        FINISHED,                       // 終了
+        CONTINUE,                       // 継続
+    };
+
+    CONNECTING_STATUS connect;          // 接続状態
+    GameMap::OBJECT data[9];            // 周辺情報
+
+    QString toString();                 // 文字列変換
+    void Finish();                      // ゲーム終了
 };
 
 #endif // GAMEMAP_H

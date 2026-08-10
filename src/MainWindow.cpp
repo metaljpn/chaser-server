@@ -32,7 +32,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // 起動画面生成
     this->startup = new StartupDialog();
     // 勝者初期化
-    this->win = GameSystem::WINNER::CONTINUE;
+    this->win = WINNER::CONTINUE;
 
     // 起動画面実行
     if(this->startup->exec()){
@@ -165,7 +165,7 @@ MainWindow::MainWindow(QWidget *parent) :
         // マップ横サイズ分
         for(int j=0;j<startup->map.size.x();j++){
             // アイテム数取得
-            if(startup->map.field[i][j] == GameSystem::MAP_OBJECT::ITEM)this->ui->Board->leave_items++;
+            if(startup->map.field[i][j] == GameMap::OBJECT::ITEM)this->ui->Board->leave_items++;
         }
     }
     // アイテム数表示
@@ -282,8 +282,8 @@ void MainWindow::DrawMapAnimation()
     // 描画数
     static int timer = 1;
     // フィールド情報
-    static Field<GameSystem::MAP_OVERLAY> f(this->startup->map.size.y(),
-                                            QVector<GameSystem::MAP_OVERLAY>(this->startup->map.size.x(),GameSystem::MAP_OVERLAY::ERASE));
+    static Field<GameMap::OVERLAY> f(this->startup->map.size.y(),
+                                            QVector<GameMap::OVERLAY>(this->startup->map.size.x(),GameMap::OVERLAY::ERASE));
     // アニメーション種類
     static int ANIMATION_SIZE = 4;
     // アニメーションタイプ
@@ -310,9 +310,9 @@ void MainWindow::DrawMapAnimation()
                 pos[i].setX(QRandomGenerator::global()->generate() % this->startup->map.size.x());
                 pos[i].setY(QRandomGenerator::global()->generate() % this->startup->map.size.y());
             // マップサイズ分の回数未到達 and 対象位置が未選択以外の間
-            }while(timer < startup->map.size.x() * startup->map.size.y() && f[pos[i].y()][pos[i].x()] != GameSystem::MAP_OVERLAY::ERASE);
+            }while(timer < startup->map.size.x() * startup->map.size.y() && f[pos[i].y()][pos[i].x()] != GameMap::OVERLAY::ERASE);
             // フィールド状態=無し(検出)
-            f[pos[i].y()][pos[i].x()] = GameSystem::MAP_OVERLAY::NOTHING;
+            f[pos[i].y()][pos[i].x()] = GameMap::OVERLAY::NOTHING;
         }
         // マップY軸数分
         for(int i=0;i<this->startup->map.size.y();i++){
@@ -346,9 +346,9 @@ void MainWindow::DrawMapAnimation()
                 // 描画数分
                 if(count*2 < timer){
                     // 下側フィールド状態=無し(検出)
-                    f[startup->map.size.y() - j - 1][startup->map.size.x() - k - 1] = GameSystem::MAP_OVERLAY::NOTHING;
+                    f[startup->map.size.y() - j - 1][startup->map.size.x() - k - 1] = GameMap::OVERLAY::NOTHING;
                     // 上側フィールド状態=無し(検出)
-                    f[j][k] = GameSystem::MAP_OVERLAY::NOTHING;
+                    f[j][k] = GameMap::OVERLAY::NOTHING;
                 }
                 // カウンタ更新
                 count++;
@@ -498,7 +498,7 @@ void MainWindow::BlindAnimation()
 void MainWindow::StepGame()
 {
     // クライアント行動情報
-    static GameSystem::Method team_mehod[TEAM_COUNT];
+    static Operation team_mehod[TEAM_COUNT];
     static int turn_count;              // ターン数
     static bool getready_flag=true;     // ターン状態
 
@@ -525,15 +525,15 @@ void MainWindow::StepGame()
             startup->team_client[player]->client->is_disconnected = true;
         }else{
             // フィールド周辺確認
-            GameSystem::AroundData buffer = ui->Board->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
-                                                                                            GameSystem::Method::ACTION::GETREADY,
-                                                                                            GameSystem::Method::ROTE::UNKNOWN},
-                                                                         ui->Board->team_pos[player]);
+            AroundData buffer = ui->Board->FieldAccessAround(Operation{static_cast<GameSystem::TEAM>(player),
+                                                                                   Operation::ACTION::GETREADY,
+                                                                                   Operation::ROTE::UNKNOWN},
+                                                             ui->Board->team_pos[player]);
             // 周辺情報応答結果取得
-            team_mehod[player] = startup->team_client[player]->client->WaitReturnMethod(buffer);
+            team_mehod[player] = startup->team_client[player]->client->WaitReturnOperation(buffer);
 
             // ターン開始動作
-            if(team_mehod[player].action == GameSystem::Method::ACTION::GETREADY){
+            if(team_mehod[player].action == Operation::ACTION::GETREADY){
                 // 異常ログ出力
                 log << getTime() + "[停止]" + getTeamName(static_cast<GameSystem::TEAM>(player)) + "が二度GetReadyを行いました!" << "\r\n";
                 // 切断
@@ -547,7 +547,7 @@ void MainWindow::StepGame()
         // 勝者判定
         this->win = Judge();
         // 勝敗決定
-        if(win != GameSystem::WINNER::CONTINUE){
+        if(win != WINNER::CONTINUE){
             // チーム更新
             player++;
             player %= TEAM_COUNT;
@@ -555,40 +555,40 @@ void MainWindow::StepGame()
             // ターン開始
             startup->team_client[player]->client->WaitGetReady();
             // フィールド周辺確認
-            GameSystem::AroundData buffer = ui->Board->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
-                                                                                            GameSystem::Method::ACTION::GETREADY,
-                                                                                            GameSystem::Method::ROTE::UNKNOWN},
-                                                                         ui->Board->team_pos[player]);
+            AroundData buffer = ui->Board->FieldAccessAround(Operation{static_cast<GameSystem::TEAM>(player),
+                                                                                   Operation::ACTION::GETREADY,
+                                                                                   Operation::ROTE::UNKNOWN},
+                                                             ui->Board->team_pos[player]);
             // 接続終了
-            buffer.connect = GameSystem::CONNECTING_STATUS::FINISHED;
+            buffer.connect = AroundData::CONNECTING_STATUS::FINISHED;
             // 周辺情報応答結果取得
-            team_mehod[player] = startup->team_client[player]->client->WaitReturnMethod(buffer);
+            team_mehod[player] = startup->team_client[player]->client->WaitReturnOperation(buffer);
             // 終了
             Finish(win);
         }
     }else{
         // 行動後フィールド周辺情報取得
-        GameSystem::AroundData around = ui->Board->FieldAccessMethod(team_mehod[player]);
+        AroundData around = ui->Board->FieldAccessOperation(team_mehod[player]);
         // 得点更新
         ScoreUpdate(team_mehod[player]);
         // 勝者判定
         this->win = Judge();
         // 勝敗決定
-        if(this->win != GameSystem::WINNER::CONTINUE){
+        if(this->win != WINNER::CONTINUE){
             // 接続終了
-            around.connect = GameSystem::CONNECTING_STATUS::FINISHED;
+            around.connect = AroundData::CONNECTING_STATUS::FINISHED;
         }
         // 周辺情報受信完了待機
         if(startup->team_client[player]->client->WaitEndSharp(around)){
             // 行動不明
-            if(team_mehod[player].action == GameSystem::Method::ACTION::UNKNOWN){
+            if(team_mehod[player].action == Operation::ACTION::UNKNOWN){
                 // 行動不明ログ出力
                 log << getTime() + "[停止]" + getTeamName(static_cast<GameSystem::TEAM>(player)) + "が不正なメソッドを呼んでいます！" << "\r\n";
                 // 切断
                 startup->team_client[player]->client->is_disconnected = true;
             }
             // 方向不明
-            if(team_mehod[player].rote   == GameSystem::Method::ROTE::UNKNOWN){
+            if(team_mehod[player].rote   == Operation::ROTE::UNKNOWN){
                 // 方向不明ログ出力
                 log << getTime() + "[停止]" + getTeamName(static_cast<GameSystem::TEAM>(player)) + "の行動メソッドが不正な方向を示しています！" << "\r\n";
                 // 切断
@@ -601,7 +601,7 @@ void MainWindow::StepGame()
             // フィールド情報
             GameBoard*& board = this->ui->Board;
             // チーム周辺情報
-            GameSystem::AroundData team_around = board->FieldAccessAround(static_cast<GameSystem::TEAM>(player));
+            AroundData team_around = board->FieldAccessAround(static_cast<GameSystem::TEAM>(player));
             // チーム周辺情報ログ出力
             log << getTime() + getTeamName(static_cast<GameSystem::TEAM>(player)) + ":" + team_around.toString() << "\r\n";
 
@@ -636,18 +636,18 @@ void MainWindow::StepGame()
         player++;
         player %= TEAM_COUNT;
         // 勝敗決定
-        if(win != GameSystem::WINNER::CONTINUE){
+        if(win != WINNER::CONTINUE){
             // 周辺情報要求
             startup->team_client[player]->client->WaitGetReady();
             // フィールド周辺確認
-            GameSystem::AroundData buffer = ui->Board->FieldAccessAround(GameSystem::Method{static_cast<GameSystem::TEAM>(player),
-                                                                                            GameSystem::Method::ACTION::GETREADY,
-                                                                                            GameSystem::Method::ROTE::UNKNOWN},
-                                                                         ui->Board->team_pos[player]);
+            AroundData buffer = ui->Board->FieldAccessAround(Operation{static_cast<GameSystem::TEAM>(player),
+                                                                                   Operation::ACTION::GETREADY,
+                                                                                   Operation::ROTE::UNKNOWN},
+                                                             ui->Board->team_pos[player]);
             // 接続終了
-            buffer.connect = GameSystem::CONNECTING_STATUS::FINISHED;
+            buffer.connect = AroundData::CONNECTING_STATUS::FINISHED;
             // 周辺情報応答結果取得
-            team_mehod[player] = startup->team_client[player]->client->WaitReturnMethod(buffer);
+            team_mehod[player] = startup->team_client[player]->client->WaitReturnOperation(buffer);
             // 終了
             Finish(win);
         }
@@ -664,7 +664,7 @@ void MainWindow::StepGame()
 *
 *   @param method クライアント行動情報
 ****************************************************************************/
-void MainWindow::ScoreUpdate(GameSystem::Method method)
+void MainWindow::ScoreUpdate(Operation method)
 {
     // 前回アイテム数
     static int leave_item = 0;
@@ -702,22 +702,22 @@ void MainWindow::ScoreUpdate(GameSystem::Method method)
 *
 *   @param method クライアント行動情報
 ****************************************************************************/
-QString MainWindow::convertString(GameSystem::Method method)
+QString MainWindow::convertString(Operation method)
 {
     QString str;                        // 文字列
 
     // 行動内容に対応した文字列を取得
-    if(method.action == GameSystem::Method::ACTION::GETREADY)str += "GetReady";
-    if(method.action == GameSystem::Method::ACTION::LOOK)    str += "Look";
-    if(method.action == GameSystem::Method::ACTION::PUT)     str += "Put";
-    if(method.action == GameSystem::Method::ACTION::SEARCH)  str += "Search";
-    if(method.action == GameSystem::Method::ACTION::WALK)    str += "Walk";
+    if(method.action == Operation::ACTION::GETREADY)str += "GetReady";
+    if(method.action == Operation::ACTION::LOOK)    str += "Look";
+    if(method.action == Operation::ACTION::PUT)     str += "Put";
+    if(method.action == Operation::ACTION::SEARCH)  str += "Search";
+    if(method.action == Operation::ACTION::WALK)    str += "Walk";
 
     // 方向に対応した文字列を取得
-    if(method.rote == GameSystem::Method::ROTE::UP)   str += "Up";
-    if(method.rote == GameSystem::Method::ROTE::RIGHT)str += "Right";
-    if(method.rote == GameSystem::Method::ROTE::LEFT) str += "Left";
-    if(method.rote == GameSystem::Method::ROTE::DOWN) str += "Down";
+    if(method.rote == Operation::ROTE::UP)   str += "Up";
+    if(method.rote == Operation::ROTE::RIGHT)str += "Right";
+    if(method.rote == Operation::ROTE::LEFT) str += "Left";
+    if(method.rote == Operation::ROTE::DOWN) str += "Down";
 
     // 戻り値[動作文字列]
     return str;
@@ -728,7 +728,7 @@ QString MainWindow::convertString(GameSystem::Method method)
 *
 *   @return 勝者(要素No.)
 ****************************************************************************/
-GameSystem::WINNER MainWindow::Judge()
+MainWindow::WINNER MainWindow::Judge()
 {
     bool team_lose[TEAM_COUNT];             // 敗者チーム
     int _player = player;                   // 次ターンのチーム
@@ -741,10 +741,10 @@ GameSystem::WINNER MainWindow::Judge()
         // 現在のチームを取得
         _player = (_player + 1) % TEAM_COUNT;
         // フィールド周辺確認
-        GameSystem::AroundData team_around = board->FieldAccessAround(static_cast<GameSystem::TEAM>(_player));
+        AroundData team_around = board->FieldAccessAround(static_cast<GameSystem::TEAM>(_player));
 
         // ブロック下敷き
-        if(team_around.data[4] == GameSystem::MAP_OBJECT::BLOCK){
+        if(team_around.data[4] == GameMap::OBJECT::BLOCK){
             // 敗因ログ出力
             log << getTime() + "[死因]" + getTeamName(static_cast<GameSystem::TEAM>(_player)) + "ブロック下敷き" << "\r\n";
             // ゲーム終了
@@ -756,10 +756,10 @@ GameSystem::WINNER MainWindow::Judge()
         }
 
         // ブロック囲まれ
-        if(team_around.data[1] == GameSystem::MAP_OBJECT::BLOCK &&
-           team_around.data[3] == GameSystem::MAP_OBJECT::BLOCK &&
-           team_around.data[5] == GameSystem::MAP_OBJECT::BLOCK &&
-           team_around.data[7] == GameSystem::MAP_OBJECT::BLOCK){
+        if(team_around.data[1] == GameMap::OBJECT::BLOCK &&
+           team_around.data[3] == GameMap::OBJECT::BLOCK &&
+           team_around.data[5] == GameMap::OBJECT::BLOCK &&
+           team_around.data[7] == GameMap::OBJECT::BLOCK){
             // 敗因ログ出力
             log << getTime() + "[死因]" + getTeamName(static_cast<GameSystem::TEAM>(_player)) + "ブロック囲まれ" << "\r\n";
             // ゲーム終了
@@ -805,7 +805,7 @@ GameSystem::WINNER MainWindow::Judge()
             team_score_set.insert(this->ui->Board->team_score[i]);
         }
         // 同点ならば、戻り値[引き分け]
-        if(team_score_set.size()==1)return GameSystem::WINNER::DRAW;
+        if(team_score_set.size()==1)return WINNER::DRAW;
 
         int index=0;                    // 勝者
         // チーム数分
@@ -814,15 +814,15 @@ GameSystem::WINNER MainWindow::Judge()
             if(this->ui->Board->team_score[index] < this->ui->Board->team_score[i])index = i;
         }
         // 戻り値[勝者]
-        return static_cast<GameSystem::WINNER>(index);
+        return static_cast<WINNER>(index);
     }
 
     // 戻り値[HOT]
-    if(team_lose[0])return GameSystem::WINNER::HOT;
+    if(team_lose[0])return WINNER::HOT;
     // 戻り値[COOL]
-    else if(team_lose[1])return GameSystem::WINNER::COOL;
+    else if(team_lose[1])return WINNER::COOL;
     // 戻り値[継続]
-    else return GameSystem::WINNER::CONTINUE;
+    else return WINNER::CONTINUE;
 }
 
 /****************************************************************************
@@ -830,7 +830,7 @@ GameSystem::WINNER MainWindow::Judge()
 *
 *   @param winner 勝者
 ****************************************************************************/
-void MainWindow::Finish(GameSystem::WINNER winner)
+void MainWindow::Finish(WINNER winner)
 {
     // ゲーム停止
     this->clock->stop();
@@ -863,7 +863,7 @@ void MainWindow::Finish(GameSystem::WINNER winner)
     }
 
     // 勝者=COOL
-    if(winner == GameSystem::WINNER::COOL){
+    if(winner == WINNER::COOL){
         // 勝利通知
         this->ui->WinnerLabel->setText("COOL WIN!" + append_str);
         // 勝利ログ出力
@@ -876,7 +876,7 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         }
     }
     // 勝者=HOT
-    if(winner == GameSystem::WINNER::HOT){
+    if(winner == WINNER::HOT){
         // 勝利通知
         this->ui->WinnerLabel->setText("HOT WIN!"  + append_str);
         // 勝利ログ出力
@@ -889,7 +889,7 @@ void MainWindow::Finish(GameSystem::WINNER winner)
         }
     }
     // 引き分け
-    if(winner == GameSystem::WINNER::DRAW){
+    if(winner == WINNER::DRAW){
         // 引き分け通知
         this->ui->WinnerLabel->setText("DRAW");
         // 引き分けログ出力

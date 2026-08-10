@@ -34,10 +34,10 @@ bool ComClient::WaitGetReady()
 *
 *   @param data 周辺情報
 ****************************************************************************/
-GameSystem::Method ComClient::WaitReturnMethod([[maybe_unused]] GameSystem::AroundData data)
+Operation ComClient::WaitReturnOperation([[maybe_unused]] AroundData data)
 {
     // 戻り値[チーム:不明、行動:検索、方向:上]
-    return GameSystem::Method{GameSystem::TEAM::UNKNOWN, GameSystem::Method::ACTION::SEARCH,GameSystem::Method::ROTE::UP};
+    return Operation{GameSystem::TEAM::UNKNOWN, Operation::ACTION::SEARCH,Operation::ROTE::UP};
 }
 
 /****************************************************************************
@@ -45,7 +45,7 @@ GameSystem::Method ComClient::WaitReturnMethod([[maybe_unused]] GameSystem::Arou
 *
 *   @return true固定
 ****************************************************************************/
-bool ComClient::WaitEndSharp([[maybe_unused]] GameSystem::AroundData data)
+bool ComClient::WaitEndSharp([[maybe_unused]] AroundData data)
 {
     return true;
 }

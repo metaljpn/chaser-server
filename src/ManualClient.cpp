@@ -42,7 +42,7 @@ bool ManualClient::WaitGetReady(){
 *
 *   @param data 周辺情報
 ****************************************************************************/
-GameSystem::Method ManualClient::WaitReturnMethod(GameSystem::AroundData data){
+Operation ManualClient::WaitReturnOperation(AroundData data){
     // 自動返答ログ追加
     diag->AppendLog(QString("[GetReady  Response] ") + data.toString());
 
@@ -66,9 +66,9 @@ GameSystem::Method ManualClient::WaitReturnMethod(GameSystem::AroundData data){
 *
 *   @param data 周辺情報
 ****************************************************************************/
-bool ManualClient::WaitEndSharp(GameSystem::AroundData data){
+bool ManualClient::WaitEndSharp(AroundData data){
     // 自動返答ログ追加
-    diag->AppendLog(QString("[Method Response] ") + data.toString());
+    diag->AppendLog(QString("[Operation Response] ") + data.toString());
     return true;
 }
 

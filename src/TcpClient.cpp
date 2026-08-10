@@ -76,18 +76,18 @@ bool TCPClient::WaitGetReady()
 *
 *   @param data 周辺情報
 ****************************************************************************/
-GameSystem::Method TCPClient::WaitReturnMethod(GameSystem::AroundData data)
+Operation TCPClient::WaitReturnOperation(AroundData data)
 {
     // 切断
     if (is_disconnected)
         // 戻り値[行動無効]
-        return GameSystem::Method();
+        return Operation();
     // TCPクライアント無効
     if (client == nullptr)
         // 戻り値[チーム名:不明 行動:不明 方向:不明]
-        return GameSystem::Method{GameSystem::TEAM::UNKNOWN,
-                                  GameSystem::Method::ACTION::UNKNOWN,
-                                  GameSystem::Method::ROTE::UNKNOWN};
+        return Operation{GameSystem::TEAM::UNKNOWN,
+                         Operation::ACTION::UNKNOWN,
+                         Operation::ROTE::UNKNOWN};
     // 周辺情報送信
     client->write(QString(data.toString() + "\r\n").toUtf8());
     // デバッグ情報
@@ -98,12 +98,12 @@ GameSystem::Method TCPClient::WaitReturnMethod(GameSystem::AroundData data)
     // 応答受信
     if (response != QString())
         // 戻り値[行動･方向情報]
-        return GameSystem::Method::fromString(response);
+        return Operation::fromString(response);
     else
         // 戻り値[チーム名:不明 行動:不明 方向:不明]
-        return GameSystem::Method{GameSystem::TEAM::UNKNOWN,
-                                  GameSystem::Method::ACTION::UNKNOWN,
-                                  GameSystem::Method::ROTE::UNKNOWN};
+        return Operation{GameSystem::TEAM::UNKNOWN,
+                         Operation::ACTION::UNKNOWN,
+                         Operation::ROTE::UNKNOWN};
 }
 
 /****************************************************************************
@@ -113,7 +113,7 @@ GameSystem::Method TCPClient::WaitReturnMethod(GameSystem::AroundData data)
 *
 *   @param data 周辺情報
 ****************************************************************************/
-bool TCPClient::WaitEndSharp(GameSystem::AroundData data)
+bool TCPClient::WaitEndSharp(AroundData data)
 {
     // 切断
     if (is_disconnected)

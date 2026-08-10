@@ -7,7 +7,7 @@
 #define GAMEBOARD_H
 
 #include <QWidget>                          // ユーザーインターフェース
-#include "GameSystem.h"                     // マップ管理
+#include "GameSystem.h"                     // 動作管理
 #include "GameMap.h"                        // マップ管理
 
 namespace Ui {
@@ -31,30 +31,30 @@ private:
 
     void paintEvent(QPaintEvent *event);        // ペイントイベント
     void resizeEvent(QResizeEvent *event);      // リサイズイベント
-    void PickItem(GameSystem::Method method);   // アイテム取得
+    void PickItem(Operation method);            // アイテム取得
     void LoadTexture(QString texture_dir_path); // テクスチャ読込
 
 public:
     GameMap map;                            // ゲーム盤
-    Field<GameSystem::MAP_OVERLAY> overlay; // オーバーレイ(行動効果)
+    Field<GameMap::OVERLAY> overlay;        // オーバーレイ(行動効果)
     QSize image_part;                       // 単体画像サイズ
     QPoint team_pos[TEAM_COUNT];            // チーム位置
     int leave_items;                        // 残アイテム数
     int team_score[TEAM_COUNT];             // チーム得点
 
     // 指定位置物体種別取得
-    GameSystem::MAP_OBJECT FieldAccess(GameSystem::Method method, const QPoint& pos);
+    GameMap::OBJECT FieldAccess(Operation method, const QPoint& pos);
     // 周辺確認
-    GameSystem::AroundData FieldAccessAround(GameSystem::TEAM team);
+    AroundData FieldAccessAround(GameSystem::TEAM team);
     // 指定位置周辺確認
-    GameSystem::AroundData FieldAccessAround(GameSystem::Method method, const QPoint& center);
+    AroundData FieldAccessAround(Operation method, const QPoint& center);
     // 行動後周辺確認
-    GameSystem::AroundData FieldAccessMethod(GameSystem::Method method);
+    AroundData FieldAccessOperation(Operation method);
 
     // マップ設定
     void setMap(const GameMap &mapinfo);
     // オブジェクト数算出
-    int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
+    int GetMapObjectCount(GameMap::OBJECT mb);
     // オーバーレイ(行動効果)初期化
     void ResetOverlay();
 

@@ -8,6 +8,7 @@
 
 #include <QMainWindow>                  // メインウィンドウ
 #include <QMediaPlayer>                 // メディアファイル再生
+#include "GameSystem.h"                 // 動作管理
 #include "StartupDialog.h"              // 起動画面
 #include "StableLog.h"                  // ログ管理
 
@@ -20,6 +21,13 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 private:
+    // 勝者
+    enum class WINNER{
+        TEAMS,                          // チーム
+        DRAW,                           // 引き分け
+        CONTINUE,                       // 継続
+    };
+
     int player;                         // 次ターン行動チーム
     int frame_rate = 150;               // ゲームフレームレート
     QTimer* clock;                      // ゲームクロック
@@ -37,7 +45,7 @@ private:
     int anime_team_time  = 2000;        // チーム配置アニメーション時間
     int anime_blind_time = 1000;        // 暗闇アニメーション時間
     float audio_volume = 0.8f;          // 音量
-    GameSystem::WINNER win;             // 勝者
+    WINNER win;                         // 勝者
 
     Ui::MainWindow *ui;                 // UI
 
@@ -51,13 +59,13 @@ private:
     static QString getTime();
 
     // 得点更新
-    void ScoreUpdate(GameSystem::Method method);
+    void ScoreUpdate(Operation method);
     // クライアント行動文字列変換
-    QString convertString(GameSystem::Method method);
+    QString convertString(Operation method);
     // 勝敗判定
-    GameSystem::WINNER Judge();
+    WINNER Judge();
     // 勝敗通知
-    void Finish(GameSystem::WINNER win);
+    void Finish(WINNER win);
     // チーム名取得
     QString getTeamName(GameSystem::TEAM team);
 
