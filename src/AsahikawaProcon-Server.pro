@@ -18,6 +18,7 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    GameMap.cpp \
     MainWindow.cpp \
     GameSystem.cpp \
     StartupDialog.cpp \
@@ -34,6 +35,7 @@ SOURCES += main.cpp\
     DesignDialog.cpp
 
 HEADERS  += \
+    GameMap.h \
     MainWindow.h \
     GameSystem.h \
     StartupDialog.h \

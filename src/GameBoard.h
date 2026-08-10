@@ -8,6 +8,7 @@
 
 #include <QWidget>                          // ユーザーインターフェース
 #include "GameSystem.h"                     // マップ管理
+#include "GameMap.h"                        // マップ管理
 
 namespace Ui {
 class GameBoard;
@@ -34,7 +35,7 @@ private:
     void LoadTexture(QString texture_dir_path); // テクスチャ読込
 
 public:
-    GameSystem::Map map;                    // ゲーム盤
+    GameMap map;                            // ゲーム盤
     Field<GameSystem::MAP_OVERLAY> overlay; // オーバーレイ(行動効果)
     QSize image_part;                       // 単体画像サイズ
     QPoint team_pos[TEAM_COUNT];            // チーム位置
@@ -51,7 +52,7 @@ public:
     GameSystem::AroundData FieldAccessMethod(GameSystem::Method method);
 
     // マップ設定
-    void setMap(const GameSystem::Map &mapinfo);
+    void setMap(const GameMap &mapinfo);
     // オブジェクト数算出
     int GetMapObjectCount(GameSystem::MAP_OBJECT mb);
     // オーバーレイ(行動効果)初期化

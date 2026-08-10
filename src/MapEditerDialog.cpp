@@ -16,7 +16,7 @@
 *   @param map    マップ情報
 *   @param parent 親ウィジェット
 ****************************************************************************/
-MapEditerDialog::MapEditerDialog(GameSystem::Map map, QWidget *parent) :
+MapEditerDialog::MapEditerDialog(GameMap map, QWidget *parent) :
     QDialog(parent),
     clicking(false),
     ui(new Ui::MapEditerDialog),
@@ -295,7 +295,7 @@ void MapEditerDialog::SelectItem(QListWidgetItem *next)
 *
 *   @return マップ
 ****************************************************************************/
-GameSystem::Map MapEditerDialog::GetMap(){
+GameMap MapEditerDialog::GetMap(){
     // 戻り値[マップ]
     return ui->Board->map;
 }

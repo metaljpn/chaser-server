@@ -1,17 +1,13 @@
 /****************************************************************************
 *   SYSTEM  :   CHaserサーバー
 *----------------------------------------------------------------------------
-*   NOTE    :   マップ管理
+*   NOTE    :   ゲーム管理
 ****************************************************************************/
 #ifndef GAMESYSTEM_H
 #define GAMESYSTEM_H
 
 #include <QPoint>                       // 位置
-#include <QVector>                      // 動的配列
-
-// 二次元配列エイリアス
-template <class T>
-using Field = QVector<QVector<T>>;
+#include <QString>                      // 文字列
 
 // チーム情報マクロ
 #define TEAM_COUNT 2                    // チーム数
@@ -19,11 +15,6 @@ using Field = QVector<QVector<T>>;
 
 class GameSystem
 {
-private:
-    // マップサイズ
-    const static int DEFAULT_MAP_WIDTH  = 15;
-    const static int DEFAULT_MAP_HEIGHT = 17;
-
 public:
     // チーム種別
     enum class TEAM{
@@ -52,12 +43,6 @@ public:
         ITEM,                           // アイテム
     };
 
-    // 探索状態
-    enum class DISCOVER{
-        UNKNOWN,                        // 未探索
-        EXPLORED,                       // 探索済
-    };
-
     // マップ上に描画する非物体(行動効果)
     enum class MAP_OVERLAY{
         NOTHING,                        // 無し
@@ -66,34 +51,6 @@ public:
         GETREADY,                       // 周辺情報確認
         BLIND,                          // 暗闇
         ERASE,                          // 消去(未選択)
-    };
-
-    // ゲーム盤
-    struct Map{
-        Field<GameSystem::MAP_OBJECT> field;    // 物体フィールド
-        Field<GameSystem::DISCOVER> discover;   // 探索状態
-        int turn;                               // ターン
-        QString name;                           // ステージ名
-        QPoint size;                            // マップサイズ
-        QPoint team_first_point[TEAM_COUNT];    // チーム初期位置
-        QString texture_dir_path;               // テクスチャパス
-
-        Map();
-
-        // サイズ設定
-        void SetSize(QPoint size, int block_num = 20, int item_num = 51);
-        // 対称位置取得
-        QPoint MirrorPoint(const QPoint& pos);
-        // ランダムマップ生成
-        void CreateRandomMap(int block_num = 20, int item_num = 51);
-        // 設定読込
-        bool Import(QString Filename);
-        // 設定書込
-        bool Export(QString Filename);
-        // チーム名先頭文字取得
-        QString getTeamName(GameSystem::TEAM team);
-        // ブロック配置確認
-        bool CheckBlockRole(QPoint pos);
     };
 
     // クライアント行動

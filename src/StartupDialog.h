@@ -8,6 +8,7 @@
 
 #include <QDialog>                      // ダイアログ
 #include "ClientSettingForm.h"          // クライアント設定画面
+#include "GameMap.h"                    // マップ管理
 
 namespace Ui {
 class StartupDialog;
@@ -32,7 +33,7 @@ private:
     void CheckStandby();                // ゲーム開始可否確認
 
 public:
-    GameSystem::Map map;                // マップ情報
+    GameMap map;                        // マップ情報
     QString music_text;                 // BGM名
 
     // クライアント設定画面

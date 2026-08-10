@@ -9,6 +9,7 @@
 #include <QDialog>                      // ダイアログ
 #include <QListWidgetItem>              // アイテムリスト
 #include "GameSystem.h"                 // マップ管理
+#include "GameMap.h"                    // マップ管理
 
 namespace Ui {
 class MapEditerDialog;
@@ -33,9 +34,9 @@ private:
 
 public:
     QString filepath;                   // マップ保存フルパス
-    GameSystem::Map GetMap();           // マップ取得
+    GameMap GetMap();                   // マップ取得
 
-    explicit MapEditerDialog(GameSystem::Map map,QWidget *parent = 0);
+    explicit MapEditerDialog(GameMap map,QWidget *parent = 0);
     ~MapEditerDialog();
 
 private slots:

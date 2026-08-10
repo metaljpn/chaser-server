@@ -89,7 +89,7 @@ void GameBoard::paintEvent([[maybe_unused]] QPaintEvent *event){
                                            field_resource[static_cast<int>(map.field[i][j])]);
                     }
                     // 暗闇モード時未探索
-                    if(map.discover[i][j] == GameSystem::DISCOVER::UNKNOWN){
+                    if(map.discover[i][j] == GameMap::DISCOVER::UNKNOWN){
                         // 暗闇描画
                         painter.drawPixmap(j * image_part.width() ,
                                            i * image_part.height(),
@@ -141,7 +141,7 @@ GameSystem::MAP_OBJECT GameBoard::FieldAccess(GameSystem::Method method, const Q
     if(pos.x() >= map.size.x() || pos.y() >= map.size.y())return GameSystem::MAP_OBJECT::BLOCK;
 
     // 探索済設定
-    map.discover[pos.y()][pos.x()] = GameSystem::DISCOVER::EXPLORED;
+    map.discover[pos.y()][pos.x()] = GameMap::DISCOVER::EXPLORED;
 
     // オーバーレイ(行動効果)設定
     if(method.action == GameSystem::Method::ACTION::LOOK    )overlay[pos.y()][pos.x()] = GameSystem::MAP_OVERLAY::LOOK;
@@ -277,7 +277,7 @@ void GameBoard::PickItem(GameSystem::Method method){
 *
 *   @param mapinfo マップ情報
 ****************************************************************************/
-void GameBoard::setMap(const GameSystem::Map& mapinfo){
+void GameBoard::setMap(const GameMap& mapinfo){
     // マップ情報取得
     map = mapinfo;
     // 使用テクスチャディレクトリ取得
@@ -300,7 +300,7 @@ void GameBoard::setMap(const GameSystem::Map& mapinfo){
     // 探索状態サイズ設定
     map.discover.resize(map_height);
     // 探索状態初期化
-    for(auto& v : map.discover)v = QVector<GameSystem::DISCOVER>(map_width,GameSystem::DISCOVER::EXPLORED);
+    for(auto& v : map.discover)v = QVector<GameMap::DISCOVER>(map_width,GameMap::DISCOVER::EXPLORED);
 }
 
 /****************************************************************************
