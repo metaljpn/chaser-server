@@ -23,12 +23,13 @@ class MainWindow : public QMainWindow
 private:
     // 勝者
     enum class WINNER{
-        TEAMS,                          // チーム
+        COOL,                           // COOL
+        HOT,                            // HOT
         DRAW,                           // 引き分け
         CONTINUE,                       // 継続
     };
 
-    int player;                         // 次ターン行動チーム
+    int player;                         // 行動チーム
     int frame_rate = 150;               // ゲームフレームレート
     QTimer* clock;                      // ゲームクロック
     QTimer* startup_anime;              // 開始アニメーション
@@ -67,7 +68,7 @@ private:
     // 勝敗通知
     void Finish(WINNER win);
     // チーム名取得
-    QString getTeamName(GameSystem::TEAM team);
+    QString getTeamName(TEAM team);
 
 public:
     explicit MainWindow(QWidget *parent = 0);

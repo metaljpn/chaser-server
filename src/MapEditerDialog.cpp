@@ -136,10 +136,10 @@ void MapEditerDialog::FillItem(const QPoint& pos)
     // ターゲット(相手)
     if(ui->listWidget->selectedItems().first()->text() == "Target" ){
         // 初期位置変更
-        this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)] = fill_point;
-        this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )] = ui->Board->map.MirrorPoint(fill_point);
-        this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = fill_point;
-        this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = ui->Board->map.MirrorPoint(fill_point);
+        this->ui->Board->map.team_first_point[static_cast<int>(TEAM::COOL)] = fill_point;
+        this->ui->Board->map.team_first_point[static_cast<int>(TEAM::HOT )] = ui->Board->map.MirrorPoint(fill_point);
+        this->ui->Board->team_pos[static_cast<int>(TEAM::COOL)] = fill_point;
+        this->ui->Board->team_pos[static_cast<int>(TEAM::HOT )] = ui->Board->map.MirrorPoint(fill_point);
     }else{
         // オブジェクト配置
         this->ui->Board->map.field[fill_point.y()][fill_point.x()] = obj;
@@ -215,9 +215,9 @@ void MapEditerDialog::randomGenerateButtonPressed()
     }
 
     // COOL側初期位置
-    this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::COOL)] = this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::COOL)];
+    this->ui->Board->team_pos[static_cast<int>(TEAM::COOL)] = this->ui->Board->map.team_first_point[static_cast<int>(TEAM::COOL)];
     // HOT側初期位置
-    this->ui->Board->team_pos[static_cast<int>(GameSystem::TEAM::HOT )] = this->ui->Board->map.team_first_point[static_cast<int>(GameSystem::TEAM::HOT )];
+    this->ui->Board->team_pos[static_cast<int>(TEAM::HOT )] = this->ui->Board->map.team_first_point[static_cast<int>(TEAM::HOT )];
 
     // マップ設定
     ui->Board->setMap(ui->Board->map);

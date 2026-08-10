@@ -85,7 +85,7 @@ Operation TCPClient::WaitReturnOperation(AroundData data)
     // TCPクライアント無効
     if (client == nullptr)
         // 戻り値[チーム名:不明 行動:不明 方向:不明]
-        return Operation{GameSystem::TEAM::UNKNOWN,
+        return Operation{TEAM::UNKNOWN,
                          Operation::ACTION::UNKNOWN,
                          Operation::ROTE::UNKNOWN};
     // 周辺情報送信
@@ -101,7 +101,7 @@ Operation TCPClient::WaitReturnOperation(AroundData data)
         return Operation::fromString(response);
     else
         // 戻り値[チーム名:不明 行動:不明 方向:不明]
-        return Operation{GameSystem::TEAM::UNKNOWN,
+        return Operation{TEAM::UNKNOWN,
                          Operation::ACTION::UNKNOWN,
                          Operation::ROTE::UNKNOWN};
 }

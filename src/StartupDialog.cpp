@@ -39,8 +39,8 @@ StartupDialog::StartupDialog(QWidget *parent)
     ui->HotGroupBox->SetPortSpin(2010);
 
     // クライアント初期化
-    this->team_client[static_cast<int>(GameSystem::TEAM::COOL)] = ui->CoolGroupBox;
-    this->team_client[static_cast<int>(GameSystem::TEAM::HOT)] = ui->HotGroupBox;
+    this->team_client[static_cast<int>(TEAM::COOL)] = ui->CoolGroupBox;
+    this->team_client[static_cast<int>(TEAM::HOT)] = ui->HotGroupBox;
     // チーム数分
     for (int i = 0; i < TEAM_COUNT; i++) {
         // チーム準備状態初期化

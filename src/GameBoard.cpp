@@ -148,7 +148,7 @@ GameMap::OBJECT GameBoard::FieldAccess(Operation method, const QPoint& pos){
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // 自チームは対象外
-        if(static_cast<GameSystem::TEAM>(i) == method.team)continue;
+        if(static_cast<TEAM>(i) == method.team)continue;
         // 戻り値[ターゲット位置]
         if(team_pos[i] == pos)return GameMap::OBJECT::TARGET;
     }
@@ -164,7 +164,7 @@ GameMap::OBJECT GameBoard::FieldAccess(Operation method, const QPoint& pos){
 *
 *   @param team チーム
 ****************************************************************************/
-AroundData GameBoard::FieldAccessAround(GameSystem::TEAM team){
+AroundData GameBoard::FieldAccessAround(TEAM team){
     // 戻り値[周辺情報]
     return FieldAccessAround(Operation{team,Operation::ACTION::UNKNOWN,Operation::ROTE::UNKNOWN},
                              team_pos[static_cast<int>(team)]);
@@ -350,8 +350,8 @@ void GameBoard::LoadTexture(QString tex_dir_path){
     this->texture_dir_path = tex_dir_path;
 
     // チーム画像読込
-    this->team_resource   [static_cast<int>(GameSystem::TEAM::COOL)]     = QPixmap(tex_dir_path + "/Cool.png");
-    this->team_resource   [static_cast<int>(GameSystem::TEAM::HOT)]      = QPixmap(tex_dir_path + "/Hot.png");
+    this->team_resource   [static_cast<int>(TEAM::COOL)]     = QPixmap(tex_dir_path + "/Cool.png");
+    this->team_resource   [static_cast<int>(TEAM::HOT)]      = QPixmap(tex_dir_path + "/Hot.png");
     // フィールド画像読込
     this->field_resource  [static_cast<int>(GameMap::OBJECT::NOTHING)]   = QPixmap(tex_dir_path + "/Floor.png");
     this->field_resource  [static_cast<int>(GameMap::OBJECT::TARGET)]    = QPixmap();

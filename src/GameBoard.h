@@ -44,7 +44,7 @@ public:
     // 指定位置物体種別取得
     GameMap::OBJECT FieldAccess(Operation method, const QPoint& pos);
     // 周辺確認
-    AroundData FieldAccessAround(GameSystem::TEAM team);
+    AroundData FieldAccessAround(TEAM team);
     // 指定位置周辺確認
     AroundData FieldAccessAround(Operation method, const QPoint& center);
     // 行動後周辺確認

@@ -37,7 +37,7 @@ bool ComClient::WaitGetReady()
 Operation ComClient::WaitReturnOperation([[maybe_unused]] AroundData data)
 {
     // 戻り値[チーム:不明、行動:検索、方向:上]
-    return Operation{GameSystem::TEAM::UNKNOWN, Operation::ACTION::SEARCH,Operation::ROTE::UP};
+    return Operation{TEAM::UNKNOWN, Operation::ACTION::SEARCH,Operation::ROTE::UP};
 }
 
 /****************************************************************************

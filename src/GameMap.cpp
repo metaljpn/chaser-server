@@ -196,7 +196,7 @@ bool GameMap::Import(QString Filename){
             // チーム数分
             for(int i=0;i<TEAM_COUNT;i++){
                 // チーム名検出
-                if(str[0]==getTeamName(static_cast<GameSystem::TEAM>(i)).at(0)){
+                if(str[0]==getTeamName(static_cast<TEAM>(i)).at(0)){
                     // 座標取得
                     QStringList list = str.remove(0,2).split(",");
                     // 初期位置設定
@@ -267,7 +267,7 @@ bool GameMap::Export(QString Filename){
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // チーム名及び初期位置を出力
-        stream << QString(getTeamName(static_cast<GameSystem::TEAM>(i)).at(0))
+        stream << QString(getTeamName(static_cast<TEAM>(i)).at(0))
                           + ":"
                           + QString::number(team_first_point[i] .x())
                           + ","
@@ -288,11 +288,11 @@ bool GameMap::Export(QString Filename){
 *
 *   @param team チーム種別
 ****************************************************************************/
-QString GameMap::getTeamName(GameSystem::TEAM team){
+QString GameMap::getTeamName(TEAM team){
     // COOL文字列
-    if(team == GameSystem::TEAM::COOL)return "C";
+    if(team == TEAM::COOL)return "C";
     // HOT文字列
-    if(team == GameSystem::TEAM::HOT) return "H";
+    if(team == TEAM::HOT) return "H";
     // 不明
     return "UNKNOWN";
 }

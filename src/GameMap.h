@@ -66,7 +66,7 @@ public:
     // 設定書込
     bool Export(QString Filename);
     // チーム名先頭文字取得
-    QString getTeamName(GameSystem::TEAM team);
+    QString getTeamName(TEAM team);
     // ブロック配置確認
     bool CheckBlockRole(QPoint pos);
 };

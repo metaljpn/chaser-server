@@ -9,18 +9,14 @@
 #include <QPoint>                       // 位置
 #include <QString>                      // 文字列
 
-// チーム情報マクロ
+// チーム情報
 #define TEAM_COUNT 2                    // チーム数
-#define TEAMS COOL,HOT                  // チーム名
 
-// 共通定義
-struct GameSystem
-{
-    // チーム種別
-    enum class TEAM{
-        TEAMS,
-        UNKNOWN
-    };
+// チーム種別
+enum class TEAM{
+    COOL,                               // COOL
+    HOT,                                // HOT
+    UNKNOWN                             // 不明
 };
 
 // 動作
@@ -43,9 +39,9 @@ struct Operation{
         UNKNOWN                         // 不明
     };
 
-    GameSystem::TEAM team;              // チーム
+    TEAM team;                          // チーム
     ACTION action;                      // 行動
-    ROTE   rote;                        // 方向
+    ROTE rote;                          // 方向
 
     // 方向別座標取得
     QPoint  GetRoteVector();
