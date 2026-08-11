@@ -27,6 +27,9 @@ StartupDialog::StartupDialog(QWidget *parent)
 {
     // UI初期化
     ui->setupUi(this);
+    // HOT設定非表示
+    ui->HotGroupBox->hide();
+
     // BGMリスト生成
     setMusicFileList();
     // テクスチャリスト生成
@@ -46,11 +49,13 @@ StartupDialog::StartupDialog(QWidget *parent)
         // チーム準備状態初期化
         team_standby[i] = false;
     }
+    // HOT側無条件準備済
+    team_standby[static_cast<int>(TEAM::HOT)] = true;
 
     // HOT側ポート番号シグナル･スロット設定
     connect(ui->HotGroupBox,  &ClientSettingForm::Standby, this, &StartupDialog::ClientStandby);
     // COOL側ポート番号シグナル･スロット設定
-    connect(ui->CoolGroupBox, &ClientSettingForm::Standby, this, &StartupDialog::ClientStandby);
+    connect(ui->CoolGroupBox,  &ClientSettingForm::Standby, this, &StartupDialog::ClientStandby);
 
     // ローカルIPの探索
     foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {

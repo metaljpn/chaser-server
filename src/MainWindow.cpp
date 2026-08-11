@@ -29,6 +29,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     // UI設定
     ui->setupUi(this);
+    // HOT情報非表示
+    ui->HotGroup->hide();
+
     // 起動画面生成
     this->startup = new StartupDialog();
     // 勝者初期化
@@ -43,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
             // デバッグ出力
             qDebug() << this->ui->Board->team_pos[i];
         }
+
         // UI初期化
         this->ui->Board->setMap(this->startup->map);            // マップ設定
         this->ui->TimeBar->setMaximum(this->startup->map.turn); // 進捗バー最大値
@@ -54,11 +58,6 @@ MainWindow::MainWindow(QWidget *parent) :
             this->startup->team_client[static_cast<int>(TEAM::COOL)]->client->Name == "" ?
                 "Cool" :
                 this->startup->team_client[static_cast<int>(TEAM::COOL)]->client->Name);
-        // HOT名
-        this->ui->HotNameLabel->setText(
-            this->startup->team_client[static_cast<int>(TEAM::HOT )]->client->Name == "" ?
-                "Hot" :
-                this->startup->team_client[static_cast<int>(TEAM::HOT )]->client->Name);
     }else{
         // アプリケーション終了
         exit(0);
@@ -168,6 +167,7 @@ MainWindow::MainWindow(QWidget *parent) :
             if(startup->map.field[i][j] == GameMap::OBJECT::ITEM)this->ui->Board->leave_items++;
         }
     }
+
     // アイテム数表示
     ui->ItemLeaveLabel->setText(QString::number(this->ui->Board->leave_items));
 
@@ -406,7 +406,7 @@ void MainWindow::SetTeamAnimation()
     ui->Board->team_pos[team_count] = this->startup->map.team_first_point[team_count];
 
     // チーム数到達
-    if(team_count == TEAM_COUNT){
+    if((team_count == TEAM_COUNT)||(static_cast<TEAM>(team_count)==TEAM::HOT)){
         // 暗闇モード
         if(dark == true){
             // タイマー
@@ -513,6 +513,8 @@ void MainWindow::StepGame()
         qDebug() << QString("-----残") + QString::number(turn_count) + "ターン-----";
     }
 
+    player = 0;
+
     // ターン開始
     if(getready_flag){
         // 開始異常
@@ -604,7 +606,7 @@ void MainWindow::StepGame()
             log << getTime() + getTeamName(static_cast<TEAM>(player)) + ":" + team_around.toString() << "\r\n";
 
             // 最終チーム
-            if(player ==  TEAM_COUNT-1){
+            if((player ==  TEAM_COUNT-1)||(static_cast<TEAM>(player)==TEAM::COOL)){
                 // 進捗バー更新
                 ui->TimeBar->setValue(this->ui->TimeBar->value() - 1);
                 ui->TimeBar->repaint();
@@ -729,11 +731,15 @@ QString MainWindow::convertString(Operation method)
 MainWindow::WINNER MainWindow::Judge()
 {
     bool team_lose[TEAM_COUNT];             // 敗者チーム
+#if 0
     int _player = player;                   // 次ターンのチーム
     GameBoard*& board = this->ui->Board;    // ボード盤
+#endif
 
     // 敗者チーム初期化
     for(int i=0;i<TEAM_COUNT;i++)team_lose[i] = false;
+
+#if 0
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
         // 現在のチームを取得
@@ -780,6 +786,7 @@ MainWindow::WINNER MainWindow::Judge()
             break;
         }
     }
+#endif
 
     // 相打ち or 時間切れ
     if(!std::find(team_lose,team_lose+TEAM_COUNT,false) || ui->TimeBar->value()==0){
@@ -811,6 +818,8 @@ MainWindow::WINNER MainWindow::Judge()
             // 最高得点更新ならば勝者
             if(this->ui->Board->team_score[index] < this->ui->Board->team_score[i])index = i;
         }
+        // COOL強制勝利
+        index = 0;
         // 戻り値[勝者]
         return static_cast<WINNER>(index);
     }
@@ -864,6 +873,7 @@ void MainWindow::Finish(WINNER winner)
     if(winner == WINNER::COOL){
         // 勝利通知
         this->ui->WinnerLabel->setText("COOL WIN!" + append_str);
+        this->ui->WinnerLabel->setText("GAME END" + append_str);
         // 勝利ログ出力
         log << getTime() + "[決着]COOLが勝利しました。" << "\r\n";
         // ボット戦モード

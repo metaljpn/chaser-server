@@ -13,7 +13,7 @@
 *   コンストラクタ
 ****************************************************************************/
 GameMap::GameMap():
-    turn(100),                                  // ターン数
+    turn(50),                                   // ターン数
     name("[DEFAULT MAP]"),                      // マップ名
     size(DEFAULT_MAP_WIDTH,DEFAULT_MAP_HEIGHT), // サイズ
     texture_dir_path(":/Image/Jewel")           // テクスチャパス
@@ -55,7 +55,6 @@ QPoint GameMap::MirrorPoint(const QPoint& pos){
 *   @param item_num  アイテム数
 ****************************************************************************/
 void GameMap::CreateRandomMap(int block_num, int item_num){
-    turn = 100;                         // ターン数
     name = "[RANDOM MAP]";              // マップ名
 
     // 一様ノルム(L∞ノルム)
@@ -82,6 +81,7 @@ void GameMap::CreateRandomMap(int block_num, int item_num){
 
     // HOT側の初期位置を点対称に配置
     team_first_point[1] = MirrorPoint(team_first_point[0]);
+    team_first_point[1] = QPoint(99,99);
 
     // フィールド初期化
     field.clear();
