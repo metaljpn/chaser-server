@@ -52,10 +52,12 @@ StartupDialog::StartupDialog(QWidget *parent)
     // HOT側無条件準備済
     team_standby[static_cast<int>(TEAM::HOT)] = true;
 
-    // HOT側ポート番号シグナル･スロット設定
-    connect(ui->HotGroupBox,  &ClientSettingForm::Standby, this, &StartupDialog::ClientStandby);
     // COOL側ポート番号シグナル･スロット設定
     connect(ui->CoolGroupBox,  &ClientSettingForm::Standby, this, &StartupDialog::ClientStandby);
+    // COOL側待機開始
+    ui->CoolGroupBox->ConnectionToggled(true);
+    // HOT側ポート番号シグナル･スロット設定
+    connect(ui->HotGroupBox,  &ClientSettingForm::Standby, this, &StartupDialog::ClientStandby);
 
     // ローカルIPの探索
     foreach (const QHostAddress &address, QNetworkInterface::allAddresses()) {
