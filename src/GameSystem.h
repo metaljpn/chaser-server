@@ -20,7 +20,8 @@ enum class TEAM{
 };
 
 // 動作
-struct Operation{
+class Operation{
+public:
     // 行動
     enum class ACTION{
         WALK,                           // 指定方向移動
