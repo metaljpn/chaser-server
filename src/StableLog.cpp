@@ -37,13 +37,14 @@ StableLog::StableLog(QString filename)
     QTextStream log;
 
     // ログファイル書込オープン
-    file.open(QIODevice::WriteOnly);
-    // ログデバイス設定
-    log.setDevice(&file);
-    // ログ見出し出力
-    log << "--Stable Log--\r\n";
-    // ログファイルクローズ
-    file.close();
+    if(file.open(QIODevice::WriteOnly)){
+        // ログデバイス設定
+        log.setDevice(&file);
+        // ログ見出し出力
+        log << "--Stable Log--\r\n";
+        // ログファイルクローズ
+        file.close();
+    }
 }
 
 /****************************************************************************
@@ -71,11 +72,12 @@ void StableLog::Write(const QString &str) const
     QFile file(m_filename);
 
     // 追記書込オープン
-    file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text);
-    // 書込
-    file.write(str.toUtf8());
-    // クローズ
-    file.close();
+    if(file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text)){
+        // 書込
+        file.write(str.toUtf8());
+        // クローズ
+        file.close();
+    }
 }
 
 /****************************************************************************

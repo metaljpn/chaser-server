@@ -228,7 +228,12 @@ bool GameMap::Export(QString Filename){
     // 拡張子が"txt"
     if (fileExt == "txt") {
         // 追記書込オープン
-        file.open(QIODevice::WriteOnly | QIODevice::Append);
+        if(!file.open(QIODevice::WriteOnly | QIODevice::Append)){
+            // オープン異常通知
+            QMessageBox::information(nullptr, "追記モードでファイルを開けません", file.errorString());
+            // 戻り値[異常]
+            return false;
+        }
     } else {
         // 書込専用以外
         if (!file.open(QIODevice::WriteOnly)) {
