@@ -731,17 +731,16 @@ QString MainWindow::convertString(Operation method)
 MainWindow::WINNER MainWindow::Judge()
 {
     bool team_lose[TEAM_COUNT];             // 敗者チーム
-#if 0
     int _player = player;                   // 次ターンのチーム
     GameBoard*& board = this->ui->Board;    // ボード盤
-#endif
 
     // 敗者チーム初期化
     for(int i=0;i<TEAM_COUNT;i++)team_lose[i] = false;
 
-#if 0
     // チーム数分
     for(int i=0;i<TEAM_COUNT;i++){
+        // 相手チームを取得
+        _player = (_player + 1) % TEAM_COUNT;
         // 現在のチームを取得
         _player = (_player + 1) % TEAM_COUNT;
         // フィールド周辺確認
@@ -785,8 +784,10 @@ MainWindow::WINNER MainWindow::Judge()
             // ループ脱出
             break;
         }
+
+        // ループ脱出
+        break;
     }
-#endif
 
     // 相打ち or 時間切れ
     if(!std::find(team_lose,team_lose+TEAM_COUNT,false) || ui->TimeBar->value()==0){
@@ -887,6 +888,7 @@ void MainWindow::Finish(WINNER winner)
     if(winner == WINNER::HOT){
         // 勝利通知
         this->ui->WinnerLabel->setText("HOT WIN!"  + append_str);
+        this->ui->WinnerLabel->setText("GAME OVER" + append_str);
         // 勝利ログ出力
         log << getTime() + "[決着]HOTが勝利しました。" << "\r\n";
         // ボット戦モード
