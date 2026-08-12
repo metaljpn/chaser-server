@@ -13,7 +13,7 @@
 template <class T>
 using Field = QVector<QVector<T>>;
 
-struct GameMap
+class GameMap
 {
 private:
     // マップサイズ
@@ -72,7 +72,8 @@ public:
 };
 
 // 周辺情報
-struct AroundData{
+class AroundData{
+public:
     // 接続状態
     enum class CONNECTING_STATUS{
         FINISHED,                       // 終了
