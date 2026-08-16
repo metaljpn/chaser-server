@@ -297,11 +297,13 @@ void MainWindow::DrawMapAnimation()
     ui->Board->ResetEffect();
 
     // 位置
-    QPoint pos[2];
+    QPoint pos[3];
     // ランダム座標でフィールド描画
     if(ANIMATION_TYPE == 0){
         // 表示数
         int i_max = 2;
+        // 初回ならばループ上限補正
+        if(timer == 1)i_max++;
         // 指定個数分
         for(int i=0;i<i_max;i++){
             do{
