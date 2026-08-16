@@ -904,6 +904,7 @@ void MainWindow::Finish(WINNER winner)
     if(winner == WINNER::DRAW){
         // 引き分け通知
         this->ui->WinnerLabel->setText("DRAW");
+        this->ui->WinnerLabel->setText("GAME END" + append_str);
         // 引き分けログ出力
         log << getTime() + "[決着]引き分けです。" << "\r\n";
     }
