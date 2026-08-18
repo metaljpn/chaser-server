@@ -39,13 +39,13 @@ public:
     ~MapEditerDialog();
 
 private slots:
-    void ComboChanged();                // エリア選択
-    void SpinChanged(int value);        // ターン数変更
-    void randomGenerateButtonPressed(); // [ランダム生成]ボタン押下
-    void Clear();                       // [全消し]ボタン押下
-    void Export();                      // [書き出し]ボタン押下
-    // オブジェクト選択
-    void SelectItem(QListWidgetItem* next);
+    void ComboChanged();                        // エリア選択
+    void SpinChanged(int value);                // ターン数変更
+    void randomGenerateButtonPressed();         // [ランダム生成]ボタン押下
+    void randomGenerateButtonPressedOld();      // 旧[ランダム生成]ボタン押下
+    void Clear();                               // [全消し]ボタン押下
+    void Export();                              // [書き出し]ボタン押下
+    void SelectItem(QListWidgetItem* next);     // オブジェクト選択
 };
 
 #endif // MAPEDITERDIALOG_H

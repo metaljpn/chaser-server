@@ -5,6 +5,7 @@
 ****************************************************************************/
 #include "StableLog.h"                  // ログ管理
 
+#include <QDebug>                       // デバッグ情報
 #include <QFile>                        // ファイルアクセス
 #include <QTextStream>                  // テキストアクセス
 
@@ -37,14 +38,20 @@ StableLog::StableLog(QString filename)
     QTextStream log;
 
     // ログファイル書込オープン
-    if(file.open(QIODevice::WriteOnly)){
-        // ログデバイス設定
-        log.setDevice(&file);
-        // ログ見出し出力
-        log << "--Stable Log--\r\n";
-        // ログファイルクローズ
-        file.close();
+    if(!file.open(QIODevice::WriteOnly)){
+        // 異常通知
+        qDebug() << "ログファイルのオープンに失敗しました : ";
+        qDebug() << file.errorString();
+        // 関数終了
+        return;
     }
+
+    // ログデバイス設定
+    log.setDevice(&file);
+    // ログ見出し出力
+    log << "--Stable Log--\r\n";
+    // ログファイルクローズ
+    file.close();
 }
 
 /****************************************************************************
@@ -72,12 +79,18 @@ void StableLog::Write(const QString &str) const
     QFile file(m_filename);
 
     // 追記書込オープン
-    if(file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text)){
-        // 書込
-        file.write(str.toUtf8());
-        // クローズ
-        file.close();
+    if(!file.open(QIODevice::Append | QIODevice::Unbuffered | QIODevice::Text)){
+        // 異常通知
+        qDebug() << "ログファイルのオープンに失敗しました : ";
+        qDebug() << file.errorString();
+        // 関数終了
+        return;
     }
+
+    // 書込
+    file.write(str.toUtf8());
+    // クローズ
+    file.close();
 }
 
 /****************************************************************************

@@ -29,7 +29,7 @@ public:
         SEARCH,                         // 指定方向直線確認
         PUT,                            // 指定方向ブロック配置
         GETREADY,                       // 周辺情報確認
-        UNKNOWN,                        // 不明
+        UNKNOWN                         // 不明
     };
     // 方向
     enum class ROTE{

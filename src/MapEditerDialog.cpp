@@ -68,6 +68,7 @@ MapEditerDialog::MapEditerDialog(GameMap map, QWidget *parent) :
 
     // [ランダム生成]ボタンイベント設定
     connect(ui->randomGenerateButton, &QPushButton::pressed, this, &MapEditerDialog::randomGenerateButtonPressed);
+    connect(ui->randomGenerateButtonOld, &QPushButton::pressed, this, &MapEditerDialog::randomGenerateButtonPressedOld);
 }
 
 /****************************************************************************
@@ -199,6 +200,40 @@ void MapEditerDialog::SpinChanged(int value){
 *   [ランダム生成]ボタン押下
 ****************************************************************************/
 void MapEditerDialog::randomGenerateButtonPressed()
+{
+    // エリア文字列取得
+    auto fieldSizeText = ui->comboBox->currentText();
+
+    // 広域
+    if(fieldSizeText=="広域(21x17)"){
+        // フィールドサイズ設定
+        this->ui->Board->map.SetSize(QPoint(21,17), ui->BlockSpin->value(), ui->ItemSpin->value());
+    }
+    // 決戦
+    else if(fieldSizeText=="決戦(15x17)"){
+        // フィールドサイズ設定
+        this->ui->Board->map.SetSize(QPoint(15,17), ui->BlockSpin->value(), ui->ItemSpin->value());
+    }
+
+    // COOL側初期位置
+    this->ui->Board->team_pos[static_cast<int>(TEAM::COOL)] = this->ui->Board->map.team_first_point[static_cast<int>(TEAM::COOL)];
+    // HOT側初期位置
+    this->ui->Board->team_pos[static_cast<int>(TEAM::HOT )] = this->ui->Board->map.team_first_point[static_cast<int>(TEAM::HOT )];
+
+    // マップ設定
+    ui->Board->setMap(ui->Board->map);
+    // 描画更新
+    paintEvent(nullptr);
+    // オブジェクト数更新
+    ReCount();
+    // 再描画
+    update();
+}
+
+/****************************************************************************
+*   旧[ランダム生成]ボタン押下
+****************************************************************************/
+void MapEditerDialog::randomGenerateButtonPressedOld()
 {
     // エリア文字列取得
     auto fieldSizeText = ui->comboBox->currentText();

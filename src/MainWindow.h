@@ -26,7 +26,7 @@ private:
         COOL,                           // COOL
         HOT,                            // HOT
         DRAW,                           // 引き分け
-        CONTINUE,                       // 継続
+        CONTINUE                        // 継続
     };
 
     int player;                         // 行動チーム
@@ -42,19 +42,25 @@ private:
     bool dark;                          // 暗闇モード
     bool isbotbattle;                   // ボット戦モード
     StableLog log;                      // ログストリーム
-    int anime_map_time   = 6000;        // マップ描画時間
-    int anime_team_time  = 2000;        // チーム配置アニメーション時間
-    int anime_blind_time = 1000;        // 暗闇アニメーション時間
-    float audio_volume = 0.8f;          // 音量
-    WINNER win;                         // 勝者
 
-    Ui::MainWindow *ui;                 // UI
+    constexpr static int DEFAULT_ANIME_MAP_TIME   = 6000;   // マップ描画時間
+    constexpr static int DEFAULT_ANIME_TEAM_TIME  = 2000;   // チーム配置時間
+    constexpr static int DEFAULT_ANIME_BLIND_TIME = 1000;   // 暗闇アニメーション時間
+    constexpr static float DEFAULT_AUDIO_VOLUME   = 0.8f;   // 音量
+
+    int anime_map_time   = DEFAULT_ANIME_MAP_TIME;          // マップ描画時間
+    int anime_team_time  = DEFAULT_ANIME_TEAM_TIME;         // チーム配置時間
+    int anime_blind_time = DEFAULT_ANIME_BLIND_TIME;        // 暗闇アニメーション時間
+	float audio_volume = DEFAULT_AUDIO_VOLUME;              // 音量
+    WINNER win;                                             // 勝者
+
+    Ui::MainWindow *ui;                                     // UI
 
     // インスタンス
     static MainWindow* s_instance;
-    // メッセージハンドラ退避
+	// メッセージハンドラ退避
     static QtMessageHandler s_prevMsgHandler;
-    // メッセージハンドラ
+	// メッセージハンドラ
     static void s_messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg);
     // 日時取得
     static QString getTime();
@@ -62,7 +68,7 @@ private:
     // 得点更新
     void ScoreUpdate(Operation method);
     // クライアント行動文字列変換
-    QString convertString(Operation method);
+    static QString convertString(Operation method);
     // 勝敗判定
     WINNER Judge();
     // 勝敗通知

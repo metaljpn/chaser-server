@@ -191,9 +191,9 @@ void ClientSettingForm::DisConnected() {
     if (dynamic_cast<TCPClient*>(this->client) != nullptr) {
         // ソケットクローズ
         dynamic_cast<TCPClient*>(this->client)->CloseSocket();
-        // 再生成
-        this->client = new TCPClient(this);
     }
+    // 再生成
+    this->client = new TCPClient(this);
 
     // 接続時のシグナル･スロット設定
     connect(this->client, &TCPClient::Connected,    this, &ClientSettingForm::Connected);
@@ -202,7 +202,7 @@ void ClientSettingForm::DisConnected() {
     // 切断時のシグナル･スロット設定
     connect(this->client, &TCPClient::Disconnected, this, &ClientSettingForm::DisConnected);
     // シグナル･スロット設定直後処理
-    if(this->client != nullptr) this->client->Startup();
+    this->client->Startup();
     // ボタンキャプション
     this->ui->ConnectButton->setText("接続開始");
     // 状態
