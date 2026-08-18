@@ -16,9 +16,13 @@ using Field = QVector<QVector<T>>;
 class GameMap
 {
 private:
-    // マップサイズ
-    const static int DEFAULT_MAP_WIDTH  = 15;
-    const static int DEFAULT_MAP_HEIGHT = 17;
+    // 通常マップサイズ
+    static constexpr int DEFAULT_MAP_WIDTH  = 15;
+    static constexpr int DEFAULT_MAP_HEIGHT = 17;
+
+    // 通常アイテム・ブロック数
+    static constexpr int DEFAULT_ITEM_NUM = 50;
+	static constexpr int DEFAULT_BLOCK_NUM = 20;
 
 public:
     // マップ上に存在する物体
@@ -56,11 +60,11 @@ public:
     GameMap();
 
     // サイズ設定
-    void SetSize(QPoint size, int block_num = 20, int item_num = 51);
+    void SetSize(QPoint size, int block_num = DEFAULT_BLOCK_NUM, int item_num = DEFAULT_ITEM_NUM, bool isOldMap = false);
     // 対称位置取得
     QPoint MirrorPoint(const QPoint& pos);
     // ランダムマップ生成
-    void CreateRandomMap(int block_num = 20, int item_num = 51);
+    void CreateRandomMap(int block_num = DEFAULT_BLOCK_NUM, int item_num = DEFAULT_ITEM_NUM, bool isOldMap = false);
     // 設定読込
     bool Import(QString Filename);
     // 設定書込
@@ -69,6 +73,8 @@ public:
     QString getTeamName(TEAM team);
     // ブロック配置確認
     bool CheckBlockRole(QPoint pos);
+    // 旧ブロック配置確認
+    bool CheckBlockRoleOld(QPoint pos);
 };
 
 // 周辺情報

@@ -26,12 +26,13 @@ GameMap::GameMap():
 *   @param size      サイズ情報
 *   @param block_num ブロック数
 *   @param item_num  アイテム数
+*   @param isOldMap  旧マップ
 ****************************************************************************/
-void GameMap::SetSize(QPoint size, int block_num, int item_num){
+void GameMap::SetSize(QPoint size, int block_num, int item_num, bool isOldMap){
     // サイズ取得
     this->size = size;
     // ランダム生成
-    this->CreateRandomMap(block_num, item_num);
+    this->CreateRandomMap(block_num, item_num, isOldMap);
 }
 
 /****************************************************************************
@@ -53,97 +54,177 @@ QPoint GameMap::MirrorPoint(const QPoint& pos){
 *
 *   @param block_num ブロック数
 *   @param item_num  アイテム数
+*   @param isOldMap  旧マップ
 ****************************************************************************/
-void GameMap::CreateRandomMap(int block_num, int item_num){
-    name = "[RANDOM MAP]";              // マップ名
+void GameMap::CreateRandomMap(int block_num, int item_num, bool isOldMap){
+    turn = 100;                         // ターン数
 
-    // 一様ノルム(L∞ノルム)
-    auto UniformNorm = [](QPoint pos){
-        // 戻り値[絶対値最大]
-        return std::abs(pos.x()) > std::abs(pos.y()) ? std::abs(pos.x()) : std::abs(pos.y());
-    };
+    // 新マップ
+    if (!isOldMap) 
+    {
+        name = "[RANDOM MAP]";              // マップ名
 
-    do{
-        // ランダム座標取得
-        auto pos = QPoint(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
-        // 取得座標が盤面中心にあるアイテムの周囲
-        if(UniformNorm(pos - QPoint(size.x()/2, size.y()/2)) <= 1)
-            // 座標再取得
-            continue;
-        if(pos.x() < size.x()/2 ||                          // 盤面の左側
-          (pos.x() == size.x()/2 && pos.y() < size.y()/2)){ // 盤面中心の縦列 and 盤面の上半分
-            // COOL側初期位置取得
-            team_first_point[0] = pos;
-            // ループ脱出
-            break;
+        do {
+            // ランダム座標取得
+            auto pos = QPoint(QRandomGenerator::global()->generate() % size.x(), QRandomGenerator::global()->generate() % size.y());
+
+            if (pos.x() < size.x() / 2 ||                               // 盤面の左側 or
+                (pos.x() == size.x() / 2 && pos.y() < size.y() / 2)) {  // 盤面中心の縦列 and 盤面の上半分
+                // COOL側初期位置取得
+                team_first_point[0] = pos;
+                // ループ脱出
+                break;
+            }
+        // 座標確定まで
+        } while (true);
+
+        // HOT側の初期位置を点対称に配置
+        team_first_point[1] = MirrorPoint(team_first_point[0]);
+        team_first_point[1] = QPoint(99,99);
+
+        // フィールド初期化
+        field.clear();
+        // フィールドY軸数分
+        for (int i = 0; i < size.y(); i++) {
+            // 1行分のフィールドデータを取得
+            field.push_back(QVector<GameMap::OBJECT>(size.x()));
         }
-    }while(true);
 
-    // HOT側の初期位置を点対称に配置
-    team_first_point[1] = MirrorPoint(team_first_point[0]);
-    team_first_point[1] = QPoint(99,99);
+        // ブロック配置
+        for (int i = 0; i < block_num / 2; i++) {
+            // ランダム座標取得
+            QPoint pos(QRandomGenerator::global()->generate() % size.x(), QRandomGenerator::global()->generate() % size.y());
 
-    // フィールド初期化
-    field.clear();
-    // フィールドY軸数分
-    for(int i=0;i<size.y();i++){
-        // 1行分のフィールドデータを取得
-        field.push_back(QVector<GameMap::OBJECT>(size.x()));
-    }
-
-    // ブロック配置
-    for(int i=0;i<block_num/2;i++){
-        // ランダム座標取得
-        QPoint pos(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
-        // 点対称座標取得
-        auto mirrorPos = MirrorPoint(pos);
-
-        // ブロック配置有効 and プレイヤー初期値位置以外 and ブロック以外 and マップ中心以外
-        if(CheckBlockRole(pos) &&
-            pos != team_first_point[0] &&
-            pos != team_first_point[1] &&
-            field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK &&
-            pos != QPoint(size.x()/2, size.y()/2 )){
-            // ブロック配置
-            field[pos.y()][pos.x()] = GameMap::OBJECT::BLOCK;
-            // 点対称にブロック配置
-            field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::BLOCK;
-        }else{
-            // 座標再取得
-            i--;
+            // ブロック配置有効 and ブロック以外
+            if (CheckBlockRole(pos) &&
+                field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK ) {
+                // ブロック配置
+                field[pos.y()][pos.x()] = GameMap::OBJECT::BLOCK;
+                // 点対称座標取得
+                auto mirrorPos = MirrorPoint(pos);
+                // 点対称にブロック配置
+                field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::BLOCK;
+            }
+            else {
+                // 座標再取得
+                i--;
+            }
         }
-    }
 
-    // アイテム配置
-    for(int i=0;i<item_num/2;i++){
-        // ランダム座標取得
-        QPoint pos(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
-        // 点対称座標取得
-        auto mirrorPos = MirrorPoint(pos);
-        // 配置有効フラグ
-        bool around_item_flag = true;
+        // アイテム配置
+        for (int i = 0; i < item_num / 2; i++) {
+            // ランダム座標取得
+            QPoint pos(QRandomGenerator::global()->generate() % size.x(), QRandomGenerator::global()->generate() % size.y());
 
-        // プレイヤー初期座標の周辺
-        if(UniformNorm(team_first_point[0]  - pos) <= 1 || UniformNorm(team_first_point[1] - pos) <= 1)
-            // 配置無効
-            around_item_flag=false;
-
-        // 配置有効 and アイテム以外 and ブロック以外 and マップ中心以外
-        if(around_item_flag &&
-            field[pos.y()][pos.x()] != GameMap::OBJECT::ITEM &&
-            field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK &&
-            pos != QPoint(size.x()/2, size.y()/2) ){
-            // アイテム配置
-            field[pos.y()][pos.x()] = GameMap::OBJECT::ITEM;
-            //点対称にアイテム配置
-            field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::ITEM;
-        }else{
-            // 座標再取得
-            i--;
+            // チームの初期座標以外 and アイテム以外 and ブロック以外
+            if (pos != team_first_point[0] && pos != team_first_point[1] &&
+                field[pos.y()][pos.x()] != GameMap::OBJECT::ITEM &&
+                field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK ) {
+                // アイテム配置
+                field[pos.y()][pos.x()] = GameMap::OBJECT::ITEM;
+                // 点対称座標取得
+                auto mirrorPos = MirrorPoint(pos);
+                // 点対称にアイテム配置
+                field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::ITEM;
+            }
+            else {
+                // 座標再取得
+                i--;
+            }
         }
     }
-    // マップ中心にアイテムを配置
-    field[size.y()/2][size.x()/2] = GameMap::OBJECT::ITEM;
+    else
+    {
+        name = "[OLD RANDOM MAP]";
+
+        // 一様ノルム(L∞ノルム)
+        auto UniformNorm = [](QPoint pos){
+            // 戻り値[絶対値最大]
+            return std::abs(pos.x()) > std::abs(pos.y()) ? std::abs(pos.x()) : std::abs(pos.y());
+        };
+
+        do {
+            // ランダム座標取得
+            auto pos = QPoint(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
+            // 取得座標が盤面中心にあるアイテムの周囲
+            if(UniformNorm(pos - QPoint(size.x()/2, size.y()/2)) <= 1)
+                // 座標再取得
+                continue;
+            if(pos.x() < size.x()/2 ||                              // 盤面の左側 or
+                (pos.x() == size.x()/2 && pos.y() < size.y()/2)){   // 盤面中心の縦列 and 盤面の上半分
+                // COOL側初期位置取得
+                team_first_point[0] = pos;
+                // ループ脱出
+                break;
+            }
+        // 座標確定まで
+        } while(true);
+
+        // HOT側の初期位置を点対称に配置
+        team_first_point[1] = MirrorPoint(team_first_point[0]);
+        team_first_point[1] = QPoint(99,99);
+
+        // フィールド初期化
+        field.clear();
+        // フィールドY軸数分
+        for(int i=0;i<size.y();i++){
+            // 1行分のフィールドデータを取得
+            field.push_back(QVector<GameMap::OBJECT>(size.x()));
+        }
+
+        // ブロック配置
+        for(int i=0;i<block_num/2;i++){
+            // ランダム座標取得
+            QPoint pos(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
+            // 点対称座標取得
+            auto mirrorPos = MirrorPoint(pos);
+
+            // 旧ブロック配置有効 and ブロック以外 and マップ中心以外
+            if(CheckBlockRoleOld(pos) &&
+                field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK &&
+                pos != QPoint(size.x()/2, size.y()/2 )){
+                // ブロック配置
+                field[pos.y()][pos.x()] = GameMap::OBJECT::BLOCK;
+                // 点対称にブロック配置
+                field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::BLOCK;
+            }else{
+                // 座標再取得
+                i--;
+            }
+        }
+
+        // アイテム配置
+        for(int i=0;i<item_num/2;i++){
+            // ランダム座標取得
+            QPoint pos(QRandomGenerator::global()->generate() % size.x(),QRandomGenerator::global()->generate() % size.y());
+            // 点対称座標取得
+            auto mirrorPos = MirrorPoint(pos);
+            // 配置有効フラグ
+            bool around_item_flag = true;
+
+            // プレイヤー初期座標の周辺
+            if(UniformNorm(team_first_point[0]  - pos) <= 1 || UniformNorm(team_first_point[1] - pos) <= 1)
+                // 配置無効
+                around_item_flag = false;
+
+            // 配置有効 and チームの初期座標以外 and アイテム以外 and ブロック以外 and マップ中心以外
+            if(around_item_flag &&
+                pos != team_first_point[0] && pos != team_first_point[1] &&
+                field[pos.y()][pos.x()] != GameMap::OBJECT::ITEM &&
+                field[pos.y()][pos.x()] != GameMap::OBJECT::BLOCK &&
+                pos != QPoint(size.x()/2, size.y()/2) ){
+                // アイテム配置
+                field[pos.y()][pos.x()] = GameMap::OBJECT::ITEM;
+                // 点対称にアイテム配置
+                field[mirrorPos.y()][mirrorPos.x()] = GameMap::OBJECT::ITEM;
+            }else{
+                // 座標再取得
+                i--;
+            }
+        }
+        // マップ中心にアイテムを配置
+        field[size.y()/2][size.x()/2] = GameMap::OBJECT::ITEM;
+    }
 }
 
 /****************************************************************************
@@ -225,23 +306,15 @@ bool GameMap::Export(QString Filename){
     // 拡張子取得
     QString fileExt = Filename.split("/").last().split(".").last();
 
-    // 拡張子が"txt"
-    if (fileExt == "txt") {
-        // 追記書込オープン
-        if(!file.open(QIODevice::WriteOnly | QIODevice::Append)){
-            // オープン異常通知
-            QMessageBox::information(nullptr, "追記モードでファイルを開けません", file.errorString());
-            // 戻り値[異常]
-            return false;
-        }
-    } else {
-        // 書込専用以外
-        if (!file.open(QIODevice::WriteOnly)) {
-            // オープン異常通知
-            QMessageBox::information(nullptr, "ファイルを開けません", file.errorString());
-            // 戻り値[異常]
-            return false;
-        }
+    // 拡張子が"txt"ならば追記書込オープン、それ以外は書込オープン
+    QIODevice::OpenMode openMode = (fileExt == "txt") ? 
+        (QIODevice::WriteOnly | QIODevice::Append) : QIODevice::WriteOnly;
+    // オープン失敗
+    if (!file.open(openMode)) {
+        // 異常通知
+        QMessageBox::information(nullptr, "ファイルを開けません", file.errorString());
+        // 戻り値[異常]
+        return false;
     }
 
     // マップファイル名
@@ -310,14 +383,61 @@ QString GameMap::getTeamName(TEAM team){
 *   @param pos 位置情報
 ****************************************************************************/
 bool GameMap::CheckBlockRole(QPoint pos){
-    // 外周にブロックがあってはいけない
-    if(pos.x() == 0 || pos.x() == size.x()-1 || pos.y() == 0|| pos.y() == size.y()-1)
+	// 各チームの初期位置にブロックがあってはいけない
+	if (pos == team_first_point[0] || pos == team_first_point[1])
+		return false;
+
+    // COOL側 X軸に対するSearchをしたとき、その終点にブロックがあってはいけない
+    else if(pos == team_first_point[0] + QPoint(9, 0) || pos == team_first_point[0] + QPoint(-9, 0))
+        return false;
+    // HOT側 X軸に対するSearchをしたとき、その終点にブロックがあってはいけない
+    else if(pos == team_first_point[1] + QPoint(9, 0) || pos == team_first_point[1] + QPoint(-9, 0))
         return false;
     // COOL側 Y軸に対するSearchをしたとき、その終点にブロックがあってはいけない
     else if(pos == team_first_point[0] + QPoint(0, 9) || pos == team_first_point[0] + QPoint(0, -9))
         return false;
     // HOT側 Y軸に対するSearchをしたとき、その終点にブロックがあってはいけない
     else if(pos == team_first_point[1] + QPoint(0, 9) || pos == team_first_point[1] + QPoint(0, -9))
+        return false;
+
+    // チーム数分
+	for (int i = 0; i < TEAM_COUNT; i++) {
+		if((pos.x() == 0 || pos.x() == size.x() - 1) &&                                         // 外周(X=0 or X=size.x()-1) and
+	       (pos.y() == team_first_point[i].y()) &&                                              // ブロックを置こうとしているY座標がチームのY座標と同じ and
+		   (team_first_point[i].x() - 9 <= pos.x() && pos.x() <= team_first_point[i].x() + 9))  // チームのSearch範囲(X軸)はブロックであってはいけない
+            return false;
+
+		if((pos.y() == 0 || pos.y() == size.y() - 1) &&                                         // 外周(Y=0 or Y=size.y()-1) and
+		   (pos.x() == team_first_point[i].x()) &&                                              // ブロックを置こうとしているX座標が、チームのX座標と同じ and
+		   (team_first_point[i].y() - 9 <= pos.y() && pos.y() <= team_first_point[i].y() + 9))  // チームのSearch範囲(Y軸)はブロックであってはいけない
+            return false;
+	}
+
+    // 戻り値[配置可]
+    return true;
+}
+
+/****************************************************************************
+*   旧ブロック配置確認
+*
+*   @return 配置可否
+*
+*   @param pos 位置情報
+****************************************************************************/
+bool GameMap::CheckBlockRoleOld(QPoint pos) {
+    // 各チームの初期位置にブロックがあってはいけない
+    if (pos == team_first_point[0] || pos == team_first_point[1])
+        return false;
+
+    // 外周にブロックがあってはいけない
+    else if (pos.x() == 0 || pos.x() == size.x() - 1 || pos.y() == 0 || pos.y() == size.y() - 1)
+        return false;
+
+    // COOL側 Y軸に対するSearchをしたとき、その終点にブロックがあってはいけない
+    else if (pos == team_first_point[0] + QPoint(0, 9) || pos == team_first_point[0] + QPoint(0, -9))
+        return false;
+    // HOT側 Y軸に対するSearchをしたとき、その終点にブロックがあってはいけない
+    else if (pos == team_first_point[1] + QPoint(0, 9) || pos == team_first_point[1] + QPoint(0, -9))
         return false;
     else
         return true;

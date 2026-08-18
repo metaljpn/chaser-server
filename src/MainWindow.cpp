@@ -64,34 +64,29 @@ MainWindow::MainWindow(QWidget *parent) :
     }
 
     QString path;                       // ログ保存パス
-    QSettings* mSettings;               // サーバー設定
-    QVariant v;                         // 設定値
     // サーバー設定
-    mSettings = new QSettings( "setting.ini", QSettings::IniFormat );
+    QSettings mSettings("setting.ini", QSettings::IniFormat);
+    QVariant v;                         // 設定値
     // ログ保存パス
-    v = mSettings->value( "LogFilepath" );
+    v = mSettings.value( "LogFilepath" );
     if (v.typeId() != QMetaType::UnknownType)path = v.toString();
     // フレームレート
-    v = mSettings->value( "Gamespeed" );
-    if (v.typeId() != QMetaType::UnknownType)frame_rate = v.toInt();
+    v = mSettings.value( "Gamespeed" );
+    if (v.typeId() != QMetaType::UnknownType && v.toInt() > 0)frame_rate = v.toInt();
     // 消音モード
-    v = mSettings->value( "Silent" );
+    v = mSettings.value( "Silent" );
     if (v.typeId() != QMetaType::UnknownType)silent = v.toBool();
     else silent = false;
-    // チーム配置時間
-    v = mSettings->value( "Team" );
-    if (v.typeId() != QMetaType::UnknownType)anime_team_time = v.toInt();
 
-    QSettings* dSettings;               // デザイン設定
-    QVariant v2;                        // 設定値
     // デザイン設定
-    dSettings = new QSettings( "design.ini", QSettings::IniFormat );
+    QSettings dSettings("design.ini", QSettings::IniFormat);
+    QVariant v2;                        // 設定値
     // 暗闇モード
-    v2 = dSettings->value( "Dark" );
+    v2 = dSettings.value( "Dark" );
     if (v2.typeId() != QMetaType::UnknownType)dark = v2.toBool();
     else dark = false;
     // ボット戦モード
-    v2 = dSettings->value( "Bot" );
+    v2 = dSettings.value( "Bot" );
     if (v2.typeId() != QMetaType::UnknownType)isbotbattle = v2.toBool();
     else isbotbattle = false;
     // 暗闇モードならば、マップ描画時間を調整
@@ -113,8 +108,8 @@ MainWindow::MainWindow(QWidget *parent) :
     log = StableLog(path + "/log" + getTime() + ".txt");
 
     // メッセージハンドラ設定
-    s_instance = this;
-    s_prevMsgHandler = qInstallMessageHandler(MainWindow::s_messageHandler);
+	s_instance = this;
+	s_prevMsgHandler = qInstallMessageHandler(MainWindow::s_messageHandler);
 
     // 画面の最大高さをもとに、ウインドウの最大高さを決める
     int window_height = static_cast<int>(QGuiApplication::primaryScreen()->size().height()*0.8);
@@ -162,7 +157,7 @@ MainWindow::MainWindow(QWidget *parent) :
     // マップ縦サイズ分
     for(int i=0;i<startup->map.size.y();i++){
         // マップ横サイズ分
-        for(int j=0;j<startup->map.size.x();j++){
+       for(int j=0;j<startup->map.size.x();j++){
             // アイテム数取得
             if(startup->map.field[i][j] == GameMap::OBJECT::ITEM)this->ui->Board->leave_items++;
         }
@@ -172,35 +167,32 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->ItemLeaveLabel->setText(QString::number(this->ui->Board->leave_items));
 
     // 最大化設定取得
-    v = mSettings->value( "Maximum" );
+    v = mSettings.value( "Maximum" );
     // 設定有効 and ウィンドウ最大化
-    if (v.typeId() != QMetaType::UnknownType && v.toBool()){
+    if (v.typeId() != QMetaType::UnknownType && v.toBool())
         // ウィンドウ最大化
         setWindowState(Qt::WindowMaximized);
-    }
+    
 
     // アニメーション設定
-    mSettings = new QSettings( "AnimationTime.ini", QSettings::IniFormat );
+    QSettings aSettings( "AnimationTime.ini", QSettings::IniFormat );
     // マップ描画時間
-    v = mSettings->value( "Map" );
+    v = aSettings.value( "Map" );
     // マップ描画時間設定
-    if (v.typeId() != QMetaType::UnknownType)anime_map_time = v.toInt();
-    else{
-        // アニメーション設定
-        QSettings* mSettings;
-        // 設定読込
-        mSettings = new QSettings( "AnimationTime.ini", QSettings::IniFormat );
-        // マップ描画時間
-        mSettings->setValue( "Map" , anime_map_time );
-    }
+    if (v.typeId() != QMetaType::UnknownType && v.toInt() > 0)
+        anime_map_time = v.toInt();
+    // チーム配置時間
+    v = aSettings.value("Team");
+    if (v.typeId() != QMetaType::UnknownType && v.toInt() > 0)
+        anime_team_time = v.toInt();
 
     // プレイヤー情報ログ出力(プレイヤー名、IPアドレス)
     log << "[ Cool Player : Name = " + this->startup->team_client[static_cast<int>(TEAM::COOL)]->client->Name
                + " , IP = " + this->startup->team_client[static_cast<int>(TEAM::COOL)]->client->IP
-               + " ]\r\n";
+        + " ]\r\n";
     log << "[ Hot  Player : Name = " + this->startup->team_client[static_cast<int>(TEAM::HOT)]->client->Name
                + " , IP = " + this->startup->team_client[static_cast<int>(TEAM::HOT)]->client->IP
-               + " ]\r\n";
+        + " ]\r\n";
 
     // マップ情報ログ出力
     log << "[ Map : \r\n";
@@ -208,7 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
     log << "]\r\n";
 
     // セットアップ完了ログ出力
-    log << getTime() + "セットアップ完了　ゲームを開始します。\r\n";
+    log << getTime() + "セットアップ完了　ゲームを開始します。\r\n";    
 }
 
 /****************************************************************************
@@ -423,7 +415,7 @@ void MainWindow::SetTeamAnimation()
             // タイマー
             clock = new QTimer();
             // ゲーム進行シグナル･スロット設定
-            connect(clock, &QTimer::timeout, this, &MainWindow::StepGame);
+			connect(clock, &QTimer::timeout, this, &MainWindow::StepGame);
             // タイマー始動
             clock->start(frame_rate);
             // シグナル･スロット解除
@@ -508,11 +500,11 @@ void MainWindow::StepGame()
     // ターンログ出力
     if(ui->TimeBar->value() != turn_count){
         // ターン数取得
-        turn_count = ui->TimeBar->value();
+       turn_count = ui->TimeBar->value();
         // ターン数ログ出力
-        log << QString("-----残") + QString::number(turn_count) + "ターン-----" + "\r\n";
+       log << QString("-----残") + QString::number(turn_count) + "ターン-----" + "\r\n";
         // デバッグ情報
-        qDebug() << QString("-----残") + QString::number(turn_count) + "ターン-----";
+       qDebug() << QString("-----残") + QString::number(turn_count) + "ターン-----";
     }
 
     player = 0;
@@ -864,8 +856,8 @@ void MainWindow::Finish(WINNER winner)
     // 消音モード以外
     if(!silent){
         // 試合終了時のファンファーレを再生
-        bgm = new QMediaPlayer;
-        audio_output = new QAudioOutput;
+        bgm = new QMediaPlayer(this);
+        audio_output = new QAudioOutput(this);
         bgm->setAudioOutput(audio_output);
         bgm->setSource(QUrl("qrc:/Sound/ji_023.mp3"));
         audio_output->setVolume(audio_volume);
@@ -938,7 +930,7 @@ MainWindow::~MainWindow()
     if(!silent && this->startup->music_text != "None")bgm->stop();
 
     // メッセージハンドラ復旧
-    qInstallMessageHandler(s_prevMsgHandler);
+	qInstallMessageHandler(s_prevMsgHandler);
     s_prevMsgHandler = nullptr;
     s_instance = nullptr;
 

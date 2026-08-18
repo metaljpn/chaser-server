@@ -66,3 +66,8 @@ Imageフォルダがない場合は新規作成してください。
 - Windows 11 25H2
 - Qt Creator 20.0.1
 - Desktop Qt 6.11.1 MinGW 64-bit
+
+## 開発環境(Qt5)
+- MacOSX 10.11.3 ElCapitan
+- Qt Creator 3.3.0
+- Desktop Qt 5.4.2 clang 64bit
