@@ -200,7 +200,7 @@ MainWindow::MainWindow(QWidget *parent) :
     log << "]\r\n";
 
     // セットアップ完了ログ出力
-    log << getTime() + "セットアップ完了　ゲームを開始します。\r\n";    
+    log << getTime() + "セットアップ完了　ゲームを開始します。\r\n";
 }
 
 /****************************************************************************
@@ -396,9 +396,6 @@ void MainWindow::SetTeamAnimation()
 {
     static int team_count;              // カウンタ
 
-    // チーム初期位置取得
-    ui->Board->team_pos[team_count] = this->startup->map.team_first_point[team_count];
-
     // チーム数到達
     if((team_count == TEAM_COUNT)||(static_cast<TEAM>(team_count)==TEAM::HOT)){
         // 暗闇モード
@@ -422,6 +419,8 @@ void MainWindow::SetTeamAnimation()
             disconnect(teamshow_anime, &QTimer::timeout, this, &MainWindow::SetTeamAnimation);
         }
     }else{
+        // チーム初期位置取得
+        ui->Board->team_pos[team_count] = this->startup->map.team_first_point[team_count];
         // 探索済設定
         ui->Board->map.discover[ui->Board->team_pos[team_count].y()]
                 [ui->Board->team_pos[team_count].x()] = GameMap::DISCOVER::EXPLORED;

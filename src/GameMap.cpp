@@ -401,7 +401,7 @@ bool GameMap::CheckBlockRole(QPoint pos){
         return false;
 
     // チーム数分
-	for (int i = 0; i < TEAM_COUNT; i++) {
+    for (int i = 0; i < TEAM_COUNT; i++) {
 		if((pos.x() == 0 || pos.x() == size.x() - 1) &&                                         // 外周(X=0 or X=size.x()-1) and
 	       (pos.y() == team_first_point[i].y()) &&                                              // ブロックを置こうとしているY座標がチームのY座標と同じ and
 		   (team_first_point[i].x() - 9 <= pos.x() && pos.x() <= team_first_point[i].x() + 9))  // チームのSearch範囲(X軸)はブロックであってはいけない
